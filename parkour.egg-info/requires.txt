@@ -1,0 +1,7 @@
+click
+Numpy
+MACS2
+editdistance
+biopython
+optparse-pretty
+regex

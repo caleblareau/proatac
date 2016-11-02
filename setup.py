@@ -3,7 +3,7 @@ Preprocessing ATAC Data
 """
 from setuptools import find_packages, setup
 
-dependencies = ['click', 'PyYAML', 'Numpy', 'MACS2']
+dependencies = ['click', 'Numpy', 'MACS2', 'editdistance', 'biopython', 'optparse-pretty', 'regex']
 
 setup(
     name='parkour',

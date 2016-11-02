@@ -1,0 +1,24 @@
+Metadata-Version: 1.1
+Name: parkour
+Version: 0.1.0
+Summary: Processing ATAC data.
+Home-page: https://github.com/buenrostrolab/parkour
+Author: Caleb Lareau and Jason Buenrostro
+Author-email: caleblareau@g.harvard.edu
+License: BSD
+Description: 
+        Preprocessing ATAC Data
+        
+Platform: any
+Classifier: Development Status :: 4 - Beta
+Classifier: Environment :: Console
+Classifier: Intended Audience :: Developers
+Classifier: License :: OSI Approved :: BSD License
+Classifier: Operating System :: POSIX
+Classifier: Operating System :: MacOS
+Classifier: Operating System :: Unix
+Classifier: Operating System :: Microsoft :: Windows
+Classifier: Programming Language :: Python
+Classifier: Programming Language :: Python :: 2
+Classifier: Programming Language :: Python :: 3
+Classifier: Topic :: Software Development :: Libraries :: Python Modules
