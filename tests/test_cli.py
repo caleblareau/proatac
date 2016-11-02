@@ -17,4 +17,3 @@ def test_trimmed_output():
 	result = runner.invoke(cli.main, ['-a', 'fastq/s3_1.fastq.gz', '-b', 'fastq/s3_2.fastq.gz', '-u', 'trim'])
 	print(result.output)
 	assert file_checksums_equal('p.s3_1.trim.fastq', 'correct_output/p.s3_1.trim.fastq')
-	assert file_checksums_equal('p.s3_2.trim.fastq', 'correct_output/p.s3_2.trim.fastq')
