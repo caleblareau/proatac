@@ -4,8 +4,12 @@ MANIFEST.in
 NEWS
 setup.cfg
 setup.py
+parkour/.DS_Store
+parkour/.Rhistory
 parkour/__init__.py
+parkour/__init__.pyc
 parkour/cli.py
+parkour/cli.pyc
 parkour/pyadapter_trim.py
 parkour.egg-info/PKG-INFO
 parkour.egg-info/SOURCES.txt
@@ -21,9 +25,11 @@ tests/.loop_counts.bedpe
 tests/.stat
 tests/__init__.py
 tests/__init__.pyc
-tests/example.yaml
 tests/test_cli.py
 tests/fastq/.DS_Store
+tests/fastq/p.log
+tests/fastq/p.s3_1.trim.fastq.gz
+tests/fastq/p.s3_2.trim.fastq.gz
 tests/fastq/s1_1.fastq.gz
 tests/fastq/s1_2.fastq.gz
 tests/fastq/s2_1.fastq.gz

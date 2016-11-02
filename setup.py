@@ -3,7 +3,7 @@ Preprocessing ATAC Data
 """
 from setuptools import find_packages, setup
 
-dependencies = ['click', 'Numpy', 'MACS2', 'editdistance', 'biopython', 'optparse-pretty', 'regex']
+dependencies = ['click', 'Numpy', 'MACS2', 'editdistance', 'biopython', 'optparse-pretty', 'regex', 'logging']
 
 setup(
     name='parkour',
@@ -12,7 +12,7 @@ setup(
     license='BSD',
     author='Caleb Lareau and Jason Buenrostro',
     author_email='caleblareau@g.harvard.edu',
-    description='Processing ATAC data.',
+    description='Processing and quality control of ATAC data.',
     long_description=__doc__,
     packages=find_packages(exclude=['tests']),
     include_package_data=True,

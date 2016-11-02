@@ -5,3 +5,4 @@ editdistance
 biopython
 optparse-pretty
 regex
+logging

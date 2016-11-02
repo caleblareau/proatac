@@ -2,7 +2,7 @@
 recursive-include tests *
 
 #Scripts
-recursive-include hichipper *
+recursive-include parkour *
 
 #Misc
 include Authors.rst

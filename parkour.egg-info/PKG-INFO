@@ -1,7 +1,7 @@
 Metadata-Version: 1.1
 Name: parkour
 Version: 0.1.0
-Summary: Processing ATAC data.
+Summary: Processing and quality control of ATAC data.
 Home-page: https://github.com/buenrostrolab/parkour
 Author: Caleb Lareau and Jason Buenrostro
 Author-email: caleblareau@g.harvard.edu

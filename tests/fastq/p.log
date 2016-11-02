@@ -1,0 +1,7 @@
+INFO:root: Finished trimming data; from the trimmed data--
+INFO:root:18029 sequences total
+INFO:root:783 sequences trimmed with 0 mismatches
+INFO:root:295 sequences trimmed with 1 mismatch
+INFO:root:19 mean number of bases trimmed for reads requiring trimming. 
+
+INFO:root: Finished trimming data; from the trimmed data--
