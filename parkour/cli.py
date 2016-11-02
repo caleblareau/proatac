@@ -33,23 +33,22 @@ def main(mode, o, a, b, u, s, q):
 ##################
 
 	"""
-	Valid MODE options include 'trim',
+	Valid MODE options include `trim`,
 	
-	
-	Options with `trim` mode: \n
-	-a file 1 \n
-	-b file 2 \n
+	\b
+	`trim` mode valid options:
+	  -a file 1
+	  -b file 2
 	
 	
 	"""
 	__version__ = get_distribution('parkour').version
 	modes = ['trim']
 	if not any(mode in s for s in modes):
-		sys.exit("ERROR: Improper mode selected")
+		sys.exit("ERROR: Improper mode '" + mode + "' selected")
 	
-	script_dir = os.path.dirname(os.path.realpath(__file__))
 	click.echo("Running " + mode +" mode in parkour v%s" % __version__)
-	
+	script_dir = os.path.dirname(os.path.realpath(__file__))
 	
 ###################
 #### TRIM MODE ####
@@ -68,9 +67,9 @@ def main(mode, o, a, b, u, s, q):
 		
 		# Check that all the parameters are valid
 		if not os.path.isfile(a):
-			sys.exit("ERROR: File " + a + "specified with -a does not exist!")
+			sys.exit("ERROR: File '" + a + "' specified with -a does not exist!")
 		if not os.path.isfile(b):
-			sys.exit("ERROR: File " + b + "specified with -b does not exist!")
+			sys.exit("ERROR: File '" + b + "' specified with -b does not exist!")
 		
 		cmd = ['python', os.path.join(script_dir, 'pyadapter_trim.py'), "-a", a, "-b", b, uncmprs] 
 		click.echo(cmd)

@@ -1,6 +1,6 @@
 import pytest
 from click.testing import CliRunner
-from hichipper import cli
+from parkour import cli
 import md5
 
 
@@ -12,8 +12,9 @@ def file_checksums_equal(file1, file2):
     return checksum1==checksum2 
 
 
-def test_loops_output():
+def test_trimmed_output():
 	runner = CliRunner()
-	result = runner.invoke(cli.main, ['--out', 'output1', 'example.yaml'])
-	assert file_checksums_equal('correct_output/co.intra.loop_counts.bedpe', 'output1/test_sample1.filt.intra.loop_counts.bedpe')
-	assert file_checksums_equal('correct_output/co.intra.loop_counts.bedpe', 'output1/test_sample2.filt.intra.loop_counts.bedpe')
+	result = runner.invoke(cli.main, ['-a', 'fastq/s3_1.fastq.gz', '-b', 'fastq/s3_2.fastq.gz',  'trim'])
+	assert file_checksums_equal('p.s3_1.trim.fastq.gz', 'correct_output/p.s3_1.trim.fastq.gz')
+	assert file_checksums_equal('p.s3_2.trim.fastq.gz', 'output1/tp.s3_1.trim.fastq.gz')
+
