@@ -26,8 +26,7 @@ tests/.stat
 tests/__init__.py
 tests/__init__.pyc
 tests/test_cli.py
-tests/correct_output/p.s3_1.trim.fastq.gz
-tests/correct_output/p.s3_2.trim.fastq.gz
+tests/correct_output/p.s3_1.trim.fastq
 tests/fastq/.DS_Store
 tests/fastq/s1_1.fastq.gz
 tests/fastq/s1_2.fastq.gz
