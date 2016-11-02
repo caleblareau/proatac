@@ -2,6 +2,7 @@ click
 Numpy
 MACS2
 editdistance
+pytest
 biopython
 optparse-pretty
 regex
