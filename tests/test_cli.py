@@ -15,5 +15,6 @@ def file_checksums_equal(file1, file2):
 def test_trimmed_output():
 	runner = CliRunner()
 	result = runner.invoke(cli.main, ['-a', 'fastq/s3_1.fastq.gz', '-b', 'fastq/s3_2.fastq.gz', 'trim'])
+	print(result)
 	assert file_checksums_equal('p.s3_1.trim.fastq.gz', 'correct_output/p.s3_1.trim.fastq.gz')
 	assert file_checksums_equal('p.s3_2.trim.fastq.gz', 'correct_output/p.s3_2.trim.fastq.gz')
