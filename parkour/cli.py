@@ -6,6 +6,7 @@ import shutil
 import shutil
 import random
 import string
+import logging
 from pkg_resources import get_distribution
 from subprocess import call, check_call
 
@@ -19,7 +20,7 @@ def get_subdirectories(dir):
 @click.option('-o', default="p", help='Output prefix associated with sample')
 @click.option('-a', default="", help='Filename/path for read 1 for sample')
 @click.option('-b', default="", help='Filename/path for read 2 for sample')
-@click.option('-u', is_flag=True, help='Leave .fastq files uncompressed?')
+@click.option('-u', is_flag=True, help='Leave output .fastq files uncompressed?')
 @click.option('-s', default="-p 0.01 --nomodel", help='String of arguments to pass to MACS2; default = "-p 0.01 --nomodel"')
 @click.option('-q', is_flag=True, help='Skip QC report generation? (Requires R + dependent packages (see README))')
 @click.version_option()
@@ -50,6 +51,8 @@ def main(mode, o, a, b, u, s, q):
 	click.echo("Running " + mode +" mode in parkour v%s" % __version__)
 	script_dir = os.path.dirname(os.path.realpath(__file__))
 	
+
+	
 ###################
 #### TRIM MODE ####
 ###################
@@ -61,17 +64,17 @@ def main(mode, o, a, b, u, s, q):
 		if b == "":
 			sys.exit("ERROR: Supply an argument with -b to run trim mode")
 		
-		uncmprs = ""
+		uncmprs = str(False)
 		if u:
-			uncmprs = " -u"
+			uncmprs = str(True)
 		
 		# Check that all the parameters are valid
 		if not os.path.isfile(a):
 			sys.exit("ERROR: File '" + a + "' specified with -a does not exist!")
 		if not os.path.isfile(b):
 			sys.exit("ERROR: File '" + b + "' specified with -b does not exist!")
-		
-		cmd = ['python', os.path.join(script_dir, 'pyadapter_trim.py'), "-a", a, "-b", b, uncmprs] 
+
+		cmd = ['python', os.path.join(script_dir, 'pyadapter_trim.py'), "-a", str(a), "-b", str(b), "-u", str(uncmprs), "-o", str(o)] 
 		click.echo(cmd)
 		call(cmd)
 	click.echo("Done")

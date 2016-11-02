@@ -40,13 +40,14 @@ usage = "usage: %prog [options] [inputs] This will trim adapters"
 opts = OptionParser(usage=usage)
 opts.add_option("-a", help="<Read1> Accepts fastq or fastq.gz")
 opts.add_option("-b", help="<Read2> Accepts fastq or fastq.gz")
-opts.add_option("-u", action="store_true", default=False, help="Print uncompressed output file")
+opts.add_option("-o", help="Output prefix")
+opts.add_option("-u", help="Print uncompressed output file")
 opts.add_option("-t", default="trim", help="Adds string to trimmed files")
-opts.add_option("-p", default="p", help="Prefix for everything")
 options, arguments = opts.parse_args()
 
-## Define log but eventually get rid of it
-logging.basicConfig(filename='p.log')
+# Define log
+logfilename = options.o + ".log"
+logging.basicConfig(filename=logfilename)
 
 # return usage information if no argvs given
 if len(sys.argv)==1:
@@ -59,8 +60,8 @@ p1_in = options.a
 p2_in = options.b
 
 # name outputs and print to working dir
-p1_file = options.p + "." + p1_in.split('/')[-1]
-p2_file = options.p + "." + p2_in.split('/')[-1]
+p1_file = options.o + "." + p1_in.split('/')[-1]
+p2_file = options.o + "." + p2_in.split('/')[-1]
 
 #check for file type and open input file
 append = p1_in.split('.')[-1]
@@ -96,13 +97,15 @@ n=20  # match seq
 mismatch=1  # only allow 0-1 mismatches for now
 
 # initilize write files
-if options.u == False:
+if options.u == str(False):
     r1_write = gzip.open(p1_out+'.gz', 'wb')
     r2_write = gzip.open(p2_out+'.gz', 'wb')
-elif options.u == True:
+elif options.u == str(True):
     r1_write = open(p1_out, 'w')
     r2_write = open(p2_out, 'w')
-
+else:
+	print(options.u)
+	
 while 1:
     # read lines
     p1_line = p1_rds.readline()
