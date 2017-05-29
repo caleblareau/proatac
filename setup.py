@@ -1,13 +1,13 @@
 """
-Preprocessing ATAC Data
+Preprocessing scATAC Data
 """
 from setuptools import find_packages, setup
 
-dependencies = ['click', 'Numpy', 'MACS2', 'editdistance', 'pytest', 'biopython', 'optparse-pretty', 'regex', 'logging']
+dependencies = ['click', 'Numpy', 'MACS2', 'editdistance', 'pytest', 'snakemake', 'biopython', 'optparse-pretty', 'regex', 'logging']
 
 setup(
-    name='parkour',
-    version='0.1.0',
+    name='proatac',
+    version='0.2.0',
     url='https://github.com/buenrostrolab/parkour',
     license='BSD',
     author='Caleb Lareau and Jason Buenrostro',
@@ -21,15 +21,15 @@ setup(
     install_requires=dependencies,
     entry_points={
         'console_scripts': [
-            'parkour = parkour.cli:main',
+            'proatac = proatac.cli:main',
         ],
     },
     classifiers=[
         # As from http://pypi.python.org/pypi?%3Aaction=list_classifiers
         # 'Development Status :: 1 - Planning',
-        # 'Development Status :: 2 - Pre-Alpha',
+         'Development Status :: 2 - Pre-Alpha',
         # 'Development Status :: 3 - Alpha',
-        'Development Status :: 4 - Beta',
+        # 'Development Status :: 4 - Beta',
         # 'Development Status :: 5 - Production/Stable',
         # 'Development Status :: 6 - Mature',
         # 'Development Status :: 7 - Inactive',
@@ -39,9 +39,7 @@ setup(
         'Operating System :: POSIX',
         'Operating System :: MacOS',
         'Operating System :: Unix',
-        'Operating System :: Microsoft :: Windows',
         'Programming Language :: Python',
-        'Programming Language :: Python :: 2',
         'Programming Language :: Python :: 3',
         'Topic :: Software Development :: Libraries :: Python Modules',
     ]
