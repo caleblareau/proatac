@@ -10,49 +10,24 @@ import itertools
 import time
 from pkg_resources import get_distribution
 from subprocess import call, check_call
-
-# -----------------------
-# Helper functions
-# -----------------------
-
-def string_hamming_distance(str1, str2):
-    """
-    Fast hamming distance over 2 strings known to be of same length.
-    In information theory, the Hamming distance between two strings of equal 
-    length is the number of positions at which the corresponding symbols 
-    are different.
-    eg "karolin" and "kathrin" is 3.
-    """
-    return sum(itertools.imap(operator.ne, str1, str2))
-
-def rev_comp(seq):
-    """
-    Fast Reverse Compliment
-    """  
-    tbl = {'A':'T', 'T':'A', 'C':'G', 'G':'C', 'N':'N'}
-    return ''.join(tbl[s] for s in seq[::-1])
-
-def parse_manifest(manifest):
-    samples = []
-    if manifest.endswith(('.yaml', '.yml')):
-        with open(manifest, 'r') as f: 
-            m = yaml.load(f)
-        return m
-    else:
-        click.echo(gettime() + "Please specify a valid .yaml file for analysis")
-
+from .proatacHelp import *
 
 # -----------------------
 # Core project option
 # -----------------------
 
 class proatacProject():
-	def __init__(self, project_yaml_file_handle):
+	def __init__(self, project_yaml_file_handle, script_dir):
 	
 		self.yaml = parse_manifest(project_yaml_file_handle)
 		self.name = self.yaml['project_name']
 		self.project_dir = self.yaml['project_dir']
 		self.analysis_person = self.yaml['analysis_person']
+		
+		# ------------------------------
+		# Process reference genome stuff
+		# ------------------------------
+		
 		self.reference_genome = self.yaml['reference_genome']
 		
 		# ------------------------
@@ -99,7 +74,10 @@ class proatacProject():
 		if(self.python3_path == "None"):
 			sys.exit("ERROR: cannot find python3 in environment; set the 'python3_path' in the .yaml file")
 						
-		
+		# ------------------------------
+		# Process sequencing directories
+		# ------------------------------
+				
 		for run in self.yaml['sequencing_directories']:
 			print(run)
 
@@ -112,14 +90,14 @@ class proatacProject():
 def main(manifest, check, stingy):
 	"""Preprocessing ATAC and scATAC Data."""
 	__version__ = get_distribution('proatac').version
+	script_dir = os.path.dirname(os.path.realpath(__file__))
 	
-	project = proatacProject(manifest)
+	project = proatacProject(manifest, script_dir)
 	
 	# -------------------------------
 	# Utility functions and variables
 	# -------------------------------
 	
-	script_dir = os.path.dirname(os.path.realpath(__file__))
 	outfolder = os.path.abspath(project.project_dir) 
 	logfolder = outfolder + "/logs"
 	 
