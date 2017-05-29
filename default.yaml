@@ -1,5 +1,5 @@
 project_name : "proatacProject"
-project_dir : "proatacDir"
+project_dir : "dirOut"
 analysis_person : "Caleb Lareau"
 reference_genome : "hg19"
 sequencing_directories : 
@@ -19,10 +19,11 @@ sequencing_directories :
     remove_samples : ""
 paths : 
     bowtie2_path : ""
-    bowtie2_index : " /Volumes/dat/genomes/hg19_bwt2"
+    bowtie2_index : "/Volumes/dat/genomes/hg19_bwt2/hg19"
     macs2_path : "/usr/local/bin/macs2"
     python3_path : "/Library/Frameworks/Python.framework/Versions/3.6/bin/python3"
     samtools_path : ""
+    R_path: ""
 parameters : 
 # Global PARAMETERS
 #   refGenomeFiles:
