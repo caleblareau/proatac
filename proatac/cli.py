@@ -29,10 +29,9 @@ def string_hamming_distance(str1, str2):
     return sum(itertools.imap(operator.ne, str1, str2))
 
 def rev_comp(seq):
-	"""
-    Fast Reverse Compliment
     """
-     
+    Fast Reverse Compliment
+    """  
     tbl = {'A':'T', 'T':'A', 'C':'G', 'G':'C', 'N':'N'}
     return ''.join(tbl[s] for s in seq[::-1])
 
@@ -51,55 +50,20 @@ def parse_manifest(manifest):
 # -----------------------
 
 class proatacProject():
-
-    def __init__(self, project_yaml_file_handle):
-
-        self.yaml = parse_manifest(project_yaml_file_handle)
-        print(self.yaml['paths'])
-        self.name = self.yaml['project_name']
-        self.project_dir = self.yaml['project_dir']
-        self.analyst = self.yaml['analysis_person']
+	def __init__(self, project_yaml_file_handle):
+		self.yaml = parse_manifest(project_yaml_file_handle)
+		print(self.yaml['paths'])
+		self.name = self.yaml['project_name']
+		self.project_dir = self.yaml['project_dir']
+		self.analysis_person = self.yaml['analysis_person']
+		self.reference_genome = self.yaml['reference_genome']
 		
-        self.libraries = OrderedDict()
-        self.runs = OrderedDict()
-
-        for run in self.yaml['sequencing_runs']:
-            print(run)
-
-    @property
-    def parameters(self):
-        if not hasattr(self, '_parameters'):
-            #Read defaults
-            with open(os.path.join(os.path.dirname(os.path.realpath(__file__)), 'default.yaml'), 'r') as f:
-                self._parameters = yaml.load(f)['parameters']
-            # Update with user provided values
-            if 'parameters' in self.yaml:
-                for k, d in self.yaml['parameters'].items():
-                    self._parameters[k].update(d)
-
-        return self._parameters
-
-
-    @property
-    def paths(self):
-        if not hasattr(self, '_paths'):
-            script_dir = os.path.dirname(os.path.realpath(__file__))
-            #Read defaults
-            with open(os.path.join(script_dir, 'default_parameters.yaml'), 'r') as f:
-                paths = yaml.load(f)['paths']
-            # Update with user provided values
-            paths.update(self.yaml['paths'])
-
-            paths['python'] = os.path.join(paths['python_dir'], 'python')
-            paths['macs2'] = os.path.join(paths['macs2_dir'], 'macs2')
-            paths['bowtie'] = os.path.join(paths['bowtie_dir'], 'bowtie')
-            paths['samtools'] = os.path.join(paths['samtools_dir'], 'samtools')
-            paths['rsem_tbam2gbam'] = os.path.join(paths['rsem_dir'], 'rsem-tbam2gbam')
-            paths['rsem_prepare_reference'] = os.path.join(paths['rsem_dir'], 'rsem-prepare-reference')
+		for run in self.yaml['sequencing_directories']:
+			print(run)
 
 
 @click.command()
-@click.option('--check', default="hichipper_out", required=False, help='Throw this flag to check if all dependencies are configured in the .yaml')
+@click.option('--check', is_flag=True, help='[MODE] Check to see if all dependencies are properly configured')
 @click.argument('manifest')
 @click.version_option()
 
@@ -110,11 +74,16 @@ def main(manifest, check):
 	def gettime(): # Matches `date` in Linux
 		return(time.strftime("%a ") + time.strftime("%b ") + time.strftime("%d ") + time.strftime("%X ") + time.strftime("%Z ") + time.strftime("%Y")+ ": ")
 	
-	if check:
-		sys.exit("ERROR: Output path (%s) already exists." % out)
+	project = proatacProject(manifest)
 	
+	if check:
+		sys.exit("ERROR: Haven't actually set this up yet")
+	
+	# Check if directory exists; make it if not
+	if not os.path.exists(project.project_dir):
+		os.makedirs(project.project_dir)
 
 	print(gettime())
-	project = proatacProject(manifest)
+	
 	
 	
