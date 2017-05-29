@@ -18,17 +18,37 @@ from .proatacHelp import *
 
 class proatacProject():
 	def __init__(self, project_yaml_file_handle, script_dir):
-	
+		
+		# Basic attributes
 		self.yaml = parse_manifest(project_yaml_file_handle)
 		self.name = self.yaml['project_name']
 		self.project_dir = self.yaml['project_dir']
 		self.analysis_person = self.yaml['analysis_person']
 		
 		# ------------------------------
+		# Make folders / log files
+		# ------------------------------
+		
+		outfolder = os.path.abspath(self.project_dir) 
+		logfolder = outfolder + "/logs"
+		
+		# Check if directories exist; make if not
+		if not os.path.exists(outfolder):
+			os.makedirs(outfolder)
+		if not os.path.exists(logfolder):
+			os.makedirs(logfolder)
+		logf = open(logfolder + "/base.proatac.log", 'a')
+		
+		# ------------------------------
 		# Process reference genome stuff
 		# ------------------------------
 		
 		self.reference_genome = self.yaml['reference_genome']
+		supported_genomes = ['hg19', 'hg38', 'mm9', 'mm10', 'hg19_mm10']
+		if any(self.reference_genome in s for s in supported_genomes):
+			click.echo(gettime() + "Found designated reference genome: %s" % self.reference_genome, logf)
+		else: 
+			click.echo(gettime() + "Could not identify this reference genome: %s" % self.reference_genome, logf)
 		
 		# ------------------------
 		# Process dependency paths
@@ -73,13 +93,22 @@ class proatacProject():
 			self.python3_path = shutil.which("python3")
 		if(self.python3_path == "None"):
 			sys.exit("ERROR: cannot find python3 in environment; set the 'python3_path' in the .yaml file")
-						
+		
+		# Check for R package dependencies
+		required_packages = ['ggplot2', 'tidyverse']
+		installed_packages = os.popen('''R -e "installed.packages()" | awk '{print $1}' | sort | uniq''').read().strip().split("\n")
+		if(not set(required_packages) < set(installed_packages)):
+			sys.exit("ERROR: cannot find the following R package: " + str(set(required_packages) - set(installed_packages)) + "\n" + 
+				"Install it in your R console and then try rerunning proatac.")
+		
 		# ------------------------------
 		# Process sequencing directories
 		# ------------------------------
 				
 		for run in self.yaml['sequencing_directories']:
 			print(run)
+		
+		
 
 @click.command()
 @click.version_option()
@@ -91,7 +120,8 @@ def main(manifest, check, stingy):
 	"""Preprocessing ATAC and scATAC Data."""
 	__version__ = get_distribution('proatac').version
 	script_dir = os.path.dirname(os.path.realpath(__file__))
-	
+
+	click.echo(gettime() + "Starting proatac pipeline v%s" % __version__)
 	project = proatacProject(manifest, script_dir)
 	
 	# -------------------------------
@@ -100,11 +130,8 @@ def main(manifest, check, stingy):
 	
 	outfolder = os.path.abspath(project.project_dir) 
 	logfolder = outfolder + "/logs"
-	 
+	logf = open(logfolder + "/base.proatac.log", 'a')
 	cwd = os.getcwd()
-	def gettime(): # Matches `date` in Linux
-		return(time.strftime("%a ") + time.strftime("%b ") + time.strftime("%d ") + time.strftime("%X ") + 
-			time.strftime("%Z ") + time.strftime("%Y")+ ": ")
 	
 	# -------------------------------
 	# Atypical analysis modes
@@ -117,13 +144,9 @@ def main(manifest, check, stingy):
 	# Now actually do stuff
 	# -------------------------------
 
-	# Check if directory exists; make it if not
-	if not os.path.exists(outfolder):
-		os.makedirs(outfolder)
+
+
 	
-	
-	
-	print(gettime())
-	
+	logf.close()
 	
 	

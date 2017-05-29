@@ -1,5 +1,6 @@
 import yaml
 import itertools
+import time
 
 def string_hamming_distance(str1, str2):
     """
@@ -26,3 +27,7 @@ def parse_manifest(manifest):
         return m
     else:
         click.echo(gettime() + "Please specify a valid .yaml file for analysis")
+
+def gettime(): # Matches `date` in Linux
+	return(time.strftime("%a ") + time.strftime("%b ") + time.strftime("%d ") + time.strftime("%X ") + 
+		time.strftime("%Z ") + time.strftime("%Y")+ ": ")

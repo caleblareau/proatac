@@ -37,7 +37,3 @@ parameters :
 #     n : 1
 #     l : 15
 #     e : 1000
-  trim_arguments :
-    LEADING: "28"
-    SLIDINGWINDOW: "4:20"
-    MINLEN: "16"
