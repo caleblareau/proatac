@@ -2,7 +2,7 @@
 recursive-include tests *
 
 #Scripts
-recursive-include parkour *
+recursive-include proatac *
 
 #Misc
 include Authors.rst

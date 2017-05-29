@@ -1,9 +1,0 @@
-click
-Numpy
-editdistance
-pytest
-snakemake
-biopython
-optparse-pretty
-regex
-PyYAML
