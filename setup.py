@@ -1,9 +1,9 @@
 """
-Preprocessing scATAC Data
+Preprocessing ATAC and scATAC Data
 """
 from setuptools import find_packages, setup
 
-dependencies = ['click', 'Numpy', 'MACS2', 'editdistance', 'pytest', 'snakemake', 'biopython', 'optparse-pretty', 'regex', 'logging']
+dependencies = ['click', 'Numpy', 'editdistance', 'pytest', 'snakemake', 'biopython', 'optparse-pretty', 'regex', 'PyYAML']
 
 setup(
     name='proatac',

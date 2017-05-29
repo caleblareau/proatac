@@ -1,25 +1,35 @@
+project_name : "ProatacProject"
+project_dir : "ProatacDir"
+analysis_person : "Caleb Lareau"
+sequencing_runs : 
+  - name : "Run1"
+    version : 'v2'
+    dir : "/data/aryee/caleb/indrops/20170503_David_and_Vidya/o2"
+    fastq_path : "{library_prefix}_{split_affix}_{read}_001.fastq.gz"
+    split_affixes : ["L001", "L002", "L003", "L004"]
+    libraries : 
+#      - {library_name: "S1", library_prefix: "S1_S4"}
+      - {library_name: "M1_S8", library_prefix: "M1_S8"}
 paths : 
-  bowtie_dir : ''
-  samtools_dir : ''
+  bowtie_index : "/data/aryee/caleb/indrops/indrops/HS/bowtie_index"
+  python_dir : ""
+  samtools_dir : ""
+  rsem_dir : ""
+  java_dir : ""
 parameters : 
-  umi_quantification_arguments:
-    m : 10 #Ignore reads with more than M alignments, after filtering on distance from transcript end.
-    u : 1 #Ignore counts from UMI that should be split among more than U genes.
-    d : 600 #Maximal distance from transcript end, NOT INCLUDING THE POLYA TAIL
-    split-ambigs: False #If umi is assigned to m genes, add 1/m to each gene's count (instead of 1)
-    min_non_polyA: 15 #Require reads to align to this much non-polyA sequence. (Set to 0 to disable filtering on this parameter.)
-  output_arguments:
-    output_unaligned_reads_to_other_fastq: False
-    filter_alignments_to_softmasked_regions: False
-  bowtie_arguments:
-    m : 200
-    n : 1
-    l : 15
-    e : 80
+# OPTIONAL PARAMETERS
+#   refGenomeFiles:
+#     tss : pathToTSSFile.bed # 
+#     blacklist : pathToBlacklistFile.bed # 
+#   output_arguments:
+#     output_unaligned_reads_to_other_fastq: False
+#     low_complexity_mask: False
+#   bowtie_arguments:
+#     m : 200
+#     n : 1
+#     l : 15
+#     e : 1000
   trimmomatic_arguments:
     LEADING: "28"
     SLIDINGWINDOW: "4:20"
     MINLEN: "16"
-    argument_order: ['LEADING', 'SLIDINGWINDOW', 'MINLEN']
-  low_complexity_filter_arguments:
-    max_low_complexity_fraction : 0.50

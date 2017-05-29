@@ -1,0 +1,22 @@
+Metadata-Version: 1.1
+Name: proatac
+Version: 0.2.0
+Summary: Processing and quality control of ATAC data.
+Home-page: https://github.com/buenrostrolab/parkour
+Author: Caleb Lareau and Jason Buenrostro
+Author-email: caleblareau@g.harvard.edu
+License: BSD
+Description: 
+        Preprocessing ATAC and scATAC Data
+        
+Platform: any
+Classifier: Development Status :: 2 - Pre-Alpha
+Classifier: Environment :: Console
+Classifier: Intended Audience :: Developers
+Classifier: License :: OSI Approved :: BSD License
+Classifier: Operating System :: POSIX
+Classifier: Operating System :: MacOS
+Classifier: Operating System :: Unix
+Classifier: Programming Language :: Python
+Classifier: Programming Language :: Python :: 3
+Classifier: Topic :: Software Development :: Libraries :: Python Modules
