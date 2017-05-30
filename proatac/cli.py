@@ -62,6 +62,12 @@ class proatacProject():
 		if(self.bowtie2_path == "None"):
 			sys.exit("ERROR: cannot find bowtie2 in environment; set the 'bowtie2_path' in the .yaml file or add to PATH")
 		
+		# bowtie2 index
+		bwt2idxfiles = os.popen("ls " + self.yaml['paths']['bowtie2_index']+ "*.bt2").read().strip().split("\n")
+		print(bwt2idxfiles)
+		if(len(bwt2idxfiles) < 6):
+			sys.exit("ERROR: cannot find bowtie2 index; make sure to add the prefix along with the folder path")
+			
 		# macs2	
 		if(self.yaml['paths']['macs2_path'] != ''):
 			self.macs2_path = self.yaml['paths']['macs2_path']
@@ -122,13 +128,13 @@ def main(manifest, check, stingy):
 	script_dir = os.path.dirname(os.path.realpath(__file__))
 
 	click.echo(gettime() + "Starting proatac pipeline v%s" % __version__)
-	project = proatacProject(manifest, script_dir)
+	p = proatacProject(manifest, script_dir)
 	
 	# -------------------------------
 	# Utility functions and variables
 	# -------------------------------
 	
-	outfolder = os.path.abspath(project.project_dir) 
+	outfolder = os.path.abspath(p.project_dir) 
 	logfolder = outfolder + "/logs"
 	logf = open(logfolder + "/base.proatac.log", 'a')
 	cwd = os.getcwd()
@@ -138,7 +144,7 @@ def main(manifest, check, stingy):
 	# -------------------------------	
 	
 	if check:
-		sys.exit("ERROR: Haven't actually set this up yet")
+		sys.exit("Success! We're reasonably confident that all dependencies and files are good to go!")
 
 	# -------------------------------
 	# Now actually do stuff
