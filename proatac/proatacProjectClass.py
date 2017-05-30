@@ -64,7 +64,6 @@ class proatacProject():
 		
 		# bowtie2 index
 		bwt2idxfiles = os.popen("ls " + self.yaml['paths']['bowtie2_index']+ "*.bt2").read().strip().split("\n")
-		print(bwt2idxfiles)
 		if(len(bwt2idxfiles) < 6):
 			sys.exit("ERROR: cannot find bowtie2 index; make sure to add the prefix along with the folder path")
 			
@@ -115,9 +114,14 @@ class proatacProject():
 		if(not set(required_packages) < set(installed_packages)):
 			sys.exit("ERROR: cannot find the following R package: " + str(set(required_packages) - set(installed_packages)) + "\n" + 
 				"Install it in your R console and then try rerunning proatac (but there may be other missing dependencies).")
-
+		
+		# The final step should be fast, so remove the file that coordinates all samples if it exists
+		listAllSamples = outfolder + '/internal/parseltongue/' + 'allsamples.csv'
+		if os.path.exists(listAllSamples):
+			os.remove(listAllSamples)
+		
 		# Process sequencing directories		
 		for run in self.yaml['sequencing_directories']:
-			process_seq_dir(run, logf)
+			process_seq_dir(run, logf, listAllSamples)
 		
 		logf.close()

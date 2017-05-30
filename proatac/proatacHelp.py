@@ -4,6 +4,7 @@ import time
 import re
 import os
 import sys
+import csv
 
 def string_hamming_distance(str1, str2):
     """
@@ -49,7 +50,7 @@ def findIdx(list1, list2):
 	"""
 	return [i for i, x in enumerate(list1) if x in list2]
 
-def process_seq_dir(d, logf):
+def process_seq_dir(d, logf, listAllSamples):
 	"""
 	Function that takes a dictionary parsed from the main .yaml
 	and returns something more coherent to be processed downstream
@@ -108,7 +109,10 @@ def process_seq_dir(d, logf):
 		reads1 = [reads1[i] for i in keeplist2]
 		reads2 = [reads2[i] for i in keeplist2]
 	
-	print(directory + "/{sample}" + read1)
-	print(read2)
+	with open(listAllSamples, 'a') as f:
+		writer = csv.writer(f)
+		rows = zip(samples,reads1,reads2)
+		for row in rows:
+			writer.writerow(row)
 	
 	

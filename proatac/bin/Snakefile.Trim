@@ -1,0 +1,26 @@
+import csv
+
+outdir =
+
+# Create dictionary of reads indexed by sample IDs
+with open(config["allsamples"], mode='r') as infile:
+    reader = csv.reader(infile)
+    mydict = {rows[0]:{'a': rows[1], 'b':rows[2].strip()} for rows in reader}
+
+Samples = list(mydict.keys())
+
+
+
+rule all:
+    input:
+        expand('{sample}.trimstats.txt', sample=Samples)
+
+rule trim: 
+	input: 
+		a = lambda wildcards: mydict[wildcards.sample]['a'],
+		b = lambda wildcards: mydict[wildcards.sample]['b']
+	output:
+		'{sample}.trimstats.txt'
+	threads: 1
+	shell:
+		"cat {input.a} {input.b} > {output}"

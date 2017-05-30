@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 # Author: Jason Buenrostro, Stanford University
+# Modified: Caleb Lareau, Harvard University
 # The following program will trim PE reads
 
 ##### IMPORT MODULES #####
@@ -39,7 +40,7 @@ opts = OptionParser(usage=usage)
 opts.add_option("-a", help="<Read1> Accepts fastq or fastq.gz")
 opts.add_option("-b", help="<Read2> Accepts fastq or fastq.gz")
 opts.add_option("-u", action="store_true", default=False, help="Print uncompressed output file")
-opts.add_option("-s", default="", help="Prints trimmed R1 or R2 to screen. Options: R1,R2")
+opts.add_option("-s", default="", help="Sample Name NOTE THIS IS DIFFERENT")
 options, arguments = opts.parse_args()
 
 # return usage information if no argvs given
@@ -51,6 +52,7 @@ if len(sys.argv)==1:
 # name input and outputs
 p1_in = options.a
 p2_in = options.b
+sample = options.s
 
 # name outputs and print to working dir
 p1_file = p1_in.split('/')[-1]
@@ -143,21 +145,10 @@ while 1:
             qual2 = qual2[0:idx+n-1]
         
         # print data
-        if options.s == "R1":
-            print seqhead1.strip()
-            print seq1
-            print qualhead1.strip()
-            print qual1
-        elif options.s == "R2":
-            print seqhead2.strip()
-            print seq2
-            print qualhead2.strip()
-            print qual2
-        else:
-            r1_write.write(seqhead1);r1_write.write(seq1+"\n")
-            r1_write.write(qualhead1);r1_write.write(qual1+"\n")
-            r2_write.write(seqhead2);r2_write.write(seq2+"\n")
-            r2_write.write(qualhead2);r2_write.write(qual2+"\n")
+        r1_write.write(seqhead1);r1_write.write(seq1+"\n")
+        r1_write.write(qualhead1);r1_write.write(qual1+"\n")
+        r2_write.write(seqhead2);r2_write.write(seq2+"\n")
+        r2_write.write(qualhead2);r2_write.write(qual2+"\n")
 
     # increment count
     count = count + 1
@@ -166,15 +157,12 @@ while 1:
     else:
         count = count
 
-if options.s == "R1" or options.s == "R2":
-    pass
-else:
-    # close files to write the file
-    r1_write.close();r2_write.close()
-    p1_rds.close();p2_rds.close()
+r1_write.close();r2_write.close()
+p1_rds.close();p2_rds.close()
 
-    # give summary
-    print str(i)+" sequences total"
-    print str(j)+" sequences trimmed with 0 mismatches"
-    print str(k)+" sequences trimmed with 1 mismatch"
-    print str(tot_b/(j+k))+" mean number of bases trimmed for reads requiring trimming"
+o = open(s + ".trimstats.txt", 'w')
+o.write(str(i)+" total\n")
+o.write(str(j)+" 0_mismatches\n")
+o.write(str(k)+" 1_mismatch\n")
+o.write(str(tot_b/(j+k))+" mean_n_trimmed\n")
+o.close()

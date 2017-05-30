@@ -73,8 +73,11 @@ def main(manifest, check, stingy):
 	# -------------------------------
 	# Now actually do stuff
 	# -------------------------------
-
-
+	
+	click.echo(gettime() + "Trimming samples", logf)
+	os.popen('''snakemake --snakefile ''' + script_dir +
+		'''/bin/Snakefile.Trim --config allsamples="'''+
+		outfolder + '''/internal/parseltongue/allsamples.csv"''')
 
 	
 	logf.close()
