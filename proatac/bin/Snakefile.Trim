@@ -1,6 +1,8 @@
 import csv
 
-outdir =
+scriptdir = config["scriptdir"]
+outdir = config["outdir"]
+trimdir = outdir + "/01_trimmed"
 
 # Create dictionary of reads indexed by sample IDs
 with open(config["allsamples"], mode='r') as infile:
@@ -8,19 +10,17 @@ with open(config["allsamples"], mode='r') as infile:
     mydict = {rows[0]:{'a': rows[1], 'b':rows[2].strip()} for rows in reader}
 
 Samples = list(mydict.keys())
-
-
-
 rule all:
     input:
-        expand('{sample}.trimstats.txt', sample=Samples)
+        expand(trimdir + '_stats/{sample}.trimstats.txt', sample=Samples)
+    log: outdir + "/logs/" + "Snakefile.Trim.log"
 
 rule trim: 
 	input: 
 		a = lambda wildcards: mydict[wildcards.sample]['a'],
 		b = lambda wildcards: mydict[wildcards.sample]['b']
 	output:
-		'{sample}.trimstats.txt'
+		trimdir + '_stats/{sample}.trimstats.txt'
 	threads: 1
 	shell:
-		"cat {input.a} {input.b} > {output}"
+		"python3 proatac/bin/pyadapter_trim_CL.py -a {input.a} -b {input.b} -s {output} -o " + trimdir

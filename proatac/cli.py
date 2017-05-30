@@ -70,15 +70,25 @@ def main(manifest, check, stingy):
 	if check:
 		sys.exit("Success! We're reasonably confident that all dependencies and files are good to go!")
 
-	# -------------------------------
-	# Now actually do stuff
-	# -------------------------------
+	# -----------------------------------
+	# ACTUAL PREPROCESSING / SNAKE MAKING
+	# -----------------------------------
 	
+	
+	# -------------
+	# Adapter Trim
+	# -------------
+	trimfolder = outfolder + "/01_trimmed"
+	if not os.path.exists(trimfolder + "_reads"):
+		os.makedirs(trimfolder+ "_reads")
+	if not os.path.exists(trimfolder + "_stats"):
+		os.makedirs(trimfolder+ "_stats")
+				
 	click.echo(gettime() + "Trimming samples", logf)
-	os.popen('''snakemake --snakefile ''' + script_dir +
-		'''/bin/Snakefile.Trim --config allsamples="'''+
-		outfolder + '''/internal/parseltongue/allsamples.csv"''')
-
+	snakecalla = '''snakemake --snakefile ''' + script_dir + '''/bin/Snakefile.Trim '''
+	snakecallb = snakecalla + '''--config allsamples="''' + outfolder + '''/internal/parseltongue/allsamples.csv" '''
+	snakecall1 = snakecallb + '''outdir="''' + outfolder + '''" scriptdir="''' + script_dir + '''"'''
+	os.system(snakecall1)
 	
 	logf.close()
 	

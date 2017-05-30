@@ -1,6 +1,8 @@
 *.pyc
 proatac/__pycache__/*.pyc
 
+.snakemake/*
+
 dist/
 build/
 *.egg-info/
