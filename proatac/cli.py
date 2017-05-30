@@ -32,14 +32,14 @@ def main(manifest, check, stingy):
 	script_dir = os.path.dirname(os.path.realpath(__file__))
 
 	click.echo(gettime() + "Starting proatac pipeline v%s" % __version__)
-	yaml = parse_manifest(manifest)
+	ymml = parse_manifest(manifest)
 
 	
 	# -------------------------------
 	# Utility functions and variables
 	# -------------------------------
 	
-	outfolder = os.path.abspath(yaml['project_dir']) 
+	outfolder = os.path.abspath(ymml['project_dir']) 
 	logfolder = outfolder + "/logs"
 	internfolder = outfolder + "/internal"
 	parselfolder = internfolder + "/parseltongue"
@@ -60,7 +60,7 @@ def main(manifest, check, stingy):
 	cwd = os.getcwd()
 	
 	# Main Project Variable
-	p = proatacProject(yaml, script_dir)
+	p = proatacProject(ymml, script_dir)
 	logf = open(logfolder + "/base.proatac.log", 'a')
 	
 	# -------------------------------
@@ -74,6 +74,7 @@ def main(manifest, check, stingy):
 	# ACTUAL PREPROCESSING / SNAKE MAKING
 	# -----------------------------------
 	
+	click.echo(gettime() + "Project .yaml successfully loaded. ", logf)
 	
 	# -------------
 	# Adapter Trim
@@ -85,11 +86,37 @@ def main(manifest, check, stingy):
 		os.makedirs(trimfolder+ "_stats")
 				
 	click.echo(gettime() + "Trimming samples", logf)
-	snakecalla = '''snakemake --snakefile ''' + script_dir + '''/bin/Snakefile.Trim '''
-	snakecallb = snakecalla + '''--config allsamples="''' + outfolder + '''/internal/parseltongue/allsamples.csv" '''
-	snakecallc = snakecallb + '''outdir="''' + outfolder + '''" scriptdir="''' + script_dir + '''" '''
-	snakecall1 = snakecallc + '''python3="''' + p.python3_path + '''" '''
+	
+	snakedict1 = {'allsamples' : parselfolder + "/allsamples.csv", 'outdir' : outfolder,
+		'scriptdir' : script_dir, 'python3' : p.python3_path}
+		
+	y1 = parselfolder + "/snake.trim.yaml"
+	with open(y1, 'w') as yaml_file:
+		yaml.dump(snakedict1, yaml_file, default_flow_style=False)
+		
+	snakecall1 = 'snakemake --snakefile ' + script_dir + '/bin/Snakefile.Trim --config cfp="' + y1 + '"'
 	os.system(snakecall1)
+	click.echo(gettime() + "Sample trimming done.", logf)
+	
+	# -------------
+	# Alignment
+	# -------------
+	if not os.path.exists(logfolder + "/bowtie2logs"):
+		os.makedirs(logfolder+ "/bowtie2logs")
+	if not os.path.exists(outfolder + "/02_aligned_reads"):
+		os.makedirs(outfolder+ "/02_aligned_reads")
+		
+	click.echo(gettime() + "Aligning samples", logf)
+	
+	snakedict2 = {'bowtie2' : p.bowtie2_path, 'bowtie2index' : p.bowtie2_index,
+		'outdir' : outfolder, 'samtools' : p.samtools_path}
+	
+	y2 = parselfolder + "/snake.align.yaml"
+	with open(y2, 'w') as yaml_file:
+		yaml.dump(snakedict2, yaml_file, default_flow_style=False)
+	
+	snakecall2 = 'snakemake --snakefile ' + script_dir + '/bin/Snakefile.Align --config cfp="' + y2 + '"'
+	os.system(snakecall2)
 	
 	logf.close()
 	

@@ -1,5 +1,7 @@
 import csv
 
+configfile: config["cfp"]
+
 scriptdir = config["scriptdir"]
 outdir = config["outdir"]
 python3 = config["python3"]
@@ -11,6 +13,7 @@ with open(config["allsamples"], mode='r') as infile:
     mydict = {rows[0]:{'a': rows[1], 'b':rows[2].strip()} for rows in reader}
 
 Samples = list(mydict.keys())
+
 rule all:
     input:
         expand(trimdir + '_stats/{sample}.trimstats.txt', sample=Samples)

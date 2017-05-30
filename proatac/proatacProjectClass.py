@@ -66,7 +66,9 @@ class proatacProject():
 		bwt2idxfiles = os.popen("ls " + self.yaml['paths']['bowtie2_index']+ "*.bt2").read().strip().split("\n")
 		if(len(bwt2idxfiles) < 6):
 			sys.exit("ERROR: cannot find bowtie2 index; make sure to add the prefix along with the folder path")
-			
+		else:
+			self.bowtie2_index = self.yaml['paths']['bowtie2_index']
+		
 		# macs2	
 		if(self.yaml['paths']['macs2_path'] != ''):
 			self.macs2_path = self.yaml['paths']['macs2_path']
