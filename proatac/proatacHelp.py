@@ -1,6 +1,7 @@
 import yaml
 import itertools
 import time
+import re
 
 def string_hamming_distance(str1, str2):
     """
@@ -51,6 +52,9 @@ def process_seq_dir(d, logf):
 	
 	samples = []
 	
+	restuff = [re.sub("(,[ ]*!.*)$", "", x) for x in samples]
+	
+	# Remove / Filter samples as requested if applicable
 	if 'remove_samples' in d:
 		remove_samples = d['remove_samples']
 	else:
