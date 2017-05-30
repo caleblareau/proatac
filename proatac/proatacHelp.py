@@ -2,6 +2,8 @@ import yaml
 import itertools
 import time
 import re
+import os
+import sys
 
 def string_hamming_distance(str1, str2):
     """
@@ -41,39 +43,72 @@ def gettime():
 		time.strftime("%Z ") + time.strftime("%Y")+ ": ")
 		
 
+def findIdx(list1, list2):
+	"""
+	Return the indices of list1 in list2
+	"""
+	return [i for i, x in enumerate(list1) if x in list2]
+
 def process_seq_dir(d, logf):
 	"""
 	Function that takes a dictionary parsed from the main .yaml
 	and returns something more coherent to be processed downstream
+	Could parameterize this function further given more versions of scATAC
+	that would be worth processing.
 	"""
+	
 	name = d['name']
 	version = d['version']
-	directory = d['dir']
+	directory =  d['dir']
+	fastq_path = d['fastq_path']
 	
-	samples = []
-	
-	restuff = [re.sub("(,[ ]*!.*)$", "", x) for x in samples]
-	
-	# Remove / Filter samples as requested if applicable
-	if 'remove_samples' in d:
-		remove_samples = d['remove_samples']
+	# Handle whether the reads are R1/R2 (default) or something else
+	# Some attempt on the author's part to be savvy here. 
+	if 'read' in d:
+		read = d['read']
 	else:
-		remove_samples = ""
+		read = ["R1", "R2"]
+	if(len(read) != 2):
+		sys.exit("ERROR: invalid input-- " + read + " -- for 'read' in .yaml; need length 2 python vector")
 	
+	# Go get the fastq files
+	noSID = re.sub("{sample_id}", "", fastq_path)
+	read1 = re.sub("{read}", read[0], noSID)
+	read2 = re.sub("{read}", read[1], noSID)
+	
+	reads1 = os.popen("ls " + directory + "/*" + read1).read().strip().split("\n")
+	reads2 = os.popen("ls " + directory + "/*" + read2).read().strip().split("\n")
+	
+	# Parse out the sample names
+	temp1 = [re.sub(read1, "", x) for x in reads1]
+	samples = [re.sub(directory + "/", "", x) for x in temp1]
+	
+	# Remove / filter samples as requested if applicable; also remove those from the file listing
 	if 'keep_samples' in d:
 		keep_samples = d['keep_samples']
 	else:
 		keep_samples = ""
-	
-	
+		
 	if(keep_samples != ""):
-		keeplist = keep_samples.split(",")
+		keeplist = findIdx(samples, keep_samples) # indicies of samples to be kept
+		samples = [samples[i] for i in keeplist]
+		reads1 = [reads1[i] for i in keeplist]
+		reads2 = [reads2[i] for i in keeplist]
 	
+	if 'remove_samples' in d:
+		remove_samples = d['remove_samples']
+	else:
+		remove_samples = ""
+		
 	if(remove_samples != ""):
-		igslist = ignore_samples.split(",")
-		for byesample in igslist:
-			if byesample in samples: samples.remove(byesample)
+		rmlist = findIdx(samples, remove_samples) # indices of samples that should be removed
+		allidx = range(len(samples)) # 1:n
+		keeplist2 = [x for x in allidx if x not in rmlist] # indices in 1:n not in list of indices to be removed
+		samples = [samples[i] for i in keeplist2]
+		reads1 = [reads1[i] for i in keeplist2]
+		reads2 = [reads2[i] for i in keeplist2]
 	
-	
+	print(directory + "/{sample}" + read1)
+	print(read2)
 	
 	

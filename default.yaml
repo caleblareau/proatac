@@ -8,7 +8,7 @@ sequencing_directories :
     dir : "tests/fastq"
     read : ["1", "2"]
     fastq_path : "{sample_id}_{read}.fastq.gz"
-    keep_samples : "" # default is all
+    keep_samples : s1,s2 # default is all
     remove_samples : "" # default is none
   - name : "TestRun2"
     version : 'C1'

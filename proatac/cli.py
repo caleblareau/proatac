@@ -41,12 +41,22 @@ def main(manifest, check, stingy):
 	
 	outfolder = os.path.abspath(yaml['project_dir']) 
 	logfolder = outfolder + "/logs"
+	internfolder = outfolder + "/internal"
+	parselfolder = internfolder + "/parseltongue"
 	
 	# Check if directories exist; make if not
 	if not os.path.exists(outfolder):
 		os.makedirs(outfolder)
 	if not os.path.exists(logfolder):
 		os.makedirs(logfolder)	
+	if not os.path.exists(internfolder):
+		os.makedirs(internfolder)
+		with open(internfolder + "/README" , 'w') as outfile:
+			outfile.write("This folder creates important (small) intermediate; don't modify it.\n\n")	
+	if not os.path.exists(parselfolder):
+		os.makedirs(parselfolder)
+		with open(parselfolder + "/README" , 'w') as outfile:
+			outfile.write("This folder creates intermediate output to be interpreted by Snakemake; don't modify it.\n\n")	
 	cwd = os.getcwd()
 	
 	# Main Project Variable

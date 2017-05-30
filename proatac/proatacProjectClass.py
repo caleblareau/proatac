@@ -48,9 +48,8 @@ class proatacProject():
 				b = self.yaml['parameters']['anno_files']['blacklist']
 				if(b != ''):
 					self.blacklistFile = os.path.realpath(b)
-		
-		
-		
+
+
 		# ------------------------
 		# Process dependency paths
 		# ------------------------
@@ -116,15 +115,9 @@ class proatacProject():
 		if(not set(required_packages) < set(installed_packages)):
 			sys.exit("ERROR: cannot find the following R package: " + str(set(required_packages) - set(installed_packages)) + "\n" + 
 				"Install it in your R console and then try rerunning proatac (but there may be other missing dependencies).")
-		
-		
-		
-		# ------------------------------
-		# Process sequencing directories
-		# ------------------------------	
-				
+
+		# Process sequencing directories		
 		for run in self.yaml['sequencing_directories']:
 			process_seq_dir(run, logf)
-			print(run)
 		
 		logf.close()
