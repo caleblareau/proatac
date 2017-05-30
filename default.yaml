@@ -4,31 +4,31 @@ analysis_person : "Caleb Lareau"
 reference_genome : "hg19"
 sequencing_directories : 
   - name : "TestRun1"
-    version : 'v1'
+    version : 'C1'
     dir : "tests/fastq"
     read : ["1", "2"]
     fastq_path : "{sample_id}_{read}.fastq.gz"
-    keep_samples : ""
-    remove_samples : ""
+    keep_samples : "" # default is all
+    remove_samples : "" # default is none
   - name : "TestRun2"
-    version : 'v1'
+    version : 'C1'
     dir : "tests/fastq2"
     read : ["R1", "R2"]
     fastq_path : "{sample_id}_{read}.fastq.gz"
     keep_samples : ""
-    remove_samples : ""
+#    remove_samples : ""
 paths : 
     bowtie2_path : ""
     bowtie2_index : "/Volumes/dat/genomes/hg19_bwt2/hg19"
-    macs2_path : "/usr/local/bin/macs2"
-    python3_path : "/Library/Frameworks/Python.framework/Versions/3.6/bin/python3"
-    samtools_path : ""
+    java_path : ""
+    macs2_path : ""
+    python3_path : ""
     R_path: ""
+    samtools_path : ""
 parameters : 
-# Global PARAMETERS
-#   refGenomeFiles:
-#     tss : pathToTSSFile.bed # 
-#     blacklist : pathToBlacklistFile.bed # 
+    anno_files:
+#        tss : pathToTSSFile.bed # 
+#        blacklist : pathToBlacklistFile.bed # 
 #   output_arguments:
 #     output_unaligned_reads_to_other_fastq: False
 #     low_complexity_mask: False
