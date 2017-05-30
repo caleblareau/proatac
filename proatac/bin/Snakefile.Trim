@@ -23,4 +23,4 @@ rule trim:
 		trimdir + '_stats/{sample}.trimstats.txt'
 	threads: 2
 	shell:
-		python3 + " " + scriptdir + "/bin/pyadapter_trim_CL.py -a {input.a} -b {input.b} -s {output} -o " + trimdir
+		python3 + " " + scriptdir + "/bin/pyadapter_trim_CL.py -a {input.a} -b {input.b} -s {wildcards.sample} -o " + trimdir

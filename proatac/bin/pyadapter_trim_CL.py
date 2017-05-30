@@ -2,7 +2,10 @@
 
 # Author: Jason Buenrostro, Stanford University
 # Modified: Caleb Lareau, Harvard University
+
 # The following program will trim PE reads
+# With some important modifications / assumptions
+# For the PROATAC pipeline 
 
 ##### IMPORT MODULES #####
 # import necessary for python
@@ -62,26 +65,29 @@ p2_file = p2_in.split('/')[-1]
 
 #check for file type and open input file
 append = p1_in.split('.')[-1]
+o1 = outdir + "_reads/" + sample + "_1.fastq.gz"
+o2 = outdir + "_reads/" + sample + "_2.fastq.gz"
+
 if append == "fastq":
     p1_rds = open(p1_in,'r')
     p2_rds = open(p2_in,'r')
-    p1_out = re.sub(".fastq", ".trim.fastq", outdir + "_reads/" + p1_file)
-    p2_out = re.sub(".fastq", ".trim.fastq", outdir + "_reads/" + p2_file)
+    p1_out = re.sub(".fastq", ".trim.fastq", o1)
+    p2_out = re.sub(".fastq", ".trim.fastq", o2)
 elif append == "fq":
     p1_rds = open(p1_in,'r')
     p2_rds = open(p2_in,'r')
-    p1_out = re.sub(".fq", ".trim.fastq", outdir + "_reads/" + p1_file)
-    p2_out = re.sub(".fq", ".trim.fastq", outdir + "_reads/" + p2_file)
+    p1_out = re.sub(".fq", ".trim.fastq", o1)
+    p2_out = re.sub(".fq", ".trim.fastq", o2)
 elif append == "gz":
     p1_rds = gzip.open(p1_in,'r')
     p2_rds = gzip.open(p2_in,'r')
-    p1_out = re.sub(".fastq.gz", ".trim.fastq", outdir + "_reads/" + p1_file)
-    p2_out = re.sub(".fastq.gz", ".trim.fastq", outdir + "_reads/" + p2_file)
+    p1_out = re.sub(".fastq.gz", ".trim.fastq", o1)
+    p2_out = re.sub(".fastq.gz", ".trim.fastq", o2)
 elif append == "bz2":
     p1_rds = bz2.BZ2File(p1_in,'r')
     p2_rds = bz2.BZ2File(p2_in,'r')
-    p1_out = re.sub(".fastq.bz2", ".trim.fastq", outdir + "_reads/" + p1_file)
-    p2_out = re.sub(".fastq.bz2", ".trim.fastq", outdir + "_reads/" + p2_file)
+    p1_out = re.sub(".fastq.bz2", ".trim.fastq", o1)
+    p2_out = re.sub(".fastq.bz2", ".trim.fastq", o2)
 else:
     sys.exit("ERROR! The input file2 must be a .fastq or .fastq.gz")
 
@@ -163,7 +169,7 @@ r1_write.close();r2_write.close()
 p1_rds.close();p2_rds.close()
 
 # Write out trim stats
-o = open(sample, 'w')
+o = open(outdir + "_stats/" + sample + ".trimstats.txt", 'w')
 o.write(str(i)+" total\n")
 o.write(str(j)+" 0_mismatches\n")
 o.write(str(k)+" 1_mismatch\n")
