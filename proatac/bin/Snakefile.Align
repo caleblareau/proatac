@@ -44,5 +44,5 @@ rule samtools_index:
          outdir + "/02_aligned_reads/{sample}.all.sorted.bam.bai"
     threads: 1
      shell:
-         "samtools index {input}"
+         samtools + " index {input}"
  
