@@ -87,7 +87,8 @@ def main(manifest, check, stingy):
 	click.echo(gettime() + "Trimming samples", logf)
 	snakecalla = '''snakemake --snakefile ''' + script_dir + '''/bin/Snakefile.Trim '''
 	snakecallb = snakecalla + '''--config allsamples="''' + outfolder + '''/internal/parseltongue/allsamples.csv" '''
-	snakecall1 = snakecallb + '''outdir="''' + outfolder + '''" scriptdir="''' + script_dir + '''"'''
+	snakecallc = snakecallb + '''outdir="''' + outfolder + '''" scriptdir="''' + script_dir + '''" '''
+	snakecall1 = snakecallc + '''python3="''' + p.python3_path + '''" '''
 	os.system(snakecall1)
 	
 	logf.close()

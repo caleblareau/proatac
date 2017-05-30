@@ -124,4 +124,14 @@ class proatacProject():
 		for run in self.yaml['sequencing_directories']:
 			process_seq_dir(run, logf, listAllSamples)
 		
+		# Check to see if any sample names are duplicated
+		with open(listAllSamples) as f:
+			seen = set()
+			for line in f:
+				line_lower = line.split(",")[0]
+				if line_lower in seen:
+					sys.exit("ERROR: found multiple sample IDs specified the same way; this will cause problems down the road; quitting now")
+				else:
+					seen.add(line_lower)
+		
 		logf.close()
