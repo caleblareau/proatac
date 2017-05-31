@@ -2,13 +2,16 @@ import csv
 
 configfile: config["cfp"]
 
+allsamples = config["allsamples"]
 scriptdir = config["scriptdir"]
 outdir = config["outdir"]
-python3 = config["python3"]
+PEAT = config["PEAT"]
+pigz = config["pigz"]
+
 trimdir = outdir + "/01_trimmed"
 
 # Create dictionary of reads indexed by sample IDs
-with open(config["allsamples"], mode='r') as infile:
+with open(allsamples, mode='r') as infile:
     reader = csv.reader(infile)
     mydict = {rows[0]:{'a': rows[1], 'b':rows[2].strip()} for rows in reader}
 
@@ -16,14 +19,28 @@ Samples = list(mydict.keys())
 
 rule all:
     input:
-        expand(trimdir + '_stats/{sample}.trimstats.txt', sample=Samples)
+        expand(trimdir + '_reads/{sample}_paired1.fq.gz', sample=Samples),
+        expand(trimdir + '_reads/{sample}_paired2.fq.gz', sample=Samples)
 
 rule trim: 
 	input: 
 		a = lambda wildcards: mydict[wildcards.sample]['a'],
 		b = lambda wildcards: mydict[wildcards.sample]['b']
 	output:
-		trimdir + '_stats/{sample}.trimstats.txt'
+		trimdir + '_reads/{sample}_paired1.fq',
+		trimdir + '_reads/{sample}_paired2.fq'
 	threads: 2
 	shell:
-		python3 + " " + scriptdir + "/bin/pyadapter_trim_CL.py -a {input.a} -b {input.b} -s {wildcards.sample} -o " + trimdir
+		PEAT + " paired -1 {input.a} -2 {input.b} -o " + trimdir + "_reads/{wildcards.sample} -n {threads} -l 20 -r 0.1 -a 0.1 -g 0.1 --adapter_contexts"
+
+rule compress:
+	input:
+		u1 = trimdir + '_reads/{sample}_paired1.fq',
+		u2 = trimdir + '_reads/{sample}_paired2.fq',
+	output:
+		trimdir + '_reads/{sample}_paired1.fq.gz',
+		trimdir + '_reads/{sample}_paired2.fq.gz',
+	threads: 1
+	shell:
+		pigz + " {input.u1} && " + pigz + " {input.u2}"
+		

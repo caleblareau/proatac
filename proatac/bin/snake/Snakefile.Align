@@ -11,18 +11,17 @@ samtools = config["samtools"]
 trimmed_fastq = outdir + "/01_trimmed_reads"
 
 # A Snakemake regular expression matching the forward mate FASTQ files.
-SAMPLES, = glob_wildcards(join(trimmed_fastq, "{sample}_1.trim.fastq.gz"))
+SAMPLES, = glob_wildcards(join(trimmed_fastq, "{sample}_paired1.fq.gz"))
 
 # Patterns for the 1st mate and the 2nd mate using the 'sample' wildcard.
-read1 = '{sample}_1.trim.fastq.gz'
-read2 = '{sample}_2.trim.fastq.gz'
+read1 = '{sample}_paired1.fq.gz'
+read2 = '{sample}_paired2.fq.gz'
 
 rule all:
     input:
         expand(outdir + "/02_aligned_reads/{sample}.all.sorted.bam.bai", sample=SAMPLES)
 
 
-# Have to add the '|| true' at the very end of the long command-- https://groups.google.com/forum/#!topic/snakemake/_Ob_jJM0Oa0
 rule bowtie2_align:
     input:
         r1 = join(trimmed_fastq, read1),
@@ -34,7 +33,7 @@ rule bowtie2_align:
     threads: 8
     shell:
     	'(' + bowtie2 + ' -X 2000 -p {threads} -x '+ bowtie2index +' --rg-id {wildcards.sample} -1 {input.r1} -2 {input.r2} | ' + 
-    	samtools + ' view -bS - | ' + samtools + ' sort -@ {threads} - -o ' + outdir + '/02_aligned_reads/{wildcards.sample}.all.sorted.bam) 2> {log} || true' 
+    	samtools + ' view -bS - | ' + samtools + ' sort -@ {threads} - -o ' + outdir + '/02_aligned_reads/{wildcards.sample}.all.sorted.bam) 2> {log}' 
 
 rule samtools_index:
 	input:

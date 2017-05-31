@@ -8,6 +8,7 @@ import random
 import string
 import itertools
 import time
+import platform
 from .proatacHelp import *
 
 # ----------------------------------
@@ -21,7 +22,20 @@ class proatacProject():
 		self.yaml = yaml
 		self.name = self.yaml['project_name']
 		self.project_dir = self.yaml['project_dir']
-		self.analysis_person = self.yaml['analysis_person']		
+		self.analysis_person = self.yaml['analysis_person']	
+		
+		# Figure out operating system
+		self.os = "linux"
+		if(platform.platform()[0:5]=="Darwi"):
+			self.os = "mac"
+		
+		if(self.os == "mac"):
+			self.peat_path = script_dir + "/bin/mac/PEAT_mac"
+			self.pigz_path = script_dir + "/bin/mac/pigz_mac"
+		else:
+			self.peat_path = script_dir + "/bin/linux/PEAT_linux"
+			self.pigz_path = script_dir + "/bin/linux/pigz_linux"
+		
 		outfolder = os.path.abspath(yaml['project_dir']) 
 		logfolder = outfolder + "/logs"
 		logf = open(logfolder + "/base.proatac.log", 'a')
@@ -31,7 +45,7 @@ class proatacProject():
 		# ------------------------------
 		
 		self.reference_genome = self.yaml['reference_genome']
-		supported_genomes = ['hg19', 'hg38', 'mm9', 'mm10', 'hg19_mm10']
+		supported_genomes = ['hg19', 'hg38', 'mm9', 'mm10', 'hg19_mm10_c']
 		if any(self.reference_genome in s for s in supported_genomes):
 			click.echo(gettime() + "Found designated reference genome: %s" % self.reference_genome, logf)
 			self.tssFile = script_dir + "/anno/TSS/" + self.reference_genome + ".refGene.TSS.bed"

@@ -82,19 +82,17 @@ def main(manifest, check, stingy):
 	trimfolder = outfolder + "/01_trimmed"
 	if not os.path.exists(trimfolder + "_reads"):
 		os.makedirs(trimfolder+ "_reads")
-	if not os.path.exists(trimfolder + "_stats"):
-		os.makedirs(trimfolder+ "_stats")
 				
 	click.echo(gettime() + "Trimming samples", logf)
 	
 	snakedict1 = {'allsamples' : parselfolder + "/allsamples.csv", 'outdir' : outfolder,
-		'scriptdir' : script_dir, 'python3' : p.python3_path}
+		'scriptdir' : script_dir, 'PEAT' : p.peat_path, 'pigz' : p.pigz_path}
 		
 	y1 = parselfolder + "/snake.trim.yaml"
 	with open(y1, 'w') as yaml_file:
 		yaml.dump(snakedict1, yaml_file, default_flow_style=False)
 		
-	snakecall1 = 'snakemake --snakefile ' + script_dir + '/bin/Snakefile.Trim --config cfp="' + y1 + '"'
+	snakecall1 = 'snakemake --snakefile ' + script_dir + '/bin/snake/Snakefile.Trim --config cfp="' + y1 + '"'
 	os.system(snakecall1)
 	click.echo(gettime() + "Sample trimming done.", logf)
 	
@@ -115,7 +113,7 @@ def main(manifest, check, stingy):
 	with open(y2, 'w') as yaml_file:
 		yaml.dump(snakedict2, yaml_file, default_flow_style=False)
 	
-	snakecall2 = 'snakemake --snakefile ' + script_dir + '/bin/Snakefile.Align --config cfp="' + y2 + '"'
+	snakecall2 = 'snakemake --snakefile ' + script_dir + '/bin/snake/Snakefile.Align --config cfp="' + y2 + '"'
 	os.system(snakecall2)
 	
 	logf.close()
