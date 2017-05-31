@@ -36,13 +36,12 @@ rule bowtie2_align:
     	'(' + bowtie2 + ' -X 2000 -p {threads} -x '+ bowtie2index +' --rg-id {wildcards.sample} -1 {input.r1} -2 {input.r2} | ' + 
     	samtools + ' view -bS - | ' + samtools + ' sort -@ {threads} - -o ' + outdir + '/02_aligned_reads/{wildcards.sample}.all.sorted.bam) 2> {log} || true' 
 
-
 rule samtools_index:
-     input:
-         outdir + "/02_aligned_reads/{sample}.all.sorted.bam"
-     output:
-         outdir + "/02_aligned_reads/{sample}.all.sorted.bam.bai"
-    threads: 1
-     shell:
-         samtools + " index {input}"
+	input:
+		outdir + "/02_aligned_reads/{sample}.all.sorted.bam"
+	output:
+		outdir + "/02_aligned_reads/{sample}.all.sorted.bam.bai"
+	threads: 1
+	shell:
+		samtools + " index {input}"
  
