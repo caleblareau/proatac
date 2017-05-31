@@ -92,7 +92,7 @@ def main(manifest, check, stingy):
 	with open(y1, 'w') as yaml_file:
 		yaml.dump(snakedict1, yaml_file, default_flow_style=False)
 		
-	snakecall1 = 'snakemake --snakefile ' + script_dir + '/bin/snake/Snakefile.Trim --config cfp="' + y1 + '"'
+	snakecall1 = 'snakemake --snakefile ' + script_dir + '/bin/snake/Snakefile.Trim --cores ' + p.max_cores + ' --config cfp="' + y1 + '"'
 	os.system(snakecall1)
 	click.echo(gettime() + "Sample trimming done.", logf)
 	
@@ -113,7 +113,7 @@ def main(manifest, check, stingy):
 	with open(y2, 'w') as yaml_file:
 		yaml.dump(snakedict2, yaml_file, default_flow_style=False)
 	
-	snakecall2 = 'snakemake --snakefile ' + script_dir + '/bin/snake/Snakefile.Align --config cfp="' + y2 + '"'
+	snakecall2 = 'snakemake --snakefile ' + script_dir + '/bin/snake/Snakefile.Align --cores ' + p.max_cores + ' --config cfp="' + y2 + '"'
 	os.system(snakecall2)
 	
 	logf.close()

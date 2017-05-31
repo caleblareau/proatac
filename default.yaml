@@ -19,13 +19,14 @@ sequencing_directories :
 #    remove_samples : ""
 paths : 
     bowtie2_path : ""
-    bowtie2_index : "/Volumes/dat/genomes/hg19_bwt2/hg19"
+    bowtie2_index : "/mnt/genomes/bowtie2/hg19/hg19"
     java_path : ""
     macs2_path : ""
     python3_path : ""
     R_path: ""
     samtools_path : ""
 parameters : 
+    max_cores: 10
     anno_files:
 #        tss : pathToTSSFile.bed # 
 #        blacklist : pathToBlacklistFile.bed # 

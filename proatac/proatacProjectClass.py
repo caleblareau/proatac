@@ -22,7 +22,13 @@ class proatacProject():
 		self.yaml = yaml
 		self.name = self.yaml['project_name']
 		self.project_dir = self.yaml['project_dir']
-		self.analysis_person = self.yaml['analysis_person']	
+		self.analysis_person = self.yaml['analysis_person']
+		
+		# Computing configuration
+		if ("max_cores" in self.yaml['parameters']) and (str(self.yaml['parameters']['max_cores']) != "None"):
+		  self.max_cores = str(self.yaml['parameters']['max_cores'])
+		else:
+		  self.max_cores = str(1)
 		
 		# Figure out operating system
 		self.os = "linux"
