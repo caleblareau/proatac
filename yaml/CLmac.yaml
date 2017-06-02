@@ -1,0 +1,39 @@
+project_name : "proatacProject"
+project_dir : "dirOut"
+analysis_person : "Caleb Lareau"
+reference_genome : "hg19"
+sequencing_directories : 
+  - name : "TestRun1"
+    version : 'C1'
+    dir : "tests/fastq"
+    read : ["1", "2"]
+    fastq_path : "{sample_id}_{read}.fastq.gz"
+    keep_samples : s1,s2 # default is all
+    remove_samples : "" # default is none
+  - name : "TestRun2"
+    version : 'C1'
+    dir : "tests/fastq2"
+    read : ["R1", "R2"]
+    fastq_path : "{sample_id}_{read}.fastq.gz"
+    keep_samples : ""
+#    remove_samples : ""
+paths : 
+    bowtie2_path : ""
+    bowtie2_index : "/Volumes/dat/genomes/hg19_bwt2/hg19"
+    java_path : ""
+    macs2_path : ""
+    python3_path : ""
+    R_path: ""
+    samtools_path : ""
+parameters : 
+    anno_files:
+#        tss : pathToTSSFile.bed # 
+#        blacklist : pathToBlacklistFile.bed # 
+#   output_arguments:
+#     output_unaligned_reads_to_other_fastq: False
+#     low_complexity_mask: False
+#   bowtie_arguments:
+#     m : 200
+#     n : 1
+#     l : 15
+#     e : 1000
