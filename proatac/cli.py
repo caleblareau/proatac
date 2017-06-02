@@ -116,6 +116,31 @@ def main(manifest, check, stingy):
 	snakecall2 = 'snakemake --snakefile ' + script_dir + '/bin/snake/Snakefile.Align --cores ' + p.max_cores + ' --config cfp="' + y2 + '"'
 	os.system(snakecall2)
 	
+	# -------------
+	# bam process
+	# -------------
+	if not os.path.exists(outfolder + "/03_processed_reads"):
+		os.makedirs(outfolder+ "/03_processed_reads")
+	if not os.path.exists(outfolder + "/03_processed_reads/mito"):
+		os.makedirs(outfolder+ "/03_processed_reads/mito")
+	if not os.path.exists(outfolder + "/03_processed_reads/individual"):
+		os.makedirs(outfolder+ "/03_processed_reads/individual")
+		
+	click.echo(gettime() + "Cleaning up .bam files", logf)
+	
+	snakedict3 = {'chr_name_length' : p.chr_name_length, 'read_quality' : p.read_quality,
+		'outdir' : outfolder, 'samtools' : p.samtools_path, 'project_name' : p.project_name}
+		
+	y3 = parselfolder + "/snake.bamprocess.yaml"
+	with open(y3, 'w') as yaml_file:
+		yaml.dump(snakedict3, yaml_file, default_flow_style=False)
+	
+	snakecall3 = 'snakemake --snakefile ' + script_dir + '/bin/snake/Snakefile.BamProcess --cores ' + p.max_cores + ' --config cfp="' + y3 + '"'
+	os.system(snakecall3)
+	
+	
+	
+	# Suspend logging
 	logf.close()
 	
 	

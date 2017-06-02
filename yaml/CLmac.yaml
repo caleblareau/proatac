@@ -26,7 +26,9 @@ paths :
     R_path: ""
     samtools_path : ""
 parameters : 
-    anno_files:
+    max_cores : 2
+    read_quality : 30
+    anno_files : 
 #        tss : pathToTSSFile.bed # 
 #        blacklist : pathToBlacklistFile.bed # 
 #   output_arguments:

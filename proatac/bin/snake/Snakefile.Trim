@@ -40,7 +40,7 @@ rule compress:
 	output:
 		trimdir + '_reads/{sample}_paired1.fq.gz',
 		trimdir + '_reads/{sample}_paired2.fq.gz',
-	threads: 1
+	threads: 4
 	shell:
-		pigz + " {input.u1} && " + pigz + " {input.u2}"
+		pigz + " -p {threads} {input.u1} && " + pigz + " -p {threads} {input.u2}"
 		

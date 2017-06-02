@@ -24,11 +24,32 @@ class proatacProject():
 		self.project_dir = self.yaml['project_dir']
 		self.analysis_person = self.yaml['analysis_person']
 		
+		if((' ' in self.yaml['project_name']) or (' ' in self.yaml['project_dir'])):
+			sys.exit("ERROR: remove white space from project_name and project_dir variables in .yaml")
+		
+		# ------------------------------
+		# Process reference genome stuff
+		# ------------------------------
+		
+		# Computing configuration
+		if ("read_quality" in self.yaml['parameters']) and (str(self.yaml['parameters']['read_quality']) != "None"):
+			if(int(self.yaml['parameters']['read_quality']) < 0):
+				sys.exit("ERROR: read_quality as specified in the .yaml seems fishy; make sure it's a positive integer")
+			self.read_quality = str(int(self.yaml['parameters']['read_quality']))
+		else:
+			self.read_quality = str(30)
+
 		# Computing configuration
 		if ("max_cores" in self.yaml['parameters']) and (str(self.yaml['parameters']['max_cores']) != "None"):
-		  self.max_cores = str(self.yaml['parameters']['max_cores'])
+			self.max_cores = str(self.yaml['parameters']['max_cores'])
 		else:
-		  self.max_cores = str(1)
+			self.max_cores = str(1)
+			
+		# Computing configuration
+		if ("chr_name_length" in self.yaml['parameters']) and (str(self.yaml['parameters']['chr_name_length']) != "None"):
+			self.chr_name_length = str(self.yaml['parameters']['chr_name_length'])
+		else:
+			self.chr_name_length = str(10)
 		
 		# Figure out operating system
 		self.os = "linux"

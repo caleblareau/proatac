@@ -1,0 +1,67 @@
+from os.path import join
+import os
+
+configfile: config["cfp"]     
+           
+# Parse the configuration variables
+outdir = config["outdir"]
+samtools = config["samtools"]
+read_quality = config["read_quality"]
+chr_name_length = config["chr_name_length"]
+project_name = config["project_name"]
+
+aligned_reads = outdir + "/02_aligned_reads"
+
+# A Snakemake regular expression matching the bam files that were all aligned
+SAMPLES, = glob_wildcards(join(aligned_reads, "{sample}.all.sorted.bam"))
+
+# Patterns for the 1st mate and the 2nd mate using the 'sample' wildcard.
+bamin = '{sample}.all.sorted.bam'
+bamtemp1 = '{sample}.temp1.bam'
+
+rule all:
+    input:
+        outdir + "/03_processed_reads/" + project_name + ".merged.clean.all.bam.bai"
+
+
+rule filter_quality:
+    input:
+        bamAllIn = join(aligned_reads, bamin)
+    output:
+        temp(outdir + "/03_processed_reads/{sample}.temp1.bam")
+    threads: 1
+    shell:
+    	samtools + " view -q " + read_quality + " -f 0x2 {input} -o {output} && " + samtools + " index {output}"
+
+chrs = os.popen(samtools +' view -H {bamTemp1} | grep SQ | cut -f2 | sed 's/SN://g' | grep -v chrM | grep -v MT | grep -v Y | awk -v CNL="' + chr_name_length + '" '{if(length($0)<CNL)print}'`)
+print(chrs)
+
+rule filter_quality:
+    input:
+        bamTemp1 = join(aligned_reads, bamtemp1)
+    output:
+        temp(outdir + "/03_processed_reads/{sample}.temp1.bam")
+    threads: 1
+    shell:
+    	
+
+
+
+rule samtools_merge_all:
+	input:
+		expand(outdir + "/03_processed_reads/individual/{sample}.clean.sorted.bam", sample=SAMPLES)
+	output:
+		outdir + "/03_processed_reads/" + project_name + ".merged.clean.all.bam"
+	threads: 1
+	shell:
+		samtools + " merge {output} {input}"
+
+rule samtools_index_merged:
+	input:
+		outdir + "/03_processed_reads/" + project_name + ".merged.clean.all.bam"
+	output:
+		outdir + "/03_processed_reads/" + project_name + ".merged.clean.all.bam.bai"
+	threads: 16
+	shell:
+		samtools + " index {input}"
+ 
