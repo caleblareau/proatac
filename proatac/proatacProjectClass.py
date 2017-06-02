@@ -20,7 +20,7 @@ class proatacProject():
 		
 		# Basic attributes
 		self.yaml = yaml
-		self.name = self.yaml['project_name']
+		self.project_name = self.yaml['project_name']
 		self.project_dir = self.yaml['project_dir']
 		self.analysis_person = self.yaml['analysis_person']
 		

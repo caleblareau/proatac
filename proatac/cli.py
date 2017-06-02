@@ -125,11 +125,24 @@ def main(manifest, check, stingy):
 		os.makedirs(outfolder+ "/03_processed_reads/mito")
 	if not os.path.exists(outfolder + "/03_processed_reads/individual"):
 		os.makedirs(outfolder+ "/03_processed_reads/individual")
+	if not os.path.exists(logfolder + "/rmduplogs"):
+		os.makedirs(logfolder+ "/rmduplogs")
 		
 	click.echo(gettime() + "Cleaning up .bam files", logf)
 	
-	snakedict3 = {'chr_name_length' : p.chr_name_length, 'read_quality' : p.read_quality,
-		'outdir' : outfolder, 'samtools' : p.samtools_path, 'project_name' : p.project_name}
+	# Determine chromosomes to keep / filter
+	chrs = os.popen(p.samtools_path + " idxstats " +  outfolder + "/02_aligned_reads/* | cut -f1").read().strip().split("\n")
+	rmchrlist = ["*", "chrY", "MT", "chrM"]
+	keepchrs = [x for x in chrs if x not in rmchrlist and len(x) < int(p.chr_name_length)]
+	
+	# Determine mitochondrial chromosomes
+	mitochrs = []
+	for name in chrs:
+		if 'MT' in name or 'chrM' in name:
+			mitochrs.append(name)
+	
+	snakedict3 = {'keepchrs' : keepchrs, 'mitochrs' : mitochrs,  'read_quality' : p.read_quality, 'java' : p.java_path,
+		'outdir' : outfolder, 'samtools' : p.samtools_path, 'project_name' : p.project_name, 'scriptdir' : script_dir}
 		
 	y3 = parselfolder + "/snake.bamprocess.yaml"
 	with open(y3, 'w') as yaml_file:
@@ -137,6 +150,10 @@ def main(manifest, check, stingy):
 	
 	snakecall3 = 'snakemake --snakefile ' + script_dir + '/bin/snake/Snakefile.BamProcess --cores ' + p.max_cores + ' --config cfp="' + y3 + '"'
 	os.system(snakecall3)
+	
+	# ---------------------
+	# quick quality control
+	# ---------------------
 	
 	
 	

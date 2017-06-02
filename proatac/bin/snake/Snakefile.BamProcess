@@ -5,19 +5,22 @@ configfile: config["cfp"]
            
 # Parse the configuration variables
 outdir = config["outdir"]
+scriptdir = config["scriptdir"]
 samtools = config["samtools"]
 read_quality = config["read_quality"]
-chr_name_length = config["chr_name_length"]
+keepchrs = config["keepchrs"]
+mitochrs = config["mitochrs"]
 project_name = config["project_name"]
+java = config["java"]
 
 aligned_reads = outdir + "/02_aligned_reads"
+MarkDuplicatesCall = java + " -jar " + scriptdir + "/bin/MarkDuplicates.jar"
+
 
 # A Snakemake regular expression matching the bam files that were all aligned
 SAMPLES, = glob_wildcards(join(aligned_reads, "{sample}.all.sorted.bam"))
 
-# Patterns for the 1st mate and the 2nd mate using the 'sample' wildcard.
 bamin = '{sample}.all.sorted.bam'
-bamtemp1 = '{sample}.temp1.bam'
 
 rule all:
     input:
@@ -28,23 +31,33 @@ rule filter_quality:
     input:
         bamAllIn = join(aligned_reads, bamin)
     output:
-        temp(outdir + "/03_processed_reads/{sample}.temp1.bam")
+        bam = temp(outdir + "/03_processed_reads/individual/{sample}.temp1.bam"),
+        bai = temp(outdir + "/03_processed_reads/individual/{sample}.temp1.bam.bai")
     threads: 1
     shell:
-    	samtools + " view -q " + read_quality + " -f 0x2 {input} -o {output} && " + samtools + " index {output}"
+    	samtools + " view -q " + read_quality + " -f 0x2 {input} -o {output.bam} && " + samtools + " index {output.bam}"
 
-chrs = os.popen(samtools +' view -H {bamTemp1} | grep SQ | cut -f2 | sed 's/SN://g' | grep -v chrM | grep -v MT | grep -v Y | awk -v CNL="' + chr_name_length + '" '{if(length($0)<CNL)print}'`)
-print(chrs)
-
-rule filter_quality:
+rule filter_chr:
     input:
-        bamTemp1 = join(aligned_reads, bamtemp1)
+        bam = outdir + "/03_processed_reads/individual/{sample}.temp1.bam", 
+        bai = outdir + "/03_processed_reads/individual/{sample}.temp1.bam.bai"
     output:
-        temp(outdir + "/03_processed_reads/{sample}.temp1.bam")
+        bam = temp(outdir + "/03_processed_reads/individual/{sample}.temp2.bam"),
+        bai = temp(outdir + "/03_processed_reads/individual/{sample}.temp2.bam.bai")
     threads: 1
     shell:
-    	
+    	samtools + " view -b {input.bam} -o {output.bam} " + " ".join(str(i) for i in keepchrs) + " && " + samtools + " index {output.bam}"
 
+rule mark_duplicates:
+    input:
+        bam = outdir + "/03_processed_reads/individual/{sample}.temp2.bam", 
+        bai = outdir + "/03_processed_reads/individual/{sample}.temp2.bam.bai"
+    output:
+        bam = outdir + "/03_processed_reads/individual/{sample}.clean.sorted.bam",
+        rmlog = outdir + "/logs/rmduplogs/{sample}.rmdups.log"
+    threads: 1
+    shell:
+    	MarkDuplicatesCall + " INPUT={input.bam} OUTPUT={output.bam} METRICS_FILE={output.rmlog} REMOVE_DUPLICATES=true VALIDATION_STRINGENCY=SILENT && " + samtools + " index {output.bam}"
 
 
 rule samtools_merge_all:
@@ -52,16 +65,16 @@ rule samtools_merge_all:
 		expand(outdir + "/03_processed_reads/individual/{sample}.clean.sorted.bam", sample=SAMPLES)
 	output:
 		outdir + "/03_processed_reads/" + project_name + ".merged.clean.all.bam"
-	threads: 1
+	threads: 4
 	shell:
-		samtools + " merge {output} {input}"
+		samtools + " merge -@ {threads} {output} {input}"
 
 rule samtools_index_merged:
 	input:
 		outdir + "/03_processed_reads/" + project_name + ".merged.clean.all.bam"
 	output:
 		outdir + "/03_processed_reads/" + project_name + ".merged.clean.all.bam.bai"
-	threads: 16
+	threads: 1
 	shell:
 		samtools + " index {input}"
  
