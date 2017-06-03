@@ -1,8 +1,6 @@
 <p align="left">
-  <img src="media/logo.png" width="30%"/>
+  <img src="media/logo.png" width="50%"/>
 </p>
-
-------
 
 This package is maintained by [Caleb Lareau](mailto:caleblareau@g.harvard.edu) in the
 [Buenrostro Lab](https://buenrostrolab.com) Source code is made freely available here
