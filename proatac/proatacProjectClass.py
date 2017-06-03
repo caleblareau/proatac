@@ -44,7 +44,13 @@ class proatacProject():
 			self.max_cores = str(self.yaml['parameters']['max_cores'])
 		else:
 			self.max_cores = str(1)
-			
+		
+		# Computing configuration
+		if ("extract_mito" in self.yaml['parameters']) and (str(self.yaml['parameters']['extract_mito']) != "None"):
+			self.extract_mito = str(self.yaml['parameters']['extract_mito'])
+		else:
+			self.extract_mito = "false"
+
 		# Computing configuration
 		if ("chr_name_length" in self.yaml['parameters']) and (str(self.yaml['parameters']['chr_name_length']) != "None"):
 			self.chr_name_length = str(self.yaml['parameters']['chr_name_length'])
@@ -141,8 +147,15 @@ class proatacProject():
 			self.java_path = shutil.which("java")
 		if(str(self.java_path) == "None"):
 			sys.exit("ERROR: cannot find Java in environment; set the 'java_path' in the .yaml file or add to PATH")
-						
-						
+			
+		# bedtools
+		if(self.yaml['paths']['bedtools_path'] != ''):
+			self.java_path = self.yaml['paths']['bedtools_path']
+		else:
+			self.bedtools_path = shutil.which("bedtools")
+		if(str(self.bedtools_path) == "None"):
+			sys.exit("ERROR: cannot find bedtools in environment; set the 'bedtools_path' in the .yaml file or add to PATH")
+												
 		# Python3
 		if(self.yaml['paths']['python3_path'] != ''):
 			self.python3_path = self.yaml['paths']['python3_path']

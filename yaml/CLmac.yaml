@@ -18,6 +18,7 @@ sequencing_directories :
     keep_samples : ""
 #    remove_samples : ""
 paths : 
+    bedtools_path : ""
     bowtie2_path : ""
     bowtie2_index : "/Volumes/dat/genomes/hg19_bwt2/hg19"
     java_path : ""
@@ -28,6 +29,7 @@ paths :
 parameters : 
     max_cores : 2
     read_quality : 30
+    extract_mito : "true"
     anno_files : 
 #        tss : pathToTSSFile.bed # 
 #        blacklist : pathToBlacklistFile.bed # 

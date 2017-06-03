@@ -9,7 +9,6 @@ scriptdir = config["scriptdir"]
 samtools = config["samtools"]
 read_quality = config["read_quality"]
 keepchrs = config["keepchrs"]
-mitochrs = config["mitochrs"]
 project_name = config["project_name"]
 java = config["java"]
 
@@ -57,7 +56,7 @@ rule mark_duplicates:
         rmlog = outdir + "/logs/rmduplogs/{sample}.rmdups.log"
     threads: 1
     shell:
-    	MarkDuplicatesCall + " INPUT={input.bam} OUTPUT={output.bam} METRICS_FILE={output.rmlog} REMOVE_DUPLICATES=true VALIDATION_STRINGENCY=SILENT && " + samtools + " index {output.bam}"
+    	MarkDuplicatesCall + " INPUT={input.bam} OUTPUT={output.bam} METRICS_FILE={output.rmlog} REMOVE_DUPLICATES=true VALIDATION_STRINGENCY=SILENT && " + samtools + " index {output}"
 
 
 rule samtools_merge_all:

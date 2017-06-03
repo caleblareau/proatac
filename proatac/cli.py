@@ -21,8 +21,8 @@ from .proatacProjectClass import *
 
 @click.command()
 @click.version_option()
-@click.option('--check', is_flag=True, help='[MODE] Check to see if all dependencies are properly configured')
-@click.option('--stingy', is_flag=True, help='Space-efficient analyses; remove ')
+@click.option('--check', is_flag=True, help='[MODE] Check to see if all dependencies are properly configured.')
+@click.option('--stingy', is_flag=True, help='Space-efficient analyses; remove non-vital intermediate files.')
 @click.argument('manifest')
 
 
@@ -121,8 +121,6 @@ def main(manifest, check, stingy):
 	# -------------
 	if not os.path.exists(outfolder + "/03_processed_reads"):
 		os.makedirs(outfolder+ "/03_processed_reads")
-	if not os.path.exists(outfolder + "/03_processed_reads/mito"):
-		os.makedirs(outfolder+ "/03_processed_reads/mito")
 	if not os.path.exists(outfolder + "/03_processed_reads/individual"):
 		os.makedirs(outfolder+ "/03_processed_reads/individual")
 	if not os.path.exists(logfolder + "/rmduplogs"):
@@ -135,13 +133,7 @@ def main(manifest, check, stingy):
 	rmchrlist = ["*", "chrY", "MT", "chrM"]
 	keepchrs = [x for x in chrs if x not in rmchrlist and len(x) < int(p.chr_name_length)]
 	
-	# Determine mitochondrial chromosomes
-	mitochrs = []
-	for name in chrs:
-		if 'MT' in name or 'chrM' in name:
-			mitochrs.append(name)
-	
-	snakedict3 = {'keepchrs' : keepchrs, 'mitochrs' : mitochrs,  'read_quality' : p.read_quality, 'java' : p.java_path,
+	snakedict3 = {'keepchrs' : keepchrs, 'read_quality' : p.read_quality, 'java' : p.java_path,
 		'outdir' : outfolder, 'samtools' : p.samtools_path, 'project_name' : p.project_name, 'scriptdir' : script_dir}
 		
 	y3 = parselfolder + "/snake.bamprocess.yaml"
@@ -152,11 +144,41 @@ def main(manifest, check, stingy):
 	os.system(snakecall3)
 	
 	# ---------------------
-	# quick quality control
+	# Mitochondria
 	# ---------------------
 	
+	if(p.extract_mito):
+		click.echo(gettime() + "Extracting mitochondrial reads", logf)
+		
+		if not os.path.exists(outfolder + "/03_processed_reads/mito"):
+			os.makedirs(outfolder+ "/03_processed_reads/mito")
+			
+		# Determine mitochondrial chromosomes
+		mitochrs = []
+		for name in chrs:
+			if 'MT' in name or 'chrM' in name:
+				mitochrs.append(name)
+				
+		snakedictM = {'mitochrs' : mitochrs, 'outdir' : outfolder, 'samtools' : p.samtools_path, 
+			'project_name' : p.project_name}
+		yM = parselfolder + "/snake.mito.yaml"
+
+		with open(yM, 'w') as yaml_file:
+			yaml.dump(snakedictM, yaml_file, default_flow_style=False)
+		
+		snakecallM = 'snakemake --snakefile ' + script_dir + '/bin/snake/Snakefile.MitoProcess --cores ' + p.max_cores + ' --config cfp="' + yM + '"'
+		os.system(snakecallM)
+		
+		
+	# ---------------------
+	# Peaks
+	# ---------------------
+	if not os.path.exists(outfolder + "/04_qc"):
+		os.makedirs(outfolder+ "/04_qc")
+		
 	
 	
+		
 	# Suspend logging
 	logf.close()
 	
