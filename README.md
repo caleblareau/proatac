@@ -10,6 +10,7 @@
 This package is maintained by [Caleb Lareau](mailto:caleblareau@g.harvard.edu) in the
 [Buenrostro Lab](https://buenrostrolab.com) Source code is made freely available here
 and a packaged install version is provided through [PyPi](https://pypi.python.org/pypi/proatac/).
+<br><br>
 
 ## About<a name="about"></a>
 The **proatac** package implements our data processing and quality control pipeline bulk
