@@ -41,7 +41,7 @@ def main(manifest, check, stingy):
 	
 	outfolder = os.path.abspath(ymml['project_dir']) 
 	logfolder = outfolder + "/logs"
-	internfolder = outfolder + "/internal"
+	internfolder = outfolder + "/.internal"
 	parselfolder = internfolder + "/parseltongue"
 	
 	# Check if directories exist; make if not

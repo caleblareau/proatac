@@ -74,7 +74,7 @@ class proatacProject():
 		logf = open(logfolder + "/base.proatac.log", 'a')
 		
 		# ------------------------------
-		# Process reference genome stuff
+		# Process peak information
 		# ------------------------------
 		
 		self.reference_genome = self.yaml['reference_genome']
@@ -83,16 +83,24 @@ class proatacProject():
 			click.echo(gettime() + "Found designated reference genome: %s" % self.reference_genome, logf)
 			self.tssFile = script_dir + "/anno/TSS/" + self.reference_genome + ".refGene.TSS.bed"
 			self.blacklistFile = script_dir + "/anno/blacklist/" + self.reference_genome + ".ful.blacklist.bed"
+			
+			# Set up effective genome size for macs2
+			if any(self.reference_genome in s for s in ['hg19', 'hg38']):
+				self.macs2_genome_size = 'hs'
+			else if any(self.reference_genome in s for s in ['mm9', 'mm10']):
+				self.macs2_genome_size = 'mm'
+			else:
+				self.macs2_genome_size = '4.57e9'
 		else: 
 			click.echo(gettime() + "Could not identify this reference genome: %s" % self.reference_genome, logf)
 				
-		if ("anno_files" in self.yaml['parameters']) and (str(self.yaml['parameters']['anno_files']) != "None"):
-			if "tss" in self.yaml['parameters']['anno_files']:
-				b = self.yaml['parameters']['anno_files']['tss']
+		if ("peak_settings" in self.yaml['parameters']):
+			if "tssFile" in self.yaml['peak_settings']:
+				b = self.yaml['peak_settings']['tssFile']
 				if(b != ''):
 					self.tssFile = os.path.realpath(b)
-			if "blacklist" in self.yaml['parameters']['anno_files']:
-				b = self.yaml['parameters']['anno_files']['blacklist']
+			if "blacklistFile" in self.yaml['peak_settings']:
+				b = self.yaml['peak_settings']['blacklistFile']
 				if(b != ''):
 					self.blacklistFile = os.path.realpath(b)
 
@@ -172,7 +180,7 @@ class proatacProject():
 				"Install it in your R console and then try rerunning proatac (but there may be other missing dependencies).")
 		
 		# The final step should be fast, so remove the file that coordinates all samples if it exists
-		listAllSamples = outfolder + '/internal/parseltongue/' + 'allsamples.csv'
+		listAllSamples = outfolder + '/.internal/parseltongue/allsamples.csv'
 		if os.path.exists(listAllSamples):
 			os.remove(listAllSamples)
 		
