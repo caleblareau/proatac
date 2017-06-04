@@ -78,8 +78,8 @@ and hopefully seeing a valid path. If not, one solution for macs2 install is to 
 a separate python2 virtual environment using the following commands -- 
 
 ```
-python2 -m venv venv
-source venv/bin/active
+python2 -m venv venv2
+source venv2/bin/active
 
 pip install numpy
 pip install wheel
