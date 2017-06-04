@@ -34,13 +34,13 @@ extensions = ['sphinx.ext.autodoc', 'sphinx.ext.doctest',
 templates_path = ['templates']
 
 # The suffix of source filenames.
-source_suffix = '.rst'
+source_suffix = '.md'
 
 # The encoding of source files.
 #source_encoding = 'utf-8-sig'
 
 # The master toctree document.
-master_doc = 'index'
+#master_doc = 'index'
 
 # General information about the project.
 project = u'proatac'
@@ -144,10 +144,10 @@ html_sidebars = {
 #html_additional_pages = {}
 
 # If false, no module index is generated.
-#html_domain_indices = True
+html_domain_indices = False
 
 # If false, no index is generated.
-#html_use_index = True
+html_use_index = False
 
 # If true, the index is split into individual pages for each letter.
 #html_split_index = False
@@ -192,7 +192,7 @@ latex_documents = [
 
 # The name of an image file (relative to this directory) to place at the top of
 # the title page.
-#latex_logo = None
+latex_logo = "proatac_logo.png"
 
 # For "manual" documents, if this is true, then toplevel headings are parts,
 # not chapters.
