@@ -116,6 +116,18 @@ class proatacProject():
 				b = self.yaml['peak_settings']['bs_genome']
 				if(b != ''):
 					self.bsGenome = b
+			if "individual_peaks" in self.yaml['peak_settings']:
+				b = self.yaml['peak_settings']['individual_peaks']
+				if(b != ''):
+					self.bsGenome = b
+			if "n_peaks" in self.yaml['peak_settings']:
+				b = self.yaml['peak_settings']['n_peaks']
+				if(b != ''):
+					self.bsGenome = b
+			if "peak_width" in self.yaml['peak_settings']:
+				b = self.yaml['peak_settings']['peak_width']
+				if(b != ''):
+					self.bsGenome = b
 
 		# ------------------------
 		# Process dependency paths

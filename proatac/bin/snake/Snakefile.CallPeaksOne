@@ -5,8 +5,7 @@ configfile: config["cfp"]
            
 # Parse the configuration variables
 outdir = config["outdir"]
-samtools = config["samtools"]
-mitochrs = config["mitochrs"]
+macs2 = config["macs2"]
 project_name = config["project_name"]
 
 aligned_reads = outdir + "/02_aligned_reads"

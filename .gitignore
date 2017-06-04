@@ -1,5 +1,6 @@
 *.pyc
 proatac/__pycache__/*.pyc
+dirOut/*
 
 .snakemake/*
 
