@@ -44,11 +44,24 @@ pip3 install proatac
 ```
 
 ## Dependencies<a name="dependencies"></a>
+**proatac** has a few dependencies that are listed below with relevant hyperlinks for 
+installation instructions from the source. To quickly determine what may be lacking in
+your system, try running **proatac** with the [default.yaml](yaml/CLmac.yaml) file
+(more on that [here](#yaml)) using the `--check` flag. To do this, we'll first clone
+the repository
 
+```
+git clone https://github.com/buenrostrolab/proatac.git
+proatac yaml/default --check
+```
 
+If you get a message saying that the check was succesful, then you're most likely
+ready to begin analyzing data. However, if you run into one or more error messages, 
+you are likely missing the necessarily software. Make sure that
 
-- [bowtie2](http://bowtie-bio.sourceforge.net/bowtie2/index.shtml)
-- [java](https://www3.ntu.edu.sg/home/ehchua/programming/howto/JDK_Howto.html)
+- [bedtools](http://bedtools.readthedocs.io/en/latest/content/installation.html)
+- [bowtie2](http://bowtie-bio.sourceforge.net/bowtie2/index.shtml) and relevant index for analysis. 
+- [java language](https://www3.ntu.edu.sg/home/ehchua/programming/howto/JDK_Howto.html)
 - [macs2](https://github.com/taoliu/MACS)
 
 We note that macs2 though also a PyPi package is only compatible with Python 2.7
@@ -72,11 +85,15 @@ pip install wheel
 pip install macs2
 ```
 
+- [R language](https://www.r-project.org/) and package dependencies
+(see [wiki/Rpackages](https://github.com/buenrostrolab/proatac/wiki/Rpackages) for more information). 
+
 - [samtools](http://www.htslib.org/download/)
 
 ## .yaml configuration<a name="yaml"></a>
 
-
+Check out the [wiki/yaml](https://github.com/buenrostrolab/proatac/wiki/yaml) page for more 
+information about configuring this file. 
 
 ### Questions/comments/feedback
 are always welcomed. Email [Caleb](mailto:caleblareau@g.harvard.edu) anytime! 
@@ -85,5 +102,7 @@ for the public) is through raising a [new issue](https://github.com/buenrostrola
 on the Github source. 
 
 
-**proatac** logo made freely with [logomakr](https://logomakr.com/).
+**proatac** logo made freely with [logomakr](https://logomakr.com/) these
+[blue](http://www.color-hex.com/color/3c4d7d) and [red](http://www.color-hex.com/color/d71920)
+color definitions.
 <br><br><br>
