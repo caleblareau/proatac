@@ -1,10 +1,13 @@
-#Tests and data
-recursive-include tests *
+# Prune tests, data, and other stuff
+prune proatac.egg-info/
+prune tests/
+prune *.DS_Store
 
-#Scripts
-recursive-include proatac *
 
-#Misc
+# Scripts
+recursive-include proatac/*
+
+# Misc
 include Authors.rst
 include LICENSE.txt
 include NEWS
