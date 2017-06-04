@@ -3,8 +3,7 @@ proatac: a fast, flexible preprocessing pipeline for (sc)ATAC-Seq data
 ===================================================================================
 
 **proatac** is an open-source command-line toolkit that performs efficient and scalable 
-
-|downloads|
+preprocessing of `ATAC-Seq data <http://www.nature.com/nmeth/journal/v10/n12/full/nmeth.2688.html>` _.
 
 |reference|
 
@@ -47,35 +46,6 @@ Contents
 .. |quick_start_html| raw:: html
 
    <br><img src="_images/quick_start.png" style="height:150px;">
-
-.. |downloads| raw:: html
-
-   <img src="_images/downloads_v3.png" style="height:36px; margin:0; width: auto !important;">
-   <div class="index_cols">
-      <div class="col_element">
-         <img src="_images/linux_v2.png" style="height:26px; width: auto !important; margin-bottom:10px;">
-         <ul style="list-style-type:square; font-size:smaller; margin-left:0; margin-right:0px; padding-right:0px; padding-left:20px;">
-            <li><a href="https://github.com/bedops/bedops/releases/download/v2.4.26/bedops_linux_x86_64-v2.4.26.tar.bz2">x86-64 (64-bit)</a> binaries</li>
-            <li><a href="https://github.com/bedops/bedops/releases/download/v2.4.26/bedops_linux_i386-v2.4.26.tar.bz2">i386 (32-bit)</a> binaries</li>
-            <li><a href="content/installation.html#linux">Installation instructions</a> for Linux hosts</li>
-         </ul>
-      </div>
-      <div class="col_element">
-         <img src="_images/macosx_v2.png" style="height:26px; width: auto !important; margin-bottom:10px;">
-         <ul style="list-style-type:square; font-size:smaller; margin-left:0; margin-right:0px; padding-right:0px; padding-left:20px;">
-            <li><a href="https://github.com/bedops/bedops/releases/download/v2.4.26/BEDOPS.2.4.26.pkg.zip">Intel (32-/64-bit, 10.7-10.12)</a> installer package</li>
-            <li><a href="content/installation.html#mac-os-x">Installation instructions</a> for Mac OS X hosts</li>
-         </ul>
-      </div>
-      <div class="col_element">
-         <img src="_images/source_v2.png" style="height:26px; width: auto !important; margin-bottom:10px;">
-         <ul style="list-style-type:square; font-size:smaller; margin-left:0; margin-right:0px; padding-right:0px; padding-left:20px;">
-            <li><a href="https://github.com/bedops/bedops/archive/v2.4.26.tar.gz">Source code</a> (tar.gz)</li>
-            <li><a href="https://github.com/bedops/bedops/archive/v2.4.26.zip">Source code</a> (zip)</li>
-            <li><a href="content/installation.html#installation-via-source-code">Compilation instructions</a></li>
-         </ul>
-      </div>
-   </div>
 
 .. |downloads_png| image:: assets/index/downloads_v3.png
                    :height: 30px
