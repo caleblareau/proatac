@@ -8,7 +8,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 
 This package is maintained by [Caleb Lareau](mailto:caleblareau@g.harvard.edu) in the
-[Buenrostro Lab](https://buenrostrolab.com) Source code is made freely available here
+[Buenrostro Lab](https://buenrostrolab.com). Source code is made freely available here
 and a packaged install version is provided through [PyPi](https://pypi.python.org/pypi/proatac/).
 <br><br>
 
@@ -18,8 +18,27 @@ The **proatac** package implements our data processing and quality control pipel
 [single cell ATAC-Seq](http://www.nature.com/nature/journal/v523/n7561/full/nature14590.html),
 and droplet-based ATAC-Seq data. 
 
+## Table of Contents<a name="toc"></a>
+- [About](#about)
+- [Table of Contents](#toc)
+- [Workflow Overview](#werk)
+- [Dependencies](#dependencies)
+- [Installation](#installation)
 
-## Questions/comments/feedback
+## Workflow Overview<a name="werk"></a>
+NEED IMAGE HERE
+
+## Installation<a name="installation"></a>
+There are a few [dependencies](#dependencies) needed to get **proatac** to run. However,
+all are very common 
+
+
+## Dependencies<a name="dependencies"></a>
+
+
+
+
+### Questions/comments/feedback
 are always welcomed. Email [Caleb](mailto:caleblareau@g.harvard.edu) anytime! 
 The easiest way for us to have correspondence (if appropriate/interesting
 for the public) is through raising a [new issue](https://github.com/buenrostrolab/proatac/issues/new)
