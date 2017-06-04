@@ -1,10 +1,8 @@
 ===================================================================================
-BEDOPS: the fast, highly scalable and easily-parallelizable genome analysis toolkit
+proatac: a fast, flexible preprocessing pipeline for (sc)ATAC-Seq data
 ===================================================================================
 
-**BEDOPS** is an open-source command-line toolkit that performs highly efficient and scalable Boolean and other set operations, statistical calculations, archiving, conversion and other management of genomic data of arbitrary scale. Tasks can be easily split by chromosome for distributing whole-genome analyses across a computational cluster.
-
-You can read more about **BEDOPS** and how it can be useful for your research in the :ref:`Overview <overview>` documentation, as well as in the `original manuscript <http://bioinformatics.oxfordjournals.org/content/28/14/1919.abstract>`_.
+**proatac** is an open-source command-line toolkit that performs efficient and scalable 
 
 |downloads|
 
@@ -14,10 +12,10 @@ You can read more about **BEDOPS** and how it can be useful for your research in
 Citation
 ========
 
-If you use **BEDOPS** in your research, please cite the following manuscript:
-
-   Shane Neph, M. Scott Kuehn, Alex P. Reynolds, et al. **BEDOPS: high-performance genomic feature operations**. *Bioinformatics* (2012) 28 (14): 1919-1920. `doi: 10.1093/bioinformatics/bts277 <http://bioinformatics.oxfordjournals.org/content/28/14/1919.abstract>`_
-
+If you use **proatac** in your research, please currently cite our web interface:
+	
+	http://buenrostrolab.com/proatac
+	
 ========
 Contents
 ========
@@ -36,13 +34,13 @@ Contents
 
 .. |header| raw:: html
 
-   <h1>BEDOPS: the fast, highly scalable and easily-parallelizable genome analysis toolkit</h1>
+   <h1>proatac: a fast, flexible preprocessing pipeline for (sc)ATAC-Seq data</h1>
 
 .. |about_html| raw:: html
 
    <br><strong>BEDOPS</strong> is an open-source command-line toolkit that performs highly efficient and scalable Boolean and other set operations, statistical calculations, archiving, conversion and other management of genomic data of arbitrary scale. Tasks can be easily split by chromosome for distributing whole-genome analyses across a computational cluster.
 
-   <p>You can read more about <strong>BEDOPS</strong> and how it can be useful for your research in the <a href="content/overview.html">Overview</a> documentation, as well as in the <a href="http://bioinformatics.oxfordjournals.org/content/28/14/1919.abstract">original manuscript</a>.</p><br>
+   <p>You can read more about <strong>proatac</strong> and how it can be useful for your research in the <a href="content/overview.html">Overview</a> documentation.
 
 .. |quick_start| image:: assets/index/quick_start.png
 
