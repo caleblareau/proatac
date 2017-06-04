@@ -50,6 +50,16 @@ def findIdx(list1, list2):
 	"""
 	return [i for i, x in enumerate(list1) if x in list2]
 
+def check_R_packages(required_packages, R_path):
+	"""
+	Determines whether or not R packages are properly installed
+	"""
+	installed_packages = os.popen(R_path + ''' -e "installed.packages()" | awk '{print $1}' | sort | uniq''').read().strip().split("\n")
+	if(not set(required_packages) < set(installed_packages)):
+		sys.exit("ERROR: cannot find the following R package: " + str(set(required_packages) - set(installed_packages)) + "\n" + 
+			"Install it in your R console and then try rerunning proatac (but there may be other missing dependencies).")
+		
+
 def process_seq_dir(d, logf, listAllSamples):
 	"""
 	Function that takes a dictionary parsed from the main .yaml

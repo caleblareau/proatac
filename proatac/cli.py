@@ -58,10 +58,14 @@ def main(manifest, check, stingy):
 		with open(parselfolder + "/README" , 'w') as outfile:
 			outfile.write("This folder creates intermediate output to be interpreted by Snakemake; don't modify it.\n\n")	
 	cwd = os.getcwd()
-	
-	# Main Project Variable
-	p = proatacProject(ymml, script_dir)
 	logf = open(logfolder + "/base.proatac.log", 'a')
+		
+	# Main Project Variable; output to .yaml so it's clear what's going on
+	p = proatacProject(ymml, script_dir)
+	projectdict = p.__dict__
+	y0 = logfolder + "/interpreted.params.yaml"
+	with open(y0, 'w') as yaml_file:
+		yaml.dump(projectdict, yaml_file, default_flow_style=False)
 	
 	# -------------------------------
 	# Atypical analysis modes

@@ -43,7 +43,7 @@ class proatacProject():
 		if ("max_cores" in self.yaml['parameters']) and (str(self.yaml['parameters']['max_cores']) != "None"):
 			self.max_cores = str(self.yaml['parameters']['max_cores'])
 		else:
-			self.max_cores = str(1)
+			self.max_cores = str(2)
 		
 		# Computing configuration
 		if ("extract_mito" in self.yaml['parameters']) and (str(self.yaml['parameters']['extract_mito']) != "None"):
@@ -82,28 +82,40 @@ class proatacProject():
 		if any(self.reference_genome in s for s in supported_genomes):
 			click.echo(gettime() + "Found designated reference genome: %s" % self.reference_genome, logf)
 			self.tssFile = script_dir + "/anno/TSS/" + self.reference_genome + ".refGene.TSS.bed"
-			self.blacklistFile = script_dir + "/anno/blacklist/" + self.reference_genome + ".ful.blacklist.bed"
+			self.blacklistFile = script_dir + "/anno/blacklist/" + self.reference_genome + ".full.blacklist.bed"
 			
 			# Set up effective genome size for macs2
-			if any(self.reference_genome in s for s in ['hg19', 'hg38']):
+			if self.reference_genome == 'hg19':
+				self.BSgenome = 'BSgenome.Hsapiens.UCSC.hg19'
 				self.macs2_genome_size = 'hs'
-			else if any(self.reference_genome in s for s in ['mm9', 'mm10']):
+			elif self.reference_genome == 'hg38':
+				self.BSgenome = 'BSgenome.Hsapiens.UCSC.hg38'
+				self.macs2_genome_size = 'hs'
+			elif self.reference_genome == 'mm9':
+				self.BSgenome = 'BSgenome.Mmusculus.UCSC.mm9'
+				self.macs2_genome_size = 'mm'
+			elif self.reference_genome == 'mm10':
+				self.BSgenome = 'BSgenome.Mmusculus.UCSC.mm10'
 				self.macs2_genome_size = 'mm'
 			else:
+				self.BSgenome = ''
 				self.macs2_genome_size = '4.57e9'
 		else: 
 			click.echo(gettime() + "Could not identify this reference genome: %s" % self.reference_genome, logf)
 				
 		if ("peak_settings" in self.yaml['parameters']):
-			if "tssFile" in self.yaml['peak_settings']:
-				b = self.yaml['peak_settings']['tssFile']
+			if "tss_file" in self.yaml['peak_settings']:
+				b = self.yaml['peak_settings']['tss_file']
 				if(b != ''):
 					self.tssFile = os.path.realpath(b)
-			if "blacklistFile" in self.yaml['peak_settings']:
-				b = self.yaml['peak_settings']['blacklistFile']
+			if "blacklist_file" in self.yaml['peak_settings']:
+				b = self.yaml['peak_settings']['blacklist_file']
 				if(b != ''):
 					self.blacklistFile = os.path.realpath(b)
-
+			if "bs_genome" in self.yaml['peak_settings']:
+				b = self.yaml['peak_settings']['bs_genome']
+				if(b != ''):
+					self.bsGenome = b
 
 		# ------------------------
 		# Process dependency paths
@@ -164,20 +176,8 @@ class proatacProject():
 		if(str(self.bedtools_path) == "None"):
 			sys.exit("ERROR: cannot find bedtools in environment; set the 'bedtools_path' in the .yaml file or add to PATH")
 												
-		# Python3
-		if(self.yaml['paths']['python3_path'] != ''):
-			self.python3_path = self.yaml['paths']['python3_path']
-		else:
-			self.python3_path = shutil.which("python3")
-		if(str(self.python3_path) == "None"):
-			sys.exit("ERROR: cannot find python3 in environment; set the 'python3_path' in the .yaml file or add to PATH")
-		
 		# Check for R package dependencies
-		required_packages = ['ggplot2', 'tidyverse']
-		installed_packages = os.popen(self.R_path + ''' -e "installed.packages()" | awk '{print $1}' | sort | uniq''').read().strip().split("\n")
-		if(not set(required_packages) < set(installed_packages)):
-			sys.exit("ERROR: cannot find the following R package: " + str(set(required_packages) - set(installed_packages)) + "\n" + 
-				"Install it in your R console and then try rerunning proatac (but there may be other missing dependencies).")
+		check_R_packages(['ggplot2', 'tidyverse'], self.R_path)
 		
 		# The final step should be fast, so remove the file that coordinates all samples if it exists
 		listAllSamples = outfolder + '/.internal/parseltongue/allsamples.csv'

@@ -1,0 +1,45 @@
+from os.path import join
+import os
+
+configfile: config["cfp"]     
+           
+# Parse the configuration variables
+outdir = config["outdir"]
+samtools = config["samtools"]
+mitochrs = config["mitochrs"]
+project_name = config["project_name"]
+
+aligned_reads = outdir + "/02_aligned_reads"
+
+
+# A Snakemake regular expression matching the bam files that were all aligned
+SAMPLES, = glob_wildcards(join(aligned_reads, "{sample}.all.sorted.bam"))
+
+bamin = '{sample}.all.sorted.bam'
+
+rule all:
+    input:
+        outdir + "/03_processed_reads/mito/" + project_name + ".mitoreads.txt"
+
+rule filter_mito_chr:
+    input:
+        bam = join(aligned_reads, bamin)
+    output:
+        bam = outdir + "/03_processed_reads/mito/{sample}.mito.bam"
+    threads: 1
+    shell:
+    	samtools + " view -b {input.bam} -o {output.bam} " + " ".join(str(i) for i in mitochrs) + " && " + samtools + " index {output.bam}"
+
+rule make_summary_txt:
+	input:
+		expand(outdir + "/03_processed_reads/mito/{sample}.mito.bam", sample=SAMPLES)
+	output:
+		outdir + "/03_processed_reads/mito/" + project_name + ".mitoreads.txt"
+	threads: 1
+	run:
+		with open(output[0], 'w') as out:
+			for i in input:
+				sample = (i.split('/03_processed_reads/mito/')[1]).split('.')[0]
+				lns = os.popen(samtools + " view " + i + " | wc -l").read().strip()
+				out.write(sample + '\t' + lns + '\n')
+

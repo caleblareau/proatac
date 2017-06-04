@@ -8,9 +8,9 @@ dependencies = ['click', 'Numpy', 'editdistance', 'pytest', 'python-levenshtein'
 setup(
     name='proatac',
     version='0.2.0',
-    url='https://github.com/buenrostrolab/parkour',
+    url='https://github.com/buenrostrolab/proatac',
     license='BSD',
-    author='Caleb Lareau and Jason Buenrostro',
+    author='Caleb Lareau',
     author_email='caleblareau@g.harvard.edu',
     description='Processing and quality control of ATAC data.',
     long_description=__doc__,
