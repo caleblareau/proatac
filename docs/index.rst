@@ -1,9 +1,15 @@
-# proatac Documentation
+================================================================
+**proatac**: *a robust preprocessing pipeline for ATAC-Seq data*
+================================================================
 
-Source code available on [GitHub](https://github.com/buenrostrolab/proatac).
+==========
+License
+==========
+bedtools is freely available under an MIT License.
 
-## About proatac
-
-## Contact
-[Caleb Lareau](mailto:caleblareau@g.harvard.edu)
+=================
+Mailing list
+=================
+If you have questions, requests, or bugs to report, please email the
+`bedtools mailing list <https://groups.google.com/forum/?fromgroups#!forum/bedtools-discuss>`_
 
