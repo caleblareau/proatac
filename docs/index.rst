@@ -3,7 +3,7 @@ proatac: a fast, flexible preprocessing pipeline for (sc)ATAC-Seq data
 ===================================================================================
 
 **proatac** is an open-source command-line toolkit that performs efficient and scalable 
-preprocessing of `ATAC-Seq data <http://www.nature.com/nmeth/journal/v10/n12/full/nmeth.2688.html>` _.
+preprocessing of `ATAC-Seq data <http://www.nature.com/nmeth/journal/v10/n12/full/nmeth.2688.html>`_.
 
 |reference|
 
