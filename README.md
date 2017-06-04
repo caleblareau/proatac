@@ -5,6 +5,7 @@
 
 [![Build Status](https://travis-ci.org/buenrostrolab/proatac.svg?branch=master)](https://travis-ci.org/buenrostrolab/proatac)
 [![PyPI version](https://badge.fury.io/py/proatac.svg)](https://badge.fury.io/py/proatac)
+[![Documentation Status](https://readthedocs.org/projects/proatac/badge/?version=latest)](http://proatac.readthedocs.io/en/latest/?badge=latest)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 
 This package is maintained by [Caleb Lareau](mailto:caleblareau@g.harvard.edu) in the
