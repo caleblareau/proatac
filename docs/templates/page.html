@@ -107,10 +107,4 @@
 {%- block body %}
   {{ super() }}
 
-{% if disqus_shortname %}
-  {{ comments() }}
-{% else %}
-<!-- disqus commenting disabled; set disqus_shortname -->
-{% endif %}
-
 {%- endblock %}
