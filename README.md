@@ -22,19 +22,59 @@ and droplet-based ATAC-Seq data.
 - [About](#about)
 - [Table of Contents](#toc)
 - [Workflow Overview](#werk)
-- [Dependencies](#dependencies)
 - [Installation](#installation)
+- [Dependencies](#dependencies)
+- [.yaml Configuration](#yaml)
 
 ## Workflow Overview<a name="werk"></a>
 NEED IMAGE HERE
 
 ## Installation<a name="installation"></a>
-There are a few [dependencies](#dependencies) needed to get **proatac** to run. However,
-all are very common 
+There are a few [dependencies](#dependencies) needed to get **proatac** to run. All are 
+very common bioinformatics tools / languages and should be readily available in
+most systems. However, **note that the current implementation of proatac is not supported
+on Windows platforms**. 
 
+Depending on your python environment, we generally recommend 
+
+```
+python3 -m venv venv3
+source venv3/bin/active
+pip3 install proatac
+```
 
 ## Dependencies<a name="dependencies"></a>
 
+
+
+- [bowtie2](http://bowtie-bio.sourceforge.net/bowtie2/index.shtml)
+- [java](https://www3.ntu.edu.sg/home/ehchua/programming/howto/JDK_Howto.html)
+- [macs2](https://github.com/taoliu/MACS)
+
+We note that macs2 though also a PyPi package is only compatible with Python 2.7
+whereas **proatac** is a Python 3 package. There's a good chance that macs2
+is already living in your environment if you are reading this help page, which can
+be tested using the following--
+
+```
+which macs2
+```
+
+and hopefully seeing a valid path. If not, one solution for macs2 install is to create
+a separate python2 virtual environment using the following commands -- 
+
+```
+python2 -m venv venv
+source venv/bin/active
+
+pip install numpy
+pip install wheel
+pip install macs2
+```
+
+- [samtools](http://www.htslib.org/download/)
+
+## .yaml configuration<a name="yaml"></a>
 
 
 
