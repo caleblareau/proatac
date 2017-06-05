@@ -28,7 +28,8 @@ and droplet-based ATAC-Seq data.
 - [.yaml Configuration](#yaml)
 
 ## Workflow Overview<a name="werk"></a>
-NEED IMAGE HERE
+
+![proatac_overview](media/overview.pdf)
 
 ## Installation<a name="installation"></a>
 There are a few [dependencies](#dependencies) needed to get **proatac** to run. All are 
