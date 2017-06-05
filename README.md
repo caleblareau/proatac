@@ -29,7 +29,7 @@ and droplet-based ATAC-Seq data.
 
 ## Workflow Overview<a name="werk"></a>
 
-![proatac_overview](media/overview.pdf)
+![proatac_overview](media/overview.png)
 
 ## Installation<a name="installation"></a>
 There are a few [dependencies](#dependencies) needed to get **proatac** to run. All are 
