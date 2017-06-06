@@ -32,7 +32,7 @@ extensions = ['sphinx.ext.autodoc', 'sphinx.ext.doctest', 'sphinx.ext.intersphin
 templates_path = ['_templates']
 
 # The suffix of source filenames.
-source_suffix = '.rst'
+source_suffix = ['.rst', '.md']
 
 # The encoding of source files.
 #source_encoding = 'utf-8-sig'
@@ -114,7 +114,7 @@ html_theme_path = [better_theme_path]
 
 # The name for this set of Sphinx documents.  If None, it defaults to
 # "<project> v<release> documentation".
-html_title = "%s v%s" % (project, release)
+html_title = "%s" % (project)
 
 # A shorter title for the navigation bar.  Default is the same as html_title.
 #html_short_title = None
