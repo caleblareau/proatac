@@ -23,18 +23,19 @@ Specifically, we've implemented our workflow using
    :width: 100%
 
 ================
-Table of Contents 
+Installation
 ================
+.. toctree:: content/Installation
 
-.. toctree::
+================
+Dependencies
+================
+.. toctree:: content/Dependencies
 
-   content/Installation_Dependencies
-   content/revision-history
-   content/usage-examples
-   content/performance
-   content/reference
-   content/summary
-   content/release
+================
+Revisions
+================
+.. toctree:: content/revision-history
    
 ================
 Author

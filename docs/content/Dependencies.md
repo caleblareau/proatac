@@ -1,18 +1,4 @@
-# Installation
-There are a few [dependencies](#dependencies) needed to get **proatac** to run. All are 
-very common bioinformatics tools / languages and should be readily available in
-most systems. However, **note that the current implementation of proatac is not supported
-on Windows platforms**. 
-
-Depending on your python environment, we generally recommend 
-
-```
-python3 -m venv venv3
-source venv3/bin/active
-pip3 install proatac
-```
-
-# Dependencies
+# Getting proatac running
 **proatac** has a few dependencies that are listed below with relevant hyperlinks for 
 installation instructions from the source. To quickly determine what may be lacking in
 your system, try running **proatac** with the [default.yaml](yaml/CLmac.yaml) file
