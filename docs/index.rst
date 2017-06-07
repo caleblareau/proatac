@@ -6,6 +6,7 @@ proatac
 preprocessing of `ATAC-Seq data <http://www.nature.com/nmeth/journal/v10/n12/full/nmeth.2688.html>`_.
 
 .. image:: content/media/overview.png
+   :width: 100%
 
 ========
 Contents
