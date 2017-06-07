@@ -1,5 +1,5 @@
 # Install stable version through PyPi
-There are a few dependencies](http://proatac.readthedocs.io/en/latest/content/Dependencies.html)
+There are a few [dependencies](http://proatac.readthedocs.io/en/latest/content/Dependencies.html)
 needed to get **proatac** to run. All are 
 very common bioinformatics tools / languages and should be readily available in
 most systems. However, **note that the current implementation of proatac is not supported
@@ -14,6 +14,8 @@ python3 -m venv venv3
 source venv3/bin/active
 pip3 install proatac
 ```
+
+# Install via GitHub
 
 Though **not recommended**, a bleeding-edge (development) version can be installed
 directly from Git. Again using a virtual environment--
