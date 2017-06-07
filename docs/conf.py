@@ -127,7 +127,7 @@ html_short_title = "Home"
 
 # The name of an image file (relative to this directory) to place at the top
 # of the sidebar.
-html_logo = 'assets/logo_with_label_v3.png'
+html_logo = 'assets/logo.png'
 
 # The name of an image file (within the static path) to use as favicon of the
 # docs.  This file should be a Windows icon file (.ico) being 16x16 or 32x32
@@ -151,7 +151,7 @@ html_favicon = 'assets/favicon.ico'
 # Custom sidebar templates, maps document names to template names.
 #html_sidebars = {}
 html_sidebars = {
-    '**': ['localtoc.html', 'sourcelink.html', 'searchbox.html'],
+    '**': ['localtoc.html', 'searchbox.html'],
 }
 
 # Additional templates that should be rendered to pages, maps page names to
