@@ -83,6 +83,7 @@ class proatacProject():
 			click.echo(gettime() + "Found designated reference genome: %s" % self.reference_genome, logf)
 			self.tssFile = script_dir + "/anno/TSS/" + self.reference_genome + ".refGene.TSS.bed"
 			self.blacklistFile = script_dir + "/anno/blacklist/" + self.reference_genome + ".full.blacklist.bed"
+			self.bedtoolsGenomeFile = script_dir + "/anno/bedtools/chrom_" + self.reference_genome + ".sizes"
 			
 			# Set up effective genome size for macs2
 			if self.reference_genome == 'hg19':
@@ -112,6 +113,10 @@ class proatacProject():
 				b = self.yaml['peak_settings']['blacklist_file']
 				if(b != ''):
 					self.blacklistFile = os.path.realpath(b)
+			if "bedtools_genome" in self.yaml['peak_settings']:
+				b = self.yaml['peak_settings']['bedtools_genome']
+				if(b != ''):
+					self.bedtoolsGenomeFile = os.path.realpath(b)
 			if "bs_genome" in self.yaml['peak_settings']:
 				b = self.yaml['peak_settings']['bs_genome']
 				if(b != ''):
@@ -119,15 +124,15 @@ class proatacProject():
 			if "individual_peaks" in self.yaml['peak_settings']:
 				b = self.yaml['peak_settings']['individual_peaks']
 				if(b != ''):
-					self.bsGenome = b
+					self.individual_peaks = b
 			if "n_peaks" in self.yaml['peak_settings']:
 				b = self.yaml['peak_settings']['n_peaks']
 				if(b != ''):
-					self.bsGenome = b
+					self.n_peaks = b
 			if "peak_width" in self.yaml['peak_settings']:
 				b = self.yaml['peak_settings']['peak_width']
 				if(b != ''):
-					self.bsGenome = b
+					self.peak_width = b
 
 		# ------------------------
 		# Process dependency paths

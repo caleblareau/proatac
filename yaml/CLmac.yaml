@@ -30,7 +30,8 @@ parameters :
     max_cores : 2
     read_quality : 30
     run_chromVAR : "false"
-peak_settings:    
+peak_settings:   
+    bedtools_genome : "" 
     blacklist_file : ""
     bs_genome : ""
     individual_peaks : "false"

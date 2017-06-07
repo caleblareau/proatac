@@ -1,8 +1,7 @@
 ===================================================================================
-proatac
+Processing ATAC-Seq Data
 ===================================================================================
 
---------
 About
 --------
 
@@ -12,7 +11,6 @@ preprocessing of `ATAC-Seq data <http://www.nature.com/nmeth/journal/v10/n12/ful
 .. image:: content/media/overview.png
    :width: 100%
 
---------
 Table of Contents 
 --------
 
@@ -27,14 +25,12 @@ Table of Contents
    content/summary
    content/release
 
---------
 Author
 --------
-The primary developer is `Caleb Lareau<mailto:caleblareau@g.harvard.edu>`_ 
+The primary developer is `Caleb Lareau<https://caleblareau.github.io>`_ 
 in the `Buenrostro Lab <http://buenrostrolab.com>`_.
 
 
---------
 Citation
 --------
 
