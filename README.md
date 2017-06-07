@@ -1,6 +1,6 @@
 <p align="left">
   <br><br><br>
-  <img src="media/logo.png" width="50%"/>
+  <img src="docs/content/media/logo.png" width="50%"/>
 </p>
 
 [![Build Status](https://travis-ci.org/buenrostrolab/proatac.svg?branch=master)](https://travis-ci.org/buenrostrolab/proatac)
@@ -29,7 +29,7 @@ and droplet-based ATAC-Seq data.
 
 ## Workflow Overview<a name="werk"></a>
 
-![proatac_overview](media/overview.png)
+![proatac_overview](docs/content/media/overview.png)
 
 ## Installation<a name="installation"></a>
 There are a few [dependencies](#dependencies) needed to get **proatac** to run. All are 
