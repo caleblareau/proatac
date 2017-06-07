@@ -2,8 +2,9 @@
 Processing ATAC-Seq Data
 ===================================================================================
 
+================
 About
---------
+================
 
 **proatac** is an open-source command-line toolkit that performs robust and scalable 
 preprocessing of `ATAC-Seq data <http://www.nature.com/nmeth/journal/v10/n12/full/nmeth.2688.html>`_.
@@ -11,8 +12,9 @@ preprocessing of `ATAC-Seq data <http://www.nature.com/nmeth/journal/v10/n12/ful
 .. image:: content/media/overview.png
    :width: 100%
 
+================
 Table of Contents 
---------
+================
 
 .. toctree::
 
@@ -24,17 +26,26 @@ Table of Contents
    content/reference
    content/summary
    content/release
-
+   
+================
 Author
---------
-The primary developer is `Caleb Lareau<https://caleblareau.github.io>`_ 
+================
+
+The primary developer is `Caleb Lareau <https://caleblareau.github.io>`_ 
 in the `Buenrostro Lab <http://buenrostrolab.com>`_.
 
-
+================
 Citation
---------
+================
 
 If you use **proatac** in your research, please cite our tool at the following URL:
 	
 	``http://buenrostrolab.com/proatac``
 	
+================
+Bugs / Errors
+================
+
+Please let us know if you find any errors/inconsistencies in the documentation or code
+by filing a new `Github Issue <https://github.com/buenrostrolab/proatac/issues>`_.
+
