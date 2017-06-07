@@ -7,6 +7,8 @@
 [![PyPI version](https://badge.fury.io/py/proatac.svg)](https://badge.fury.io/py/proatac)
 [![Documentation Status](https://readthedocs.org/projects/proatac/badge/?version=latest)](http://proatac.readthedocs.io/en/latest/?badge=latest)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
+[![DOI](https://zenodo.org/badge/71602064.svg)](https://zenodo.org/badge/latestdoi/71602064)
+
 
 This package is maintained by [Caleb Lareau](mailto:caleblareau@g.harvard.edu) in the
 [Buenrostro Lab](https://buenrostrolab.com). Source code is made [freely available](http://github.com/buenrostrolab/proatac)
