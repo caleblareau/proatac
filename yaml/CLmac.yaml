@@ -1,6 +1,6 @@
 project_name : "proatacProject"
 project_dir : "dirOut"
-analysis_person : "Caleb Lareau"
+analyst : "Caleb Lareau"
 reference_genome : "hg19"
 sequencing_directories : 
   - name : "TestRun1"

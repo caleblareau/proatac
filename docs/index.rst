@@ -5,6 +5,7 @@ proatac
 **proatac** is an open-source command-line toolkit that performs robust and scalable 
 preprocessing of `ATAC-Seq data <http://www.nature.com/nmeth/journal/v10/n12/full/nmeth.2688.html>`_.
 
+|overview|
 .. |overview| image:: content/media/overview.png
 
 ========

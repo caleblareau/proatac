@@ -22,7 +22,7 @@ class proatacProject():
 		self.yaml = yaml
 		self.project_name = self.yaml['project_name']
 		self.project_dir = self.yaml['project_dir']
-		self.analysis_person = self.yaml['analysis_person']
+		self.analysis_person = self.yaml['analyst']
 		
 		if((' ' in self.yaml['project_name']) or (' ' in self.yaml['project_dir'])):
 			sys.exit("ERROR: remove white space from project_name and project_dir variables in .yaml")
