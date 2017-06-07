@@ -1,7 +1,16 @@
 ===================================================================================
 Processing ATAC-Seq Data
 ===================================================================================
-
+.. image:: https://badge.fury.io/py/proatac.svg
+    :target: https://badge.fury.io/py/proatac
+ 
+.. image:: https://readthedocs.org/projects/proatac/badge/?version=latest
+    :target: http://proatac.readthedocs.io/en/latest/?badge=latest
+    
+.. image:: https://img.shields.io/badge/License-MIT-blue.svg
+    :target: https://opensource.org/licenses/MIT
+    
+ 
 ================
 About
 ================
