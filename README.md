@@ -18,7 +18,8 @@ The **proatac** package implements our data processing and quality control pipel
 [ATAC-Seq](http://www.nature.com/nmeth/journal/v10/n12/full/nmeth.2688.html),
 [single cell ATAC-Seq](http://www.nature.com/nature/journal/v523/n7561/full/nature14590.html),
 and droplet-based ATAC-Seq data. 
-<br>
+<br><br>
+
 ## Workflow Overview
 
 A detailed description of the workflow including a description of various parameter
@@ -30,7 +31,7 @@ Below is a brief overview of
 
 ## Installation/Documentation/FAQ/.etc
 
-Check out the *[**proatac** documentation](http://proatac.readthedocs.io) for detailed
+Check out the [**proatac** documentation](http://proatac.readthedocs.io) for detailed
 installation instructions, dependency configuration, and other 
 <br><br>
 
@@ -38,7 +39,7 @@ installation instructions, dependency configuration, and other
 are always welcomed. The easiest way for us to have correspondence (if appropriate/interesting
 for the public) is through raising a [new issue](https://github.com/buenrostrolab/proatac/issues/new)
 on the GitHub source. For private concerns, email [Caleb](mailto:caleblareau@g.harvard.edu). 
-
+<br><br>
 **proatac** logo made freely with [logomakr](https://logomakr.com/) these
 [blue](http://www.color-hex.com/color/3c4d7d) and [red](http://www.color-hex.com/color/d71920)
 color definitions.
