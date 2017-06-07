@@ -19,7 +19,10 @@ About
 
 **proatac** is an open-source command-line toolkit that performs robust and scalable 
 preprocessing of `ATAC-Seq data <http://www.nature.com/nmeth/journal/v10/n12/full/nmeth.2688.html>`_. 
-Specifically, we've implemented our workflow using 
+Specifically, we've implemented our workflow using `Snakemake <https://www.ncbi.nlm.nih.gov/pubmed/22908215>`_,
+a robust, scalable computational workflow platform. Various snakefiles are wrapped alongside meta-data annotations
+and various object-oriented constructs and distributed as a `Python 3` package. The figure below provides a brief
+overview of the functionality of the **proatac** pipeline. 
 
 .. image:: content/media/overview.png
    :width: 100%
@@ -35,9 +38,9 @@ Dependencies
 .. toctree:: content/Dependencies
 
 ================
-Revisions
+Annotating peaks
 ================
-.. toctree:: content/revision-history
+.. toctree:: content/Annotation
    
 ================
 Author
