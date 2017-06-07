@@ -47,7 +47,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = u'proatac'
-copyright = u'2017, Caleb Lareau'
+copyright = u'Caleb Lareau, Buenrostro Lab'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
@@ -272,7 +272,7 @@ texinfo_documents = [
 epub_title = u'proatac'
 epub_author = u'Caleb Lareau'
 epub_publisher = u'Caleb Lareau'
-epub_copyright = u'2017, Caleb Lareau, Buenrostro Lab'
+epub_copyright = u'Caleb Lareau, Buenrostro Lab'
 
 # The language of the text. It defaults to the language option
 # or en if the language is not set.

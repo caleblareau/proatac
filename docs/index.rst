@@ -9,8 +9,10 @@ Processing ATAC-Seq Data
     
 .. image:: https://img.shields.io/badge/License-MIT-blue.svg
     :target: https://opensource.org/licenses/MIT
-    
- 
+
+.. image:: https://zenodo.org/badge/71602064.svg
+    :target: https://zenodo.org/badge/latestdoi/71602064
+     
 ================
 About
 ================
