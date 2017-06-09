@@ -27,8 +27,8 @@ rule trim:
 		a = lambda wildcards: mydict[wildcards.sample]['a'],
 		b = lambda wildcards: mydict[wildcards.sample]['b']
 	output:
-		trimdir + '_reads/{sample}_paired1.fq',
-		trimdir + '_reads/{sample}_paired2.fq'
+		temp(trimdir + '_reads/{sample}_paired1.fq'),
+		temp(trimdir + '_reads/{sample}_paired2.fq')
 	threads: 2
 	shell:
 		PEAT + " paired -1 {input.a} -2 {input.b} -o " + trimdir + "_reads/{wildcards.sample} -n {threads} -l 20 -r 0.1 -a 0.1 -g 0.1 --adapter_contexts"
