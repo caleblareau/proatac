@@ -38,10 +38,25 @@ Dependencies
 .. toctree:: content/Dependencies
 
 ================
+Trimming
+================
+.. toctree:: content/Trimming
+
+================
+Alignment
+================
+.. toctree:: content/Trimming
+
+================
 Annotating peaks
 ================
 .. toctree:: content/Annotation
-   
+
+================
+FAQ
+================
+.. toctree:: content/FAQ
+
 ================
 Author
 ================
@@ -62,5 +77,5 @@ Bugs / Errors
 ================
 
 Please let us know if you find any errors/inconsistencies in the documentation or code
-by filing a new `Github Issue <https://github.com/buenrostrolab/proatac/issues>`_.
+by filing a new `GitHub Issue <https://github.com/buenrostrolab/proatac/issues>`_.
 
