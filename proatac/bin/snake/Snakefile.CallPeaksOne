@@ -12,6 +12,7 @@ n_peaks = config["n_peaks"]
 outdir = config["outdir"]
 peak_width = config["peak_width"]
 project_name = config["project_name"]
+script_dir = config["script_dir]
 tssFile = config["tssFile"]
 
 # Defined variables herein
@@ -41,5 +42,5 @@ rule peaks_refine:
 		outdir + "/04_qc/" + project_name + "_summits2.bed"
 	threads: 1
 	shell:
-		"mv {input} {output}"
+		"python " + script_dir + "/bin/pyGetTopSummits.py 
 
