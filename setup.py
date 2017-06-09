@@ -7,9 +7,9 @@ dependencies = ['click', 'Numpy', 'editdistance', 'pytest', 'python-levenshtein'
 
 setup(
     name='proatac',
-    version='0.2.1',
+    version='0.2.2',
     url='https://github.com/buenrostrolab/proatac',
-    license='BSD',
+    license='MIT',
     author='Caleb Lareau',
     author_email='caleblareau@g.harvard.edu',
     description='Processing and quality control of ATAC data.',
