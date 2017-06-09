@@ -150,7 +150,6 @@ def main(manifest, check, stingy):
 	# ---------------------
 	# Mitochondria
 	# ---------------------
-	
 	if(p.extract_mito):
 		click.echo(gettime() + "Extracting mitochondrial reads", logf)
 		
@@ -180,7 +179,19 @@ def main(manifest, check, stingy):
 	if not os.path.exists(outfolder + "/04_qc"):
 		os.makedirs(outfolder+ "/04_qc")
 		
+	snakedict4 = {
+		'bedtools' : p.bedtools_path, 'blacklistFile' : p.blacklistFile, 'macs2' : p.macs2_path,
+		'macs2_genome_size' : p.macs2_genome_size, 'n_peaks' : p.n_peaks, 'outdir' : outfolder,
+		'peak_width': p.peak_width, 'project_name' : p.project_name, 'script_dir' : script_dir,
+		'tssFile' : p.tssFile
+	}	
+		
+	y4 = parselfolder + "/snake.callpeaksone.yaml"
+	with open(y4, 'w') as yaml_file:
+		yaml.dump(snakedict4, yaml_file, default_flow_style=False)
 	
+	snakecall4 = 'snakemake --snakefile ' + script_dir + '/bin/snake/Snakefile.CallPeaksOne --cores ' + p.max_cores + ' --config cfp="' + y4 + '"'
+	os.system(snakecall4)
 	
 		
 	# Suspend logging

@@ -104,7 +104,7 @@ class proatacProject():
 		else: 
 			click.echo(gettime() + "Could not identify this reference genome: %s" % self.reference_genome, logf)
 				
-		if ("peak_settings" in self.yaml['parameters']):
+		if ("peak_settings" in self.yaml):
 			if "tss_file" in self.yaml['peak_settings']:
 				b = self.yaml['peak_settings']['tss_file']
 				if(b != ''):
@@ -137,7 +137,15 @@ class proatacProject():
 		# ------------------------
 		# Process dependency paths
 		# ------------------------
-		
+
+		# bedtools
+		if(self.yaml['paths']['bedtools_path'] != ''):
+			self.java_path = self.yaml['paths']['bedtools_path']
+		else:
+			self.bedtools_path = shutil.which("bedtools")
+		if(str(self.bedtools_path) == "None"):
+			sys.exit("ERROR: cannot find bedtools in environment; set the 'bedtools_path' in the .yaml file or add to PATH")
+
 		# bowtie2
 		if(self.yaml['paths']['bowtie2_path'] != ''):
 			self.bowtie2_path = self.yaml['paths']['bowtie2_path']
@@ -184,15 +192,7 @@ class proatacProject():
 			self.java_path = shutil.which("java")
 		if(str(self.java_path) == "None"):
 			sys.exit("ERROR: cannot find Java in environment; set the 'java_path' in the .yaml file or add to PATH")
-			
-		# bedtools
-		if(self.yaml['paths']['bedtools_path'] != ''):
-			self.java_path = self.yaml['paths']['bedtools_path']
-		else:
-			self.bedtools_path = shutil.which("bedtools")
-		if(str(self.bedtools_path) == "None"):
-			sys.exit("ERROR: cannot find bedtools in environment; set the 'bedtools_path' in the .yaml file or add to PATH")
-												
+										
 		# Check for R package dependencies
 		check_R_packages(['ggplot2', 'tidyverse'], self.R_path)
 		

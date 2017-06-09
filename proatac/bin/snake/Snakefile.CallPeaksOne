@@ -4,35 +4,42 @@ import os
 configfile: config["cfp"]     
            
 # Parse the configuration variables
-outdir = config["outdir"]
+bedtools = config["bedtools"]
+blacklistFile = config["blacklistFile"]
 macs2 = config["macs2"]
+macs2_genome_size = config["macs2_genome_size"]
+n_peaks = config["n_peaks"]
+outdir = config["outdir"]
+peak_width = config["peak_width"]
 project_name = config["project_name"]
+tssFile = config["tssFile"]
 
+# Defined variables herein
 processed_reads = outdir + "/03_processed_reads"
 
 rule all:
     input:
-        outdir + "/04_processed_reads/mito/" + project_name + ".mitoreads.txt"
+        outdir + "/04_qc/" + project_name + "_summits2.bed"
 
 rule macs2_call:
     input:
         bam = processed_reads + "/" + project_name + ".merged.clean.all.bam"
     output:
-        temp(summits = outdir + "/04_qc/" + project_name + "_summits.bed"),
-        temp(peaks = outdir + "/04_qc/" + project_name + " _peaks.narrowPeak"),
-        temp(xls =" /04_qc/" + project_name + "_peaks.xls")
+        summits = temp(outdir + "/04_qc/" + project_name + "_summits.bed"),
+        peaks = temp(outdir + "/04_qc/" + project_name + "_peaks.narrowPeak"),
+        xls = temp(outdir + "/04_qc/" + project_name + "_peaks.xls")
     log:
-    	outdir + "logs/macs2.log"
+    	outdir + "logs/macs2.CallPeaksOne.log"
     threads: 1
     shell:
-    	macs2 + " callpeak -t {input.bam} -n " + outdir + "/04_qc/" + project_name + "--nomodel --keep-dup all --call-summits -g " + macs2_genome + " 2 > {log}"
+    	"(" + macs2 + " callpeak -t {input.bam} -n " + outdir + "/04_qc/" + project_name + " --nomodel --keep-dup all --call-summits -g " + macs2_genome_size + ") 2> {log}"
 
 rule peaks_refine:
 	input:
 		outdir + "/04_qc/" + project_name + "_summits.bed"
 	output:
-		outdir + "/03_processed_reads/mito/" + project_name + ".mitoreads.txt"
+		outdir + "/04_qc/" + project_name + "_summits2.bed"
 	threads: 1
 	shell:
-		
+		"mv {input} {output}"
 
