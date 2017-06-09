@@ -35,6 +35,6 @@ peak_settings:
     blacklist_file : ""
     bs_genome : ""
     individual_peaks : "false"
-    n_peaks : 50000
+    n_peaks : 5000
     peak_width : 500
     tss_file : ""

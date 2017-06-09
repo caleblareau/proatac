@@ -63,6 +63,12 @@ def main(manifest, check, stingy):
 	# Main Project Variable; output to .yaml so it's clear what's going on
 	p = proatacProject(ymml, script_dir)
 	projectdict = p.__dict__
+	del projectdict["yaml"]
+	
+	# Copy original yaml
+	cpyaml = 'cp ' + manifest + ' ' + logfolder +  "/supplied.yaml"
+	os.system(cpyaml)
+	
 	y0 = logfolder + "/interpreted.params.yaml"
 	with open(y0, 'w') as yaml_file:
 		yaml.dump(projectdict, yaml_file, default_flow_style=False)
