@@ -188,8 +188,7 @@ def main(manifest, check, stingy):
 	snakedict4 = {
 		'bedtools' : p.bedtools_path, 'blacklistFile' : p.blacklistFile, 'macs2' : p.macs2_path,
 		'macs2_genome_size' : p.macs2_genome_size, 'n_peaks' : p.n_peaks, 'outdir' : outfolder,
-		'peak_width': p.peak_width, 'project_name' : p.project_name, 'script_dir' : script_dir,
-		'tssFile' : p.tssFile
+		'peak_width': p.peak_width, 'project_name' : p.project_name, 'R' : p.R_path, 'script_dir' : script_dir
 	}	
 		
 	y4 = parselfolder + "/snake.callpeaksone.yaml"

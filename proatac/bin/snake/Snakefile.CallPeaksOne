@@ -12,22 +12,23 @@ n_peaks = config["n_peaks"]
 outdir = config["outdir"]
 peak_width = config["peak_width"]
 project_name = config["project_name"]
-script_dir = config["script_dir]
-tssFile = config["tssFile"]
+R = config["R"]
+script_dir = config["script_dir"]
+
 
 # Defined variables herein
 processed_reads = outdir + "/03_processed_reads"
 
 rule all:
     input:
-        outdir + "/04_qc/" + project_name + "_summits2.bed"
+        outdir + "/04_qc/" + "cleanedRefinedPeaks.bed"
 
 rule macs2_call:
     input:
         bam = processed_reads + "/" + project_name + ".merged.clean.all.bam"
     output:
-        summits = temp(outdir + "/04_qc/" + project_name + "_summits.bed"),
-        peaks = temp(outdir + "/04_qc/" + project_name + "_peaks.narrowPeak"),
+        summits = outdir + "/04_qc/" + project_name + "_summits.bed",
+        peaks = outdir + "/04_qc/" + project_name + "_peaks.narrowPeak",
         xls = temp(outdir + "/04_qc/" + project_name + "_peaks.xls")
     log:
     	outdir + "/logs/macs2.CallPeaksOne.log"
@@ -35,12 +36,15 @@ rule macs2_call:
     shell:
     	"(" + macs2 + " callpeak -t {input.bam} -n " + outdir + "/04_qc/" + project_name + " --nomodel --keep-dup all --call-summits -q 0.01 -g " + macs2_genome_size + ") 2> {log}"
 
+peaksCleanScript =  script_dir + "/bin/R/summitsToCleanPeaks.R"
+
 rule peaks_refine:
 	input:
 		outdir + "/04_qc/" + project_name + "_summits.bed"
 	output:
-		outdir + "/04_qc/" + project_name + "_summits2.bed"
+		outdir + "/04_qc/" + "cleanedRefinedPeaks.bed"
 	threads: 1
 	shell:
-		"python " + script_dir + "/bin/pyGetTopSummits.py 
+		R + "script " + peaksCleanScript + " {input} " + blacklistFile + " " + str(peak_width) + " " + str(n_peaks)
+
 

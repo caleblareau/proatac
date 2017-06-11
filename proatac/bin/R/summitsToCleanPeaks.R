@@ -13,18 +13,19 @@ suppressMessages(suppressWarnings(require(data.table)))
 args <- commandArgs(trailingOnly = TRUE)
 bedfile <- args[1]
 blacklist <- args[2]
-pad <- args[3]
+peak_width <- args[3]
 n <- args[4]
 
 # For dev purposes
-#bedfile <- "/Volumes/dat/Research/BuenrostroResearch/lareau_dev/proatac/dirOut/04_qc/proatacProject_summits2.bed"
+#bedfile <- "/Volumes/dat/Research/BuenrostroResearch/lareau_dev/proatac/dirOut/04_qc/proatacProject_summits.bed"
 #blacklist <- "/Volumes/dat/Research/BuenrostroResearch/lareau_dev/proatac/proatac/anno/blacklist/hg19.full.blacklist.bed"
-#pad <- 250
+#peak_width <- 500
 #n <- 1240
 
 # Make GRanges of peaks and blacklist
+pad <- round(as.numeric(peak_width)/2)
 peakdf <- data.frame(fread(paste0(input = bedfile), header = FALSE))
-peaks <- makeGRangesFromDataFrame(setNames(data.frame(peakdf[, 1], peakdf[, 2]-pad, peakdf[, 3]+pad, peakdf[, 5]),
+peaks <- makeGRangesFromDataFrame(setNames(data.frame(peakdf[, 1], peakdf[, 2]-pad+1, peakdf[, 3]+pad, peakdf[, 5]),
   c("seqnames", "start", "end", "score")), keep.extra.columns = TRUE)
 
 bdf <- data.frame(fread(paste0(input = blacklist), header = FALSE))
@@ -61,7 +62,7 @@ while (!(isDisjoint(peaks[keep_peaks]))) {
 # Export the final result by making a data frame; getting the top (or as many) n peaks
 # based on the score and then resort based on genomic position.
 fP <- data.frame(peaks[keep_peaks], rank = 1:length(keep_peaks))
-nout <- min(n, dim(fP)[1])
+nout <- min(as.numeric(n), dim(fP)[1])
 odf <- head(fP[order(fP$score, decreasing = TRUE),], nout)
 
 # Write to file
