@@ -56,7 +56,7 @@ rule mark_duplicates:
         rmlog = outdir + "/logs/rmduplogs/{sample}.rmdups.log"
     threads: 1
     shell:
-    	MarkDuplicatesCall + " INPUT={input.bam} OUTPUT={output.bam} METRICS_FILE={output.rmlog} REMOVE_DUPLICATES=true VALIDATION_STRINGENCY=SILENT && " + samtools + " index {output}"
+    	MarkDuplicatesCall + " INPUT={input.bam} OUTPUT={output.bam} METRICS_FILE={output.rmlog} REMOVE_DUPLICATES=true VALIDATION_STRINGENCY=SILENT && " + samtools + " index {output.bam}"
 
 
 rule samtools_merge_all:
@@ -64,7 +64,7 @@ rule samtools_merge_all:
 		expand(outdir + "/03_processed_reads/individual/{sample}.clean.sorted.bam", sample=SAMPLES)
 	output:
 		outdir + "/03_processed_reads/" + project_name + ".merged.clean.all.bam"
-	threads: 4
+	threads: 16
 	shell:
 		samtools + " merge -@ {threads} {output} {input}"
 

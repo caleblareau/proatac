@@ -1,46 +1,50 @@
 from os.path import join
+import os
 
 configfile: config["cfp"]     
            
 # Parse the configuration variables
-bowtie2index = config["bowtie2index"]
 outdir = config["outdir"]
-bowtie2 = config["bowtie2"]
 samtools = config["samtools"]
 
-trimmed_fastq = outdir + "/01_trimmed_reads"
+aligndir = outdir + "/02_aligned_reads"
+processdir = outdir + "/03_processed_reads/individual"
+individir = outdir + "/04_qc/individualQC/"
 
 # A Snakemake regular expression matching the forward mate FASTQ files.
-SAMPLES, = glob_wildcards(join(trimmed_fastq, "{sample}_paired1.fq.gz"))
-
-# Patterns for the 1st mate and the 2nd mate using the 'sample' wildcard.
-read1 = '{sample}_paired1.fq.gz'
-read2 = '{sample}_paired2.fq.gz'
+SAMPLES, = glob_wildcards(join(aligndir, "{sample}.all.sorted.bam"))
 
 rule all:
     input:
-        expand(outdir + "/02_aligned_reads/{sample}.all.sorted.bam.bai", sample=SAMPLES)
+        expand(individir + "{sample}.stat", sample=SAMPLES)
 
 
-rule bowtie2_align:
+rule qc_quant:
     input:
-        r1 = join(trimmed_fastq, read1),
-        r2 = join(trimmed_fastq, read2)
+        bamall = join(aligndir, '{sample}.all.sorted.bam'),
+        bamfilt = join(processdir, '{sample}.clean.sorted.bam'),
+        bt2log = outdir + '/logs/bowtie2logs/{sample}.bowtie2.log'
     output:
-        protected(outdir + "/02_aligned_reads/{sample}.all.sorted.bam")
-    log:
-        outdir + "/logs/bowtie2logs/{sample}.bowtie2.log"
-    threads: 8
-    shell:
-    	'(' + bowtie2 + ' -X 2000 -p {threads} -x '+ bowtie2index +' --rg-id {wildcards.sample} -1 {input.r1} -2 {input.r2} | ' + 
-    	samtools + ' view -bS - | ' + samtools + ' sort -@ {threads} - -o ' + outdir + '/02_aligned_reads/{wildcards.sample}.all.sorted.bam) 2> {log}' 
-
-rule samtools_index:
-	input:
-		outdir + "/02_aligned_reads/{sample}.all.sorted.bam"
-	output:
-		outdir + "/02_aligned_reads/{sample}.all.sorted.bam.bai"
-	threads: 1
-	shell:
-		samtools + " index {input}"
- 
+        protected(individir + "{sample}.stat")
+    threads: 1
+    run:
+    	with open(output[0], "w") as out:
+    		
+    		# Make the numeric determinations via shell
+    		Frags = os.popen(samtools + ' flagstat ' + input.bamall + ' | head -1 ').read().strip().split(" ")[0]
+    		AlignPercent = os.popen('tail -n 1 ' +input.bt2log).read().strip().split(" ")[0]
+    		
+    		# Caleb's new metrics
+    		awk_gc_str = ''' |  awk '{print $10}' | awk 'BEGIN{a=0; c=0; g=0; t=0;} {a+=gsub("A",""); c+=gsub("C",""); g+=gsub("G",""); t+=gsub("T","");} END{print a,c,g,t}' | awk '{print ($2+$3)/($1+$2+$3+$4)}' '''
+    		GC_Content_Raw = os.popen(samtools + ' view ' + input.bamall + awk_gc_str).read().strip().split(" ")[0]
+    		GC_Content_Filt = os.popen(samtools + ' view ' + input.bamfilt + awk_gc_str).read().strip().split(" ")[0]
+    		
+    		# Write them out to a file
+    		out.write("Frags\t" + Frags + "\n")
+    		out.write("AlignPercent\t" + AlignPercent+ "\n")
+    		
+    		# Caleb's new metrics
+    		out.write("GC_Content_Raw\t" + GC_Content_Raw+ "\n")
+    		out.write("GC_Content_Filt\t" + GC_Content_Filt+ "\n")
+    		
+    		out.close()

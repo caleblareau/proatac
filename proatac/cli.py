@@ -198,6 +198,24 @@ def main(manifest, check, stingy):
 	snakecall4 = 'snakemake --snakefile ' + script_dir + '/bin/snake/Snakefile.CallPeaksOne --cores ' + p.max_cores + ' --config cfp="' + y4 + '"'
 	os.system(snakecall4)
 	
+	# ---------------------
+	# Individual QC
+	# ---------------------	
+	if not os.path.exists(outfolder + "/04_qc/individualQC"):
+		os.makedirs(outfolder+ "/04_qc/individualQC")
+		
+	snakedict5 = {
+		'bedtools' : p.bedtools_path, 'outdir' : outfolder,
+		'project_name' : p.project_name, 'R' : p.R_path, 'samtools' : p.samtools_path, 
+		'script_dir' : script_dir
+	}	
+		
+	y5 = parselfolder + "/snake.qcstats.yaml"
+	with open(y5, 'w') as yaml_file:
+		yaml.dump(snakedict5, yaml_file, default_flow_style=False)
+	
+	snakecall5 = 'snakemake --snakefile ' + script_dir + '/bin/snake/Snakefile.QCstats --cores ' + p.max_cores + ' --config cfp="' + y5 + '"'
+	os.system(snakecall5)
 		
 	# Suspend logging
 	logf.close()
