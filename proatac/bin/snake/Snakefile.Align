@@ -14,8 +14,8 @@ trimmed_fastq = outdir + "/01_trimmed_reads"
 SAMPLES, = glob_wildcards(join(trimmed_fastq, "{sample}_paired1.fq.gz"))
 
 # Patterns for the 1st mate and the 2nd mate using the 'sample' wildcard.
-read1 = '{sample}_paired1.fq.gz'
-read2 = '{sample}_paired2.fq.gz'
+read1 = '{sample}_1.trim.fastq.gz'
+read2 = '{sample}_2.trim.fastq.gz'
 
 rule all:
     input:

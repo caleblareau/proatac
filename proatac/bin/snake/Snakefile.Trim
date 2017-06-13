@@ -19,28 +19,16 @@ Samples = list(mydict.keys())
 
 rule all:
     input:
-        expand(trimdir + '_reads/{sample}_paired1.fq.gz', sample=Samples),
-        expand(trimdir + '_reads/{sample}_paired2.fq.gz', sample=Samples)
+        expand(trimdir + '_reads/{sample}_1.trim.fastq.gz', sample=Samples),
+        expand(trimdir + '_reads/{sample}_2.trim.fastq.gz', sample=Samples)
 
 rule trim: 
 	input: 
 		a = lambda wildcards: mydict[wildcards.sample]['a'],
 		b = lambda wildcards: mydict[wildcards.sample]['b']
 	output:
-		temp(trimdir + '_reads/{sample}_paired1.fq'),
-		temp(trimdir + '_reads/{sample}_paired2.fq')
+		trimdir + '_reads/{sample}_1.trim.fastq.gz',
+		trimdir + '_reads/{sample}_2.trim.fastq.gz'
 	threads: 2
 	shell:
-		PEAT + " paired -1 {input.a} -2 {input.b} -o " + trimdir + "_reads/{wildcards.sample} -n {threads} -l 20 -r 0.1 -a 0.1 -g 0.1 --adapter_contexts"
-
-rule compress:
-	input:
-		u1 = trimdir + '_reads/{sample}_paired1.fq',
-		u2 = trimdir + '_reads/{sample}_paired2.fq',
-	output:
-		trimdir + '_reads/{sample}_paired1.fq.gz',
-		trimdir + '_reads/{sample}_paired2.fq.gz',
-	threads: 4
-	shell:
-		pigz + " -p {threads} {input.u1} && " + pigz + " -p {threads} {input.u2}"
-		
+		PEAT + " paired -1 {input.a} -2 {input.b} -o " + trimdir + "_reads/{wildcards.sample} -n {threads} -l 20 -r 0.1 -a 0.1 -g 0.1 --out_gzip"

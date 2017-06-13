@@ -63,10 +63,10 @@ class proatacProject():
 			self.os = "mac"
 		
 		if(self.os == "mac"):
-			self.peat_path = script_dir + "/bin/mac/PEAT_mac"
+			self.peat_path = script_dir + "/bin/mac/PEAT_cl123_mac"
 			self.pigz_path = script_dir + "/bin/mac/pigz_mac"
 		else:
-			self.peat_path = script_dir + "/bin/linux/PEAT_linux"
+			self.peat_path = script_dir + "/bin/linux/PEAT_cl123_linux"
 			self.pigz_path = script_dir + "/bin/linux/pigz_linux"
 		
 		outfolder = os.path.abspath(yaml['project_dir']) 
