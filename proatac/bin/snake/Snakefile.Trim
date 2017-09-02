@@ -5,8 +5,6 @@ configfile: config["cfp"]
 allsamples = config["allsamples"]
 scriptdir = config["scriptdir"]
 outdir = config["outdir"]
-PEAT = config["PEAT"]
-pigz = config["pigz"]
 
 trimdir = outdir + "/01_trimmed"
 

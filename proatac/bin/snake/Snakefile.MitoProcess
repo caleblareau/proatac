@@ -13,7 +13,7 @@ aligned_reads = outdir + "/02_aligned_reads"
 
 
 # Need to update these at some point
-mitoQual = "40"
+mitoQual = "20"
 bcftools = "bcftools"
 tabix = "tabix"
 
@@ -25,7 +25,7 @@ bamin = '{sample}.all.sorted.bam'
 
 rule all:
     input:
-        outdir + "/03_processed_reads/mito/All.SNPs.MNP.clean.txt.gz"
+        outdir + "/03_processed_reads/mito/completedSamples.txt"
 
 rule filter_mito_chr:
     input:
@@ -41,61 +41,7 @@ rule make_samtools_list:
 	input:
 		expand(outdir + "/03_processed_reads/mito/{sample}.mito.bam", sample=SAMPLES)
 	output:
-		temp(outdir + "/03_processed_reads/mito/samplesForPileup.txt")
+		outdir + "/03_processed_reads/mito/completedSamples.txt"
 	threads: 1
 	shell: 
 		"ls -1 {input} >> {output}"
-		
-rule bam_to_vcf:
-	input:
-		outdir + "/03_processed_reads/mito/samplesForPileup.txt"
-	output:
-		vcf = temp(outdir + "/03_processed_reads/mito/All.SNPs.vcf.gz"), 
-		ix = temp(outdir + "/03_processed_reads/mito/All.SNPs.vcf.gz.tbi")
-	threads: 1
-	shell:
-		samtools + " mpileup -d8000 -r " + " ".join(str(i) for i in mitochrs) +" -B -Q " + mitoQual + " -C 50 -t AD,ADF,ADR --skip-indels -b {input} -v > {output.vcf} && " + tabix + " {output.vcf}"
-
-rule bcftools_norm:
-	input:
-		vcf = outdir + "/03_processed_reads/mito/All.SNPs.vcf.gz", 
-		ix = outdir + "/03_processed_reads/mito/All.SNPs.vcf.gz.tbi"
-	output:
-		temp(outdir + "/03_processed_reads/mito/All.SNPs.MNP.vcf.gz")
-	threads:1
-	shell:
-		bcftools + " norm -m-both {input.vcf} > {output}"
-
-rule bcftools_query:
-	input:
-		outdir + "/03_processed_reads/mito/All.SNPs.MNP.vcf.gz"
-	output:
-		temp(outdir + "/03_processed_reads/mito/All.SNPs.MNP.txt")
-	threads:1
-	shell:
-		bcftools + " query -f '[%CHROM\t%POS\t%ALT\t%SAMPLE\tINFO/%AD\n]' {input} > {output}"
-
-rule variant_cleanup:
-	input:
-		outdir + "/03_processed_reads/mito/All.SNPs.MNP.txt"
-	output:
-		outdir + "/03_processed_reads/mito/All.SNPs.MNP.clean.txt.gz"
-	threads:1
-	shell:
-		'''cat {input} | sed -e 's/INFO\///g' -e 's/\.mito.bam//g' -e 's/,/\t/g' | awk '{{print $4,$2,$3,$6}}'  | awk -F'03_processed_reads/mito/' '{{print $2}}' | gzip > {output}'''
-
-
-
-# rule make_summary_txt:
-# 	input:
-# 		expand(outdir + "/03_processed_reads/mito/{sample}.mito.bam", sample=SAMPLES)
-# 	output:
-# 		outdir + "/03_processed_reads/mito/" + project_name + ".mitoreads.txt"
-# 	threads: 1
-# 	run:
-# 		with open(output[0], 'w') as out:
-# 			for i in input:
-# 				sample = (i.split('/03_processed_reads/mito/')[1]).split('.')[0]
-# 				lns = os.popen(samtools + " view " + i + " | wc -l").read().strip()
-# 				out.write(sample + '\t' + lns + '\n')
-

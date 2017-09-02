@@ -62,13 +62,6 @@ class proatacProject():
 		if(platform.platform()[0:5]=="Darwi"):
 			self.os = "mac"
 		
-		if(self.os == "mac"):
-			self.peat_path = script_dir + "/bin/mac/PEAT_cl123_mac"
-			self.pigz_path = script_dir + "/bin/mac/pigz_mac"
-		else:
-			self.peat_path = script_dir + "/bin/linux/PEAT_cl123_linux"
-			self.pigz_path = script_dir + "/bin/linux/pigz_linux"
-		
 		outfolder = os.path.abspath(yaml['project_dir']) 
 		logfolder = outfolder + "/logs"
 		logf = open(logfolder + "/base.proatac.log", 'a')
@@ -155,7 +148,7 @@ class proatacProject():
 			sys.exit("ERROR: cannot find bowtie2 in environment; set the 'bowtie2_path' in the .yaml file or add to PATH")
 		
 		# bowtie2 index
-		bwt2idxfiles = os.popen("ls " + self.yaml['paths']['bowtie2_index']+ "*.bt2").read().strip().split("\n")
+		bwt2idxfiles = os.popen("ls " + self.yaml['paths']['bowtie2_index']+ "*.bt2*").read().strip().split("\n")
 		if(len(bwt2idxfiles) < 6):
 			sys.exit("ERROR: cannot find bowtie2 index; make sure to add the prefix along with the folder path")
 		else:

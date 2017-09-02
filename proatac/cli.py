@@ -14,7 +14,6 @@ from .proatacHelp import *
 from .proatacProjectClass import *
 
 
-
 # ------------------------------
 # Command line arguments
 # ------------------------------	
@@ -24,7 +23,6 @@ from .proatacProjectClass import *
 @click.option('--check', is_flag=True, help='[MODE] Check to see if all dependencies are properly configured.')
 @click.option('--stingy', is_flag=True, help='Space-efficient analyses; remove non-vital intermediate files.')
 @click.argument('manifest')
-
 
 def main(manifest, check, stingy):
 	"""Preprocessing ATAC and scATAC Data."""
@@ -96,7 +94,7 @@ def main(manifest, check, stingy):
 	click.echo(gettime() + "Trimming samples", logf)
 	
 	snakedict1 = {'allsamples' : parselfolder + "/allsamples.csv", 'outdir' : outfolder,
-		'scriptdir' : script_dir, 'PEAT' : p.peat_path, 'pigz' : p.pigz_path}
+		'scriptdir' : script_dir}
 		
 	y1 = parselfolder + "/snake.trim.yaml"
 	with open(y1, 'w') as yaml_file:
