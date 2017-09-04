@@ -18,6 +18,13 @@ def string_hamming_distance(str1, str2):
     '''
     return sum(itertools.imap(operator.ne, str1, str2))
 
+def make_folder(folder):
+	"""
+	Function to only make a given folder if it does not already exist
+	"""
+	if not os.path.exists(folder):
+		os.makedirs(folder)
+
 def get_software_path(tool, abs_path):
 	'''
 	Function takes a tool name and a possible absolute path

@@ -91,114 +91,40 @@ def main(mode, input, output, name, ncores, bowtie2_index,
 			print(p.samples[x], p.fastq1[x], p.fastq2[x])
 		click.echo("\nIf this table doesn't look right, consider specifying a manually created sample input table (see documentation).\n")
 		sys.exit(gettime() + "Successful check complete; QUITTING.")
+	
+	# Single or bulk processing
+	if(mode == "single" or mode == "bulk"):
+	
+		of = output; logs = of + "/logs"; fin = of + "/final"; trim = of + "/01_trimmed"; 
+		aligned = of + "/02_aligned_reads"; processed = of + "/03_processed_reads";
+		qc = of + "/04_qc"
+		
+		folders = [of, logs, fin, trim, aligned, processed, qc,
+			of + "/.internal/parseltongue", of + "/.internal/samples"]
 
-	# -------------
-	# Adapter Trim
-	# -------------
-	trimfolder = outfolder + "/01_trimmed"
-	if not os.path.exists(trimfolder + "_reads"):
-		os.makedirs(trimfolder+ "_reads")
-				
-	click.echo(gettime() + "Trimming samples", logf)
-	
-	snakedict1 = {'allsamples' : parselfolder + "/allsamples.csv", 'outdir' : outfolder,
-		'scriptdir' : script_dir}
+		mkfolderout = [make_folder(x) for x in folders]
 		
-	y1 = parselfolder + "/snake.trim.yaml"
-	with open(y1, 'w') as yaml_file:
-		yaml.dump(snakedict1, yaml_file, default_flow_style=False)
+		# Determine chromosomes to keep / filter
+		#chrs = os.popen(p.samtools_path + " idxstats " +  outfolder + "/02_aligned_reads/* | cut -f1").read().strip().split("\n")
+		rmchrlist = ["*", "chrY", "MT", "chrM"]
+		#keepchrs = [x for x in chrs if x not in rmchrlist and len(x) < int(p.chr_name_length)]
 		
-	snakecall1 = 'snakemake --snakefile ' + script_dir + '/bin/snake/Snakefile.Trim --cores ' + p.max_cores + ' --config cfp="' + y1 + '"'
-	os.system(snakecall1)
-	click.echo(gettime() + "Sample trimming done.", logf)
-	
-	# -------------
-	# Alignment
-	# -------------
-	if not os.path.exists(logfolder + "/bowtie2logs"):
-		os.makedirs(logfolder+ "/bowtie2logs")
-	if not os.path.exists(outfolder + "/02_aligned_reads"):
-		os.makedirs(outfolder+ "/02_aligned_reads")
+		# To do: handle snakemake file a la mgatk -- one scatter (probably) file; one gather?
+		# Create a sample table / dump it to internal folder
+		# Dump the project to a .yaml file for passing around (a la mgatk)
 		
-	click.echo(gettime() + "Aligning samples", logf)
-	
-	snakedict2 = {'bowtie2' : p.bowtie2_path, 'bowtie2index' : p.bowtie2_index,
-		'outdir' : outfolder, 'samtools' : p.samtools_path}
-	
-	y2 = parselfolder + "/snake.align.yaml"
-	with open(y2, 'w') as yaml_file:
-		yaml.dump(snakedict2, yaml_file, default_flow_style=False)
-	
-	snakecall2 = 'snakemake --snakefile ' + script_dir + '/bin/snake/Snakefile.Align --cores ' + p.max_cores + ' --config cfp="' + y2 + '"'
-	os.system(snakecall2)
-	
-	# -------------
-	# bam process
-	# -------------
-	if not os.path.exists(outfolder + "/03_processed_reads"):
-		os.makedirs(outfolder+ "/03_processed_reads")
-	if not os.path.exists(outfolder + "/03_processed_reads/individual"):
-		os.makedirs(outfolder+ "/03_processed_reads/individual")
-	if not os.path.exists(logfolder + "/rmduplogs"):
-		os.makedirs(logfolder+ "/rmduplogs")
+		if keep_temp_files:
+			click.echo(gettime() + "Temporary files not deleted since --keep-temp-files was specified.")
+		else:
+			if(mode == "bulk" or mode == "single"):
+				byefolder = of
+			
+			shutil.rmtree(byefolder + "/logs")
+			shutil.rmtree(byefolder + "/.internal")
+			shutil.rmtree(byefolder + "/01_trimmed")
+			shutil.rmtree(byefolder + "/02_aligned_reads")
+			shutil.rmtree(byefolder + "/03_processed_reads")
+			shutil.rmtree(byefolder + "/04_qc")
+			click.echo(gettime() + "Intermediate files successfully removed.")
 		
-	click.echo(gettime() + "Cleaning up .bam files", logf)
-	
-	# Determine chromosomes to keep / filter
-	chrs = os.popen(p.samtools_path + " idxstats " +  outfolder + "/02_aligned_reads/* | cut -f1").read().strip().split("\n")
-	rmchrlist = ["*", "chrY", "MT", "chrM"]
-	keepchrs = [x for x in chrs if x not in rmchrlist and len(x) < int(p.chr_name_length)]
-	
-	snakedict3 = {'keepchrs' : keepchrs, 'read_quality' : p.read_quality, 'java' : p.java_path,
-		'outdir' : outfolder, 'samtools' : p.samtools_path, 'project_name' : p.project_name, 'scriptdir' : script_dir}
-		
-	y3 = parselfolder + "/snake.bamprocess.yaml"
-	with open(y3, 'w') as yaml_file:
-		yaml.dump(snakedict3, yaml_file, default_flow_style=False)
-	
-	snakecall3 = 'snakemake --snakefile ' + script_dir + '/bin/snake/Snakefile.BamProcess --cores ' + p.max_cores + ' --config cfp="' + y3 + '"'
-	os.system(snakecall3)
-	
-		
-	# ---------------------
-	# Peaks
-	# ---------------------
-	if not os.path.exists(outfolder + "/04_qc"):
-		os.makedirs(outfolder+ "/04_qc")
-		
-	snakedict4 = {
-		'bedtools' : p.bedtools_path, 'blacklistFile' : p.blacklistFile, 'macs2' : p.macs2_path,
-		'macs2_genome_size' : p.macs2_genome_size, 'n_peaks' : p.n_peaks, 'outdir' : outfolder,
-		'peak_width': p.peak_width, 'project_name' : p.project_name, 'R' : p.R_path, 'script_dir' : script_dir
-	}	
-		
-	y4 = parselfolder + "/snake.callpeaksone.yaml"
-	with open(y4, 'w') as yaml_file:
-		yaml.dump(snakedict4, yaml_file, default_flow_style=False)
-	
-	snakecall4 = 'snakemake --snakefile ' + script_dir + '/bin/snake/Snakefile.CallPeaksOne --cores ' + p.max_cores + ' --config cfp="' + y4 + '"'
-	os.system(snakecall4)
-	
-	# ---------------------
-	# Individual QC
-	# ---------------------	
-	if not os.path.exists(outfolder + "/04_qc/individualQC"):
-		os.makedirs(outfolder+ "/04_qc/individualQC")
-		
-	snakedict5 = {
-		'bedtools' : p.bedtools_path, 'outdir' : outfolder,
-		'project_name' : p.project_name, 'R' : p.R_path, 'samtools' : p.samtools_path, 
-		'script_dir' : script_dir
-	}	
-		
-	y5 = parselfolder + "/snake.qcstats.yaml"
-	with open(y5, 'w') as yaml_file:
-		yaml.dump(snakedict5, yaml_file, default_flow_style=False)
-	
-	snakecall5 = 'snakemake --snakefile ' + script_dir + '/bin/snake/Snakefile.QCstats --cores ' + p.max_cores + ' --config cfp="' + y5 + '"'
-	os.system(snakecall5)
-		
-	# Suspend logging
-	logf.close()
-	
-	
+	click.echo(gettime() + "Complete.")
