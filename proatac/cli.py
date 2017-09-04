@@ -27,7 +27,7 @@ from ruamel.yaml.scalarstring import SingleQuotedScalarString as sqs
 @click.option('--name', '-n', default="proatac",  help='Prefix for project name')
 @click.option('--ncores', '-c', default = "detect", help='Number of cores to run the main job in parallel.')
 
-@click.option('--bowtie2-index', '-bi', default = ".", required=True, help='Path to the bowtie2 index; should be specified as if you were calling bowtie2 (with file index prefix)')
+@click.option('--bowtie2-index', '-bi', default = "", required=True, help='Path to the bowtie2 index; should be specified as if you were calling bowtie2 (with file index prefix)')
 
 @click.option('--cluster', default = "",  help='Message to send to Snakemake to execute jobs on cluster interface; see documentation.')
 @click.option('--jobs', default = "0",  help='Max number of jobs to be running concurrently on the cluster interface.')
@@ -45,7 +45,7 @@ from ruamel.yaml.scalarstring import SingleQuotedScalarString as sqs
 
 @click.option('--bedtools-genome', '-bg', default = "", help='Path to bedtools genome; overrides default if --reference-genome flag is set and is necessary for non-supported genomes.')
 @click.option('--blacklist-file', '-bl', default = "", help='Path to bed file of blacklist; overrides default if --reference-genome flag is set and is necessary for non-supported genomes.')
-@click.option('--tss-file', '-ts', default = "", help='Path bed file of transcription start sites; overrides default if --reference-genome flag is set and is necessary for non-supported genomes..')
+@click.option('--tss-file', '-ts', default = "", help='Path bed file of transcription start sites; overrides default if --reference-genome flag is set and is necessary for non-supported genomes.')
 @click.option('--macs2_genome_size', '-mg', default = "", help='String passed to macs2 for ; overrides default if --reference-genome flag is set and is necessary for non-supported genomes.')
 @click.option('--bs-genome', '-bs', default = "", help='String corresponding to the R/Bioconductor package for BS genome of build; overrides default if --reference-genome flag is set and is necessary for non-supported genomes..')
 
@@ -73,23 +73,24 @@ def main(mode, input, output, name, ncores, bowtie2_index,
 	script_dir = os.path.dirname(os.path.realpath(__file__))
 
 	click.echo(gettime() + "Starting proatac pipeline v%s" % __version__)
+	
+	# Make a mode for summits to peaks
+	# Make a mode to handle split-pool data
+	
 	p = proatacProject(script_dir, mode, input, output, name, ncores, bowtie2_index,
 		cluster, jobs, keep_duplicates, max_javamem, extract_mito, reference_genome,
 		clipl, clipr, keep_temp_files, skip_fastqc,
 		bedtools_genome, blacklist_file, tss_file, macs2_genome_size, bs_genome, 
 		bedtools_path, bowtie2_path, java_path, macs2_path, samtools_path, r_path)
-
-	# -------------------------------
-	# Atypical analysis modes
-	# -------------------------------	
 	
 	if (mode == "check"):
-		click.echo("Will process the following samples / files with bulk / single specified: \n\n")
+		click.echo(gettime() + "Dependencies and user-reported file paths OK")
+		click.echo("\nproatac will process the following samples / files with bulk / single specified: \n")
 		print("Sample", "Fastq1", "Fastq2")
 		for x in range(len(p.samples)):
 			print(p.samples[x], p.fastq1[x], p.fastq2[x])
-		click.echo("\n\nIf this table doesn't look right, consider specifying a manually created sample input table.")
-		sys.exit("Success!")
+		click.echo("\nIf this table doesn't look right, consider specifying a manually created sample input table (see documentation).\n")
+		sys.exit(gettime() + "Successful check complete; QUITTING.")
 
 	# -------------
 	# Adapter Trim

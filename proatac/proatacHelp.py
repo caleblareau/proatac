@@ -1,6 +1,7 @@
 import yaml
 import itertools
 import time
+import shutil
 import re
 import os
 import sys
@@ -17,11 +18,20 @@ def string_hamming_distance(str1, str2):
     '''
     return sum(itertools.imap(operator.ne, str1, str2))
 
-def check_software_exists(tool):
+def get_software_path(tool, abs_path):
+	'''
+	Function takes a tool name and a possible absolute path
+	specified by the user input and returns the absolute path
+	to the tool
+	'''
 	tool_path = shutil.which(tool)
 	if(str(tool_path) == "None"):
-		sys.exit("ERROR: cannot find "+tool+" in environment; add it to user PATH environment or specify executable using a flag.")
-
+		if(abs_path == ""):
+			sys.exit("ERROR: cannot find "+tool+" in environment; add it to user PATH environment or specify executable using a flag.")
+	if(abs_path != ""):
+		if(os.path.isfile(abs_file)):
+			tool_path = abs_path
+	return(tool_path)
 
 def rev_comp(seq):
     '''
@@ -32,7 +42,7 @@ def rev_comp(seq):
 
 def gettime(): 
 	'''
-	Matches `date` in Linux
+	Matches `date` in unix
 	'''
 	return(time.strftime("%a ") + time.strftime("%b ") + time.strftime("%d ") + time.strftime("%X ") + 
 		time.strftime("%Z ") + time.strftime("%Y")+ ": ")
