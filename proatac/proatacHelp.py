@@ -1,4 +1,3 @@
-import yaml
 import itertools
 import time
 import shutil
@@ -6,6 +5,7 @@ import re
 import os
 import sys
 import csv
+from ruamel import yaml
 from functools import partial
 
 def string_hamming_distance(str1, str2):

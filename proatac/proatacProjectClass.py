@@ -3,17 +3,17 @@ import os
 import os.path
 import sys
 import shutil
-import yaml
 import random
 import string
 import itertools
 import time
 import platform
+from ruamel import yaml
 from .proatacHelp import *
 
 class proatacProject():
 	def __init__(self, script_dir, mode, input, output, name, ncores, bowtie2_index,
-		cluster, jobs, keep_duplicates, max_javamem, extract_mito, reference_genome,
+		cluster, jobs, peak_width, keep_duplicates, max_javamem, extract_mito, reference_genome,
 		clipl, clipr, keep_temp_files, skip_fastqc,
 		bedtools_genome, blacklist_file, tss_file, macs2_genome_size, bs_genome, 
 		bedtools_path, bowtie2_path, java_path, macs2_path, samtools_path, r_path):
@@ -33,6 +33,7 @@ class proatacProject():
 		# Assign straightforward attributes
 		self.clipl = clipl
 		self.clipr = clipr
+		self.peak_width = peak_width
 		self.max_javamem = max_javamem
 		self.extract_mito = extract_mito
 		self.keep_duplicates = keep_duplicates
@@ -45,8 +46,8 @@ class proatacProject():
 		# Collect samples / fastq lists
 		self.samples, self.fastq1, self.fastq2 = inferSampleVectors(input)
 		
-		self.reference_genome = reference_genome
 		# Handle reference genome
+		self.reference_genome = reference_genome
 		supported_genomes = ['hg19', 'hg38', 'mm9', 'mm10', 'hg19_mm10_c']
 		if any(self.reference_genome == s for s in supported_genomes):
 			click.echo(gettime() + "Found designated reference genome: %s" % self.reference_genome)

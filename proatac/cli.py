@@ -20,7 +20,7 @@ from ruamel.yaml.scalarstring import SingleQuotedScalarString as sqs
 @click.command()
 @click.version_option()
 
-@click.argument('mode', type=click.Choice(['bulk', 'check', 'single']))
+@click.argument('mode', type=click.Choice(['bulk', 'check', 'single', 'summitsToPeaks']))
 
 @click.option('--input', '-i', default = ".", required=True, help='Input for particular mode; see documentation')
 @click.option('--output', '-o', default="proatac_out", help='Output directory for analysis; see documentation.')
@@ -32,6 +32,7 @@ from ruamel.yaml.scalarstring import SingleQuotedScalarString as sqs
 @click.option('--cluster', default = "",  help='Message to send to Snakemake to execute jobs on cluster interface; see documentation.')
 @click.option('--jobs', default = "0",  help='Max number of jobs to be running concurrently on the cluster interface.')
 
+@click.option('--peak-width', '-pw', default = "250", help='Fixed width value of resulting peaks from summit calling / padding. 250, 500 recommended.')
 @click.option('--keep-duplicates', '-kd', is_flag=True, help='Keep optical/PCR duplicates')
 @click.option('--max-javamem', '-jm', default = "4000m", help='Maximum memory for java')
 @click.option('--extract-mito', '-em', is_flag=True, help='Extract mitochondrial reads as part of special output.')
@@ -57,14 +58,14 @@ from ruamel.yaml.scalarstring import SingleQuotedScalarString as sqs
 @click.option('--R-path', default = "", help='Path to R; by default, assumes that R is in PATH')
 
 def main(mode, input, output, name, ncores, bowtie2_index,
-	cluster, jobs, keep_duplicates, max_javamem, extract_mito, reference_genome,
+	cluster, jobs, peak_width, keep_duplicates, max_javamem, extract_mito, reference_genome,
 	clipl, clipr, keep_temp_files, skip_fastqc,
 	bedtools_genome, blacklist_file, tss_file, macs2_genome_size, bs_genome, 
 	bedtools_path, bowtie2_path, java_path, macs2_path, samtools_path, r_path):
 	
 	"""
 	proatac: a toolkit for prePROcessing ATAC-seq and scatac-seq data. \n
-	Caleb Lareau; Buenrostro Lab. \n
+	Caleb Lareau, Aryee/Buenrostro Labs \n
 	modes = ['bulk', 'check', 'single'] \n
 	See http://proatac.readthedocs.io for more details.
 	"""
@@ -74,11 +75,17 @@ def main(mode, input, output, name, ncores, bowtie2_index,
 
 	click.echo(gettime() + "Starting proatac pipeline v%s" % __version__)
 	
-	# Make a mode for summits to peaks
+	# Take a collection of summits files and return a consensus set of peaks
+	# Based on the relative ranking approach	
+	if(mode == 'summitsToPeaks'):
+		make_folder(
+		doSummitsToPeaks(input, name, peak_width)
+		click.echo(gettime() + "Starting proatac pipeline v%s"
+		
 	# Make a mode to handle split-pool data
 	
 	p = proatacProject(script_dir, mode, input, output, name, ncores, bowtie2_index,
-		cluster, jobs, keep_duplicates, max_javamem, extract_mito, reference_genome,
+		cluster, jobs, peak_width, keep_duplicates, max_javamem, extract_mito, reference_genome,
 		clipl, clipr, keep_temp_files, skip_fastqc,
 		bedtools_genome, blacklist_file, tss_file, macs2_genome_size, bs_genome, 
 		bedtools_path, bowtie2_path, java_path, macs2_path, samtools_path, r_path)
