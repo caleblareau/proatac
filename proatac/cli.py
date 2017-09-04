@@ -8,82 +8,89 @@ import random
 import string
 import itertools
 import time
+import pysam
+
 from pkg_resources import get_distribution
 from subprocess import call, check_call
 from .proatacHelp import *
 from .proatacProjectClass import *
-
-
-# ------------------------------
-# Command line arguments
-# ------------------------------	
+from ruamel import yaml
+from ruamel.yaml.scalarstring import SingleQuotedScalarString as sqs
 
 @click.command()
 @click.version_option()
-@click.option('--check', is_flag=True, help='[MODE] Check to see if all dependencies are properly configured.')
-@click.option('--stingy', is_flag=True, help='Space-efficient analyses; remove non-vital intermediate files.')
-@click.argument('manifest')
 
-def main(manifest, check, stingy):
-	"""Preprocessing ATAC and scATAC Data."""
+@click.argument('mode', type=click.Choice(['bulk', 'check', 'single']))
+
+@click.option('--input', '-i', default = ".", required=True, help='Input for particular mode; see documentation')
+@click.option('--output', '-o', default="proatac_out", help='Output directory for analysis; see documentation.')
+@click.option('--name', '-n', default="proatac",  help='Prefix for project name')
+@click.option('--ncores', '-c', default = "detect", help='Number of cores to run the main job in parallel.')
+
+@click.option('--bowtie2-index', '-bi', default = ".", required=True, help='Path to the bowtie2 index; should be specified as if you were calling bowtie2 (with file index prefix)')
+
+@click.option('--cluster', default = "",  help='Message to send to Snakemake to execute jobs on cluster interface; see documentation.')
+@click.option('--jobs', default = "0",  help='Max number of jobs to be running concurrently on the cluster interface.')
+
+@click.option('--keep-duplicates', '-kd', is_flag=True, help='Keep optical/PCR duplicates')
+@click.option('--max-javamem', '-jm', default = "4000m", help='Maximum memory for java')
+@click.option('--extract-mito', '-em', is_flag=True, help='Extract mitochondrial reads as part of special output.')
+@click.option('--reference-genome', '-rg', default = "", help='Support for built-in genome; choices are hg19, mm9, hg38, mm10, hg19_mm10_c (species mix)')
+
+@click.option('--clipL', '-cl', default = "0", help='Number of variants to clip from left hand side of read.')
+@click.option('--clipR', '-cr', default = "0", help='Number of variants to clip from right hand side of read.')
+
+@click.option('--keep-temp-files', '-z', is_flag=True, help='Keep all intermediate files.')
+@click.option('--skip-fastqc', '-sf', is_flag=True, help='Throw this flag to skip fastqc on the trimmed fastqs; will only run if software is discovered in the path')
+
+@click.option('--bedtools-genome', '-bg', default = "", help='Path to bedtools genome; overrides default if --reference-genome flag is set and is necessary for non-supported genomes.')
+@click.option('--blacklist-file', '-bl', default = "", help='Path to bed file of blacklist; overrides default if --reference-genome flag is set and is necessary for non-supported genomes.')
+@click.option('--tss-file', '-ts', default = "", help='Path bed file of transcription start sites; overrides default if --reference-genome flag is set and is necessary for non-supported genomes..')
+@click.option('--macs2_genome_size', '-mg', default = "", help='String passed to macs2 for ; overrides default if --reference-genome flag is set and is necessary for non-supported genomes.')
+@click.option('--bs-genome', '-bs', default = "", help='String corresponding to the R/Bioconductor package for BS genome of build; overrides default if --reference-genome flag is set and is necessary for non-supported genomes..')
+
+@click.option('--bedtools-path', default = "", help='Path to bedtools; by default, assumes that bedtools is in PATH')
+@click.option('--bowtie2-path', default = "", help='Path to bowtie2; by default, assumes that bowtie2 is in PATH')
+@click.option('--java-path', default = "", help='Path to java; by default, assumes that java is in PATH')
+@click.option('--macs2-path', default = "", help='Path to macs2; by default, assumes that macs2 is in PATH')
+@click.option('--samtools-path', default = "", help='Path to samtools; by default, assumes that samtools is in PATH')
+@click.option('--R-path', default = "", help='Path to R; by default, assumes that R is in PATH')
+
+def main(mode, input, output, name, ncores, bowtie2_index,
+	cluster, jobs, keep_duplicates, max_javamem, extract_mito, reference_genome,
+	clipl, clipr, keep_temp_files, skip_fastqc,
+	bedtools_genome, blacklist_file, tss_file, macs2_genome_size, bs_genome, 
+	bedtools_path, bowtie2_path, java_path, macs2_path, samtools_path, r_path):
+	
+	"""
+	proatac: a toolkit for prePROcessing ATAC-seq and scatac-seq data. \n
+	Caleb Lareau; Buenrostro Lab. \n
+	modes = ['bulk', 'check', 'single'] \n
+	See http://proatac.readthedocs.io for more details.
+	"""
+	
 	__version__ = get_distribution('proatac').version
 	script_dir = os.path.dirname(os.path.realpath(__file__))
 
 	click.echo(gettime() + "Starting proatac pipeline v%s" % __version__)
-	ymml = parse_manifest(manifest)
+	p = proatacProject(script_dir, mode, input, output, name, ncores, bowtie2_index,
+		cluster, jobs, keep_duplicates, max_javamem, extract_mito, reference_genome,
+		clipl, clipr, keep_temp_files, skip_fastqc,
+		bedtools_genome, blacklist_file, tss_file, macs2_genome_size, bs_genome, 
+		bedtools_path, bowtie2_path, java_path, macs2_path, samtools_path, r_path)
 
-	
-	# -------------------------------
-	# Utility functions and variables
-	# -------------------------------
-	
-	outfolder = os.path.abspath(ymml['project_dir']) 
-	logfolder = outfolder + "/logs"
-	internfolder = outfolder + "/.internal"
-	parselfolder = internfolder + "/parseltongue"
-	
-	# Check if directories exist; make if not
-	if not os.path.exists(outfolder):
-		os.makedirs(outfolder)
-	if not os.path.exists(logfolder):
-		os.makedirs(logfolder)	
-	if not os.path.exists(internfolder):
-		os.makedirs(internfolder)
-		with open(internfolder + "/README" , 'w') as outfile:
-			outfile.write("This folder creates important (small) intermediate; don't modify it.\n\n")	
-	if not os.path.exists(parselfolder):
-		os.makedirs(parselfolder)
-		with open(parselfolder + "/README" , 'w') as outfile:
-			outfile.write("This folder creates intermediate output to be interpreted by Snakemake; don't modify it.\n\n")	
-	cwd = os.getcwd()
-	logf = open(logfolder + "/base.proatac.log", 'a')
-		
-	# Main Project Variable; output to .yaml so it's clear what's going on
-	p = proatacProject(ymml, script_dir)
-	projectdict = p.__dict__
-	del projectdict["yaml"]
-	
-	# Copy original yaml
-	cpyaml = 'cp ' + manifest + ' ' + logfolder +  "/supplied.yaml"
-	os.system(cpyaml)
-	
-	y0 = logfolder + "/interpreted.params.yaml"
-	with open(y0, 'w') as yaml_file:
-		yaml.dump(projectdict, yaml_file, default_flow_style=False)
-	
 	# -------------------------------
 	# Atypical analysis modes
 	# -------------------------------	
 	
-	if check:
-		sys.exit("Success! We're reasonably confident that all dependencies and files are good to go!")
+	if (mode == "check"):
+		click.echo("Will process the following samples / files with bulk / single specified: \n\n")
+		print("Sample", "Fastq1", "Fastq2")
+		for x in range(len(p.samples)):
+			print(p.samples[x], p.fastq1[x], p.fastq2[x])
+		click.echo("\n\nIf this table doesn't look right, consider specifying a manually created sample input table.")
+		sys.exit("Success!")
 
-	# -----------------------------------
-	# ACTUAL PREPROCESSING / SNAKE MAKING
-	# -----------------------------------
-	
-	click.echo(gettime() + "Project .yaml successfully loaded. ", logf)
-	
 	# -------------
 	# Adapter Trim
 	# -------------
@@ -151,31 +158,6 @@ def main(manifest, check, stingy):
 	snakecall3 = 'snakemake --snakefile ' + script_dir + '/bin/snake/Snakefile.BamProcess --cores ' + p.max_cores + ' --config cfp="' + y3 + '"'
 	os.system(snakecall3)
 	
-	# ---------------------
-	# Mitochondria
-	# ---------------------
-	if(p.extract_mito):
-		click.echo(gettime() + "Extracting mitochondrial reads", logf)
-		
-		if not os.path.exists(outfolder + "/03_processed_reads/mito"):
-			os.makedirs(outfolder+ "/03_processed_reads/mito")
-			
-		# Determine mitochondrial chromosomes
-		mitochrs = []
-		for name in chrs:
-			if 'MT' in name or 'chrM' in name:
-				mitochrs.append(name)
-				
-		snakedictM = {'mitochrs' : mitochrs, 'outdir' : outfolder, 'samtools' : p.samtools_path, 
-			'project_name' : p.project_name}
-		yM = parselfolder + "/snake.mito.yaml"
-
-		with open(yM, 'w') as yaml_file:
-			yaml.dump(snakedictM, yaml_file, default_flow_style=False)
-		
-		snakecallM = 'snakemake --snakefile ' + script_dir + '/bin/snake/Snakefile.MitoProcess --cores ' + p.max_cores + ' --config cfp="' + yM + '"'
-		os.system(snakecallM)
-		
 		
 	# ---------------------
 	# Peaks

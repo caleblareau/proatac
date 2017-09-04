@@ -1,13 +1,13 @@
 """
-Preprocessing ATAC and scATAC Data
+prePROcessing ATAC and scatac data 
 """
 from setuptools import find_packages, setup
 
-dependencies = ['click', 'Numpy', 'editdistance', 'pytest', 'python-levenshtein', 'snakemake', 'biopython', 'optparse-pretty', 'regex', 'PyYAML']
+dependencies = ['click', 'Numpy', 'editdistance', 'pytest', 'python-levenshtein', 'snakemake', 'biopython', 'optparse-pretty', 'regex', 'PyYAML', 'pysam', 'ruamel.yaml', 'multiqc']
 
 setup(
     name='proatac',
-    version='0.2.4',
+    version='0.3.0',
     url='https://github.com/buenrostrolab/proatac',
     license='MIT',
     author='Caleb Lareau',
@@ -27,15 +27,15 @@ setup(
     classifiers=[
         # As from http://pypi.python.org/pypi?%3Aaction=list_classifiers
         # 'Development Status :: 1 - Planning',
-         'Development Status :: 2 - Pre-Alpha',
-        # 'Development Status :: 3 - Alpha',
+        # 'Development Status :: 2 - Pre-Alpha',
+         'Development Status :: 3 - Alpha',
         # 'Development Status :: 4 - Beta',
         # 'Development Status :: 5 - Production/Stable',
         # 'Development Status :: 6 - Mature',
         # 'Development Status :: 7 - Inactive',
         'Environment :: Console',
         'Intended Audience :: Developers',
-        'License :: OSI Approved :: BSD License',
+        'License :: OSI Approved :: MIT License',
         'Operating System :: POSIX',
         'Operating System :: MacOS',
         'Operating System :: Unix',

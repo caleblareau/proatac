@@ -7,7 +7,7 @@ Development Lead
 
 * Caleb Lareau <caleblareau@g.harvard.edu>
 
-Supervisor
+Supervisor / Originator
 ---------------
 
 * Jason Buenrostro
@@ -15,4 +15,5 @@ Supervisor
 Contributors
 ------------
 
-None yet. Make yours today!
+* Christoph Muus
+* Jacob Ulirsch

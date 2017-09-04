@@ -5,124 +5,226 @@ import re
 import os
 import sys
 import csv
+from functools import partial
 
 def string_hamming_distance(str1, str2):
-    """
+    '''
     Fast hamming distance over 2 strings known to be of same length.
     In information theory, the Hamming distance between two strings of equal 
     length is the number of positions at which the corresponding symbols 
     are different.
     eg "karolin" and "kathrin" is 3.
-    """
+    '''
     return sum(itertools.imap(operator.ne, str1, str2))
+
+def check_software_exists(tool):
+	tool_path = shutil.which(tool)
+	if(str(tool_path) == "None"):
+		sys.exit("ERROR: cannot find "+tool+" in environment; add it to user PATH environment or specify executable using a flag.")
 
 
 def rev_comp(seq):
-    """
+    '''
     Fast Reverse Compliment
-    """  
+    '''  
     tbl = {'A':'T', 'T':'A', 'C':'G', 'G':'C', 'N':'N'}
     return ''.join(tbl[s] for s in seq[::-1])
 
-def parse_manifest(manifest):
-	"""
-	Basic function to parse yaml/yml
-	"""
-	samples = []
-	if manifest.endswith(('.yaml', '.yml')):
-		with open(manifest, 'r') as f: 
-			m = yaml.load(f)
-		return m
-	else:
-		click.echo(gettime() + "Please specify a valid .yaml file for analysis")
-
 def gettime(): 
-	"""
+	'''
 	Matches `date` in Linux
-	"""
+	'''
 	return(time.strftime("%a ") + time.strftime("%b ") + time.strftime("%d ") + time.strftime("%X ") + 
 		time.strftime("%Z ") + time.strftime("%Y")+ ": ")
 		
 
 def findIdx(list1, list2):
-	"""
+	'''
 	Return the indices of list1 in list2
-	"""
+	'''
 	return [i for i, x in enumerate(list1) if x in list2]
 
 def check_R_packages(required_packages, R_path):
-	"""
+	'''
 	Determines whether or not R packages are properly installed
-	"""
+	'''
 	installed_packages = os.popen(R_path + ''' -e "installed.packages()" | awk '{print $1}' | sort | uniq''').read().strip().split("\n")
 	if(not set(required_packages) < set(installed_packages)):
 		sys.exit("ERROR: cannot find the following R package: " + str(set(required_packages) - set(installed_packages)) + "\n" + 
 			"Install it in your R console and then try rerunning proatac (but there may be other missing dependencies).")
 		
 
-def process_seq_dir(d, logf, listAllSamples):
-	"""
-	Function that takes a dictionary parsed from the main .yaml
-	and returns something more coherent to be processed downstream
-	Could parameterize this function further given more versions of scATAC
-	that would be worth processing.
-	"""
+def inferSampleVectors(input):
+	'''
+	Given input file / directory, creates 3 vectors of samplename, fastq1, fastq2
+	'''
+	def list_duplicates_of(seq,item):
+		start_at = -1
+		locs = []
+		while True:
+			try:
+				loc = seq.index(item,start_at+1)
+			except ValueError:
+				break
+			else:
+				locs.append(loc)
+				start_at = loc
+		return locs
+
+	samplenames = []
+	fastq1 = []
+	fastq2 = []
+
+	# Import sample table if that's what is provided
+	if(os.path.isfile(input)):
+		sniff_range = 4096
+		delimiters = ';\t, '
+		sniffer = csv.Sniffer()
+
+		with open(input, 'r') as infile:
+			# Determine dialect
+			dialect = sniffer.sniff(
+				infile.read(sniff_range), delimiters=delimiters
+			)
+			infile.seek(0)
+
+			# Sniff for header
+			has_header = sniffer.has_header(infile.read(sniff_range))
+			infile.seek(0)
+			reader = csv.reader(infile, dialect)
+			for row in reader:
+				samplenames.append(row[0])
+				fastq1.append(row[1])
+				fastq2.append(row[2])
 	
-	name = d['name']
-	version = d['version']
-	directory =  d['dir']
-	fastq_path = d['fastq_path']
-	
-	# Handle whether the reads are R1/R2 (default) or something else
-	# Some attempt on the author's part to be savvy here. 
-	if 'read' in d:
-		read = d['read']
+	# Otherwise figure out .fastq files from directory, do the merging, and infer sample names
 	else:
-		read = ["R1", "R2"]
-	if(len(read) != 2):
-		sys.exit("ERROR: invalid input-- " + read + " -- for 'read' in .yaml; need length 2 python vector")
-	
-	# Go get the fastq files
-	noSID = re.sub("{sample_id}", "", fastq_path)
-	read1 = re.sub("{read}", read[0], noSID)
-	read2 = re.sub("{read}", read[1], noSID)
-	
-	reads1 = os.popen("ls " + directory + "/*" + read1).read().strip().split("\n")
-	reads2 = os.popen("ls " + directory + "/*" + read2).read().strip().split("\n")
-	
-	# Parse out the sample names
-	temp1 = [re.sub(read1, "", x) for x in reads1]
-	samples = [re.sub(directory + "/", "", x) for x in temp1]
-	
-	# Remove / filter samples as requested if applicable; also remove those from the file listing
-	if 'keep_samples' in d:
-		keep_samples = d['keep_samples']
-	else:
-		keep_samples = ""
-		
-	if(keep_samples != ""):
-		keeplist = findIdx(samples, keep_samples) # indicies of samples to be kept
-		samples = [samples[i] for i in keeplist]
-		reads1 = [reads1[i] for i in keeplist]
-		reads2 = [reads2[i] for i in keeplist]
-	
-	if 'remove_samples' in d:
-		remove_samples = d['remove_samples']
-	else:
-		remove_samples = ""
-		
-	if(remove_samples != ""):
-		rmlist = findIdx(samples, remove_samples) # indices of samples that should be removed
-		allidx = range(len(samples)) # 1:n
-		keeplist2 = [x for x in allidx if x not in rmlist] # indices in 1:n not in list of indices to be removed
-		samples = [samples[i] for i in keeplist2]
-		reads1 = [reads1[i] for i in keeplist2]
-		reads2 = [reads2[i] for i in keeplist2]
-	
-	with open(listAllSamples, 'a') as f:
-		writer = csv.writer(f)
-		rows = zip(samples,reads1,reads2)
-		for row in rows:
-			writer.writerow(row)
-	
-	
+		files = os.popen("ls " + input.rstrip("/") +"/*.fastq.gz").read().strip().split("\n")
+		if(len(files) < 2):
+			sys.exit("ERROR: input determined to be a directory but no paired .fastq.gz files found; QUITTING")
+		files1 = [filename.replace("_R1", "_1").replace("_R2", "_1").replace("_2", "_1") for filename in files]
+		samples = [os.path.basename(sample).split("_1")[0] for sample in files1]
+		dups_in_source = partial(list_duplicates_of, samples)
+		for c in set(samples):
+			if(len(dups_in_source(c)) == 2):
+				samplenames.append(c)
+				fastq1.append(files[dups_in_source(c)[0]])
+				fastq2.append(files[dups_in_source(c)[1]])
+
+	return(samplenames, fastq1, fastq2)
+
+
+# https://stackoverflow.com/questions/1006289/how-to-find-out-the-number-of-cpus-using-python	
+def available_cpu_count():
+    '''
+    Number of available virtual or physical CPUs on this system, i.e.
+    user/real as output by time(1) when called with an optimally scaling
+    userspace-only program
+	'''
+    # cpuset
+    # cpuset may restrict the number of *available* processors
+    try:
+        m = re.search(r'(?m)^Cpus_allowed:\s*(.*)$',
+                      open('/proc/self/status').read())
+        if m:
+            res = bin(int(m.group(1).replace(',', ''), 16)).count('1')
+            if res > 0:
+                return res
+    except IOError:
+        pass
+
+    # Python 2.6+
+    try:
+        import multiprocessing
+        return multiprocessing.cpu_count()
+    except (ImportError, NotImplementedError):
+        pass
+
+    # http://code.google.com/p/psutil/
+    try:
+        import psutil
+        return psutil.cpu_count()   # psutil.NUM_CPUS on old versions
+    except (ImportError, AttributeError):
+        pass
+
+    # POSIX
+    try:
+        res = int(os.sysconf('SC_NPROCESSORS_ONLN'))
+
+        if res > 0:
+            return res
+    except (AttributeError, ValueError):
+        pass
+
+    # Windows
+    try:
+        res = int(os.environ['NUMBER_OF_PROCESSORS'])
+
+        if res > 0:
+            return res
+    except (KeyError, ValueError):
+        pass
+
+    # jython
+    try:
+        from java.lang import Runtime
+        runtime = Runtime.getRuntime()
+        res = runtime.availableProcessors()
+        if res > 0:
+            return res
+    except ImportError:
+        pass
+
+    # BSD
+    try:
+        sysctl = subprocess.Popen(['sysctl', '-n', 'hw.ncpu'],
+                                  stdout=subprocess.PIPE)
+        scStdout = sysctl.communicate()[0]
+        res = int(scStdout)
+
+        if res > 0:
+            return res
+    except (OSError, ValueError):
+        pass
+
+    # Linux
+    try:
+        res = open('/proc/cpuinfo').read().count('processor\t:')
+
+        if res > 0:
+            return res
+    except IOError:
+        pass
+
+    # Solaris
+    try:
+        pseudoDevices = os.listdir('/devices/pseudo/')
+        res = 0
+        for pd in pseudoDevices:
+            if re.match(r'^cpuid@[0-9]+$', pd):
+                res += 1
+
+        if res > 0:
+            return res
+    except OSError:
+        pass
+
+    # Other UNIXes (heuristic)
+    try:
+        try:
+            dmesg = open('/var/run/dmesg.boot').read()
+        except IOError:
+            dmesgProcess = subprocess.Popen(['dmesg'], stdout=subprocess.PIPE)
+            dmesg = dmesgProcess.communicate()[0]
+
+        res = 0
+        while '\ncpu' + str(res) + ':' in dmesg:
+            res += 1
+
+        if res > 0:
+            return res
+    except OSError:
+        pass
+
+    raise Exception('Can not determine number of CPUs on this system')
+    

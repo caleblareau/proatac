@@ -1,34 +1,31 @@
 #!/usr/bin/env python
 
-# Author: Jason Buenrostro, Stanford University
+# Original uthor: Jason Buenrostro
 # Modified: Caleb Lareau, Broad Institute
 
 # The following program will trim PE reads
-# With additional soft-clipping at the left and right
+# With additional (soft/hard)-clipping at the left and right
 
 ##### IMPORT MODULES #####
-# import necessary for python
 import os
 import re
 import sys
 import gzip
 import string
 import Levenshtein
-from Bio import SeqIO
-from Bio import AlignIO
 from optparse import OptionParser
 
 #### OPTIONS ####
-# define options
 opts = OptionParser()
 usage = "usage: %prog [options] [inputs] This will trim adapters"
 opts = OptionParser(usage=usage)
 opts.add_option("-a", help="<Read1> Accepts fastq or fastq.gz")
 opts.add_option("-b", help="<Read2> Accepts fastq or fastq.gz")
-opts.add_option("-l", default = "0", help="Number of base pairs to soft-mask on the left.")
-opts.add_option("-r", default = "0", help="Number of base pairs to soft-mask on the right.")
-opts.add_option("-o", default = "out", help="Output directory for files")
-opts.add_option("-s", required = True, help="Sample name")
+opts.add_option("-l", default = "0", help="Number of base pairs to soft-mask on the left.", choices=['0', '1', '2', '3', '4', '5', '6'])
+opts.add_option("-r", default = "0", help="Number of base pairs to soft-mask on the right. Needs to be negative or zero.", choices=['0', '-1', '-2', '-3', '-4', '-5', '-6'])
+opts.add_option("-o", default = ".", help="Output directory for files")
+opts.add_option("-s", default = "sample1", help="Sample name")
+opts.add_option("-t", default = "hard", help="Type of trimming to perform if l != 0 or r != 0", choices=['hard', 'soft'])
 options, arguments = opts.parse_args()
 
 # return usage information if no argvs given
@@ -43,11 +40,10 @@ clipL = options.l
 clipR = options.r
 outdir = options.o
 sample = options.s
+cliptype = options.t
 
 ##### DEFINE FUNCTIONS #####
-# Reverse complement
 complement = str.maketrans('ATCGN', 'TAGCN')
-
 def reverse_complement(sequence):
 	return sequence.upper().translate(complement)[::-1]
 
@@ -59,33 +55,57 @@ def fuzz_align(s_seq,l_seq,mismatch):
 		if dist <= mismatch:  # find first then break
 			return i, dist
 
-def clippy(seq1, seq2, qual1, qual2):
+# Hard clipping
+def clip_hard(seq1, seq2, qual1, qual2):
+  
+	# Clip Both
+	if(int(clipL) > 0 and int(clipR) < 0):
+		seq1 = seq1[int(clipL):int(clipR)] 
+		qual1 = qual1[int(clipL):int(clipR)] 
+		seq2 = seq2[int(clipL):int(clipR)] 
+		qual2 = qual2[int(clipL):int(clipR)] 
+
+	# Clip right
+	elif(int(clipR) < 0):
+		seq1 = seq1[:int(clipR)]
+		qual1 = qual1[:int(clipR)]
+		seq2 = seq2[:int(clipR)] 
+		qual2 = qual2[:int(clipR)]
+		
+	# Clip left
+	elif(int(clipL) > 0):
+		seq1 = seq1[int(clipL):] 
+		qual1 = qual1[int(clipL):]
+		seq2 = seq2[int(clipL):]
+		qual2 = qual2[int(clipL):]
+		
+	return(seq1, seq2, qual1, qual2)
+
+# Soft clipping
+def clip_soft(seq1, seq2, qual1, qual2):
+
 	# Clip Both
 	if(int(clipL) > 0 and int(clipR) < 0):
 		seq1 = "N"*int(clipL) + seq1[int(clipL):int(clipR)] + "N"*(abs(int(clipR)))
 		qual1 = "!"*int(clipL) + qual1[int(clipL):int(clipR)] + "!"*(abs(int(clipR)))
-		seq2 = "N"*int(clipL) + seq1[int(clipL):int(clipR)] + "N"*(abs(int(clipR)))
+		seq2 = "N"*int(clipL) + seq2[int(clipL):int(clipR)] + "N"*(abs(int(clipR)))
 		qual2 = "!"*int(clipL) + qual2[int(clipL):int(clipR)] + "!"*(abs(int(clipR)))
 
 	# Clip right
 	elif(int(clipR) < 0):
 		seq1 = seq1[:int(clipR)] + "N"*(abs(int(clipR)))
 		qual1 = qual1[:int(clipR)] + "!"*(abs(int(clipR)))
-		seq2 = seq1[:int(clipR)] + "N"*(abs(int(clipR)))
+		seq2 = seq2[:int(clipR)] + "N"*(abs(int(clipR)))
 		qual2 = qual2[:int(clipR)] + "!"*(abs(int(clipR)))
 		
 	# Clip left
 	elif(int(clipL) > 0):
 		seq1 = "N"*int(clipL) + seq1[int(clipL):] 
 		qual1 = "!"*int(clipL) + qual1[int(clipL):]
-		seq2 = "N"*int(clipL) + seq1[int(clipL):]
+		seq2 = "N"*int(clipL) + seq2[int(clipL):]
 		qual2 = "!"*int(clipL) + qual2[int(clipL):]
 		
 	return(seq1, seq2, qual1, qual2)
-
-# name outputs and print to working dir
-p1_file = p1_in.split('/')[-1]
-p2_file = p2_in.split('/')[-1]
 
 #check for file type and open input file
 extension = p1_in.split('.')[-1]
@@ -104,8 +124,8 @@ i=0;j=0;k=0;tot_b=0
 n=20  # match seq
 mismatch=1  # only allow 0-1 mismatches for now
 
-r1_write = gzip.open(outdir + "/" + sample + '_1.fastq.gz', 'wt')
-r2_write = gzip.open(outdir + "/" + sample + '_2.fastq.gz', 'wt')
+r1_write = gzip.open(outdir + "/" + sample + '_1.trim.fastq.gz', 'wt')
+r2_write = gzip.open(outdir + "/" + sample + '_2.trim.fastq.gz', 'wt')
 
 while 1:
 	# process the first file
@@ -145,8 +165,11 @@ while 1:
 		qual1 = qual1[0:idx+n-1]
 		qual2 = qual2[0:idx+n-1]
 		
-	if(int(clipL) > 0 or int(clipR) > 0):
-		seq1, seq2, qual1, qual2 = clippy(seq1, seq2, qual1, qual2)
+	if(int(clipL) > 0 or int(clipR) < 0):
+		if(cliptype == "hard"):
+			seq1, seq2, qual1, qual2 = clip_hard(seq1, seq2, qual1, qual2)
+		elif(cliptype == "soft"):
+			seq1, seq2, qual1, qual2 = clip_soft(seq1, seq2, qual1, qual2)
 		
 	r1_write.write(seqhead1+"\n");r1_write.write(seq1+"\n")
 	r1_write.write(qualhead1+"\n");r1_write.write(qual1+"\n")
@@ -157,8 +180,10 @@ r1_write.close();r2_write.close()
 left.close();right.close()
 
 with open(outdir + "/" + sample+ '.trim.log', 'w') as logfile:
-	# give summary
+
+	# give summary statistics
 	logfile.write(str(i)+" sequences\n")
 	logfile.write(str(j)+" mismatches0\n")
 	logfile.write(str(k)+" mismatches1\n")
 	logfile.write(str(round(tot_b/(j+k),2))+" averageTrimLength\n")
+
