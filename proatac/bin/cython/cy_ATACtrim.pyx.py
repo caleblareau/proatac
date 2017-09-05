@@ -16,7 +16,7 @@ cdef char* reverse_complement(char* dna):
     return(dna.translate(complement))
     
 # Align with mismatch, find first and move on, assumes only one
-cdef char* fuzz_align(char* s_seq, char* l_seq, int mismatch):
+cdef char* fuzz_align_c(char* s_seq, char* l_seq, int mismatch):
 	for i, base in enumerate(l_seq):  # loop through equal size windows
 		l_subset = l_seq[i:i+len(s_seq)]
 		dist = Levenshtein.distance(l_subset, s_seq)
@@ -24,25 +24,19 @@ cdef char* fuzz_align(char* s_seq, char* l_seq, int mismatch):
 			return i, dist
 
 # Hard clipping
-cdef clip_hard(char* seq1, char* seq2, qual1, qual2):
+cdef char* clip_hard_c(char* val, int clipL, int clipR):
   
 	# Clip Both
-	if(int(clipL) > 0 and int(clipR) < 0):
-		seq1 = seq1[int(clipL):int(clipR)] 
-		qual1 = qual1[int(clipL):int(clipR)] 
-		seq2 = seq2[int(clipL):int(clipR)] 
-		qual2 = qual2[int(clipL):int(clipR)] 
+	if(clipL > 0 and clipR < 0):
+		val = val[int(clipL):int(clipR)] 
 
 	# Clip right
-	elif(int(clipR) < 0):
-		seq1 = seq1[:int(clipR)]
-		qual1 = qual1[:int(clipR)]
-		seq2 = seq2[:int(clipR)] 
-		qual2 = qual2[:int(clipR)]
+	elif(clipR < 0):
+		val = val[:clipR]
 		
 	# Clip left
-	elif(int(clipL) > 0):
-		seq1 = seq1[int(clipL):] 
+	elif(clipL > 0):
+		val = val[clipL:] 
 		qual1 = qual1[int(clipL):]
 		seq2 = seq2[int(clipL):]
 		qual2 = qual2[int(clipL):]

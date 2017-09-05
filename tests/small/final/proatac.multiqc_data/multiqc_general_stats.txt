@@ -1,4 +1,0 @@
-Sample	Bowtie 2_overall_alignment_rate	FastQC_percent_duplicates	FastQC_percent_gc	FastQC_avg_sequence_length	FastQC_percent_fails	FastQC_total_sequences
-SRR1779979	83.25					
-SRR1779979_1		67.20151270374527	48.0	68.0837093295444	41.66666666666667	489145.0
-SRR1779979_2		69.03769408907672	53.0	68.0837093295444	33.33333333333333	489145.0

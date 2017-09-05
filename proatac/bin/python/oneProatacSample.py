@@ -20,6 +20,7 @@ with open(configFile, 'r') as stream:
 outdir = config["output"]
 name = config["name"]
 script_dir = config["script_dir"]
+mode = config["mode"]
 
 # Step 1
 clipl = config["clipl"]
@@ -31,9 +32,12 @@ java = str(config["java"])
 bowtie2 = config["bowtie2"]
 samtools = config["samtools"]
 bowtie2index = config["bowtie2_index"]
+extract_mito = str(config["extract_mito"])
 
 # Step 3
-bowtie2 = config["bowtie2"]
+max_javamem = config["max_javamem"]
+keep_duplicates = str(config["keep_duplicates"])
+MarkDuplicatesCall = java + " -Xmx"+max_javamem+"  -jar " + script_dir + "/bin/MarkDuplicates.jar"
 
 
 # 01 Trim using custom script
@@ -58,7 +62,29 @@ if not os.path.isfile(sortedbam):
 	os.system(bwt2call)
 	pysam.index(sortedbam)
 
-# 03 Process .bam files
+# 02a mito-- extract if the user says to
+if(extract_mito == "True"):
+	mitobam = outdir + "/mito/" + sample + ".mito.bam"
+	mitochrs = ['chrM', 'MT', 'humanM', 'mouseM', 'humanMT', 'mouseMT']
+	mitocall = samtools + " view -b "+sortedbam+" -o "+mitobam+" " + " ".join(str(i) for i in mitochrs) + " && " + samtools + " index " + mitobam
+	if not os.path.isfile(mitobam):
+		os.system(mitocall)
 
+# 03 Process .bam files
+#temp1 = outdir + "/03_processed_reads/temp/" + sample + ".temp1.bam"
+#temp2 = outdir + "/03_processed_reads/temp/" + sample + ".temp2.bam"
+
+#if(mode == "bulk"):
+#	finalbam = outdir + "/final/bams/"+sample+".proatac.bam"
+#else:
+#	finalbam = outdir + "/03_processed_reads/bams/"+sample+".proatac.bam"
+	
+#rmlog = outdir + "/logs/picard/"+sample+".rmdups.log"
+#MarkDuplicatesCall + " INPUT="+temp2+" OUTPUT="+finalbam+" METRICS_FILE="+rmlog+" REMOVE_DUPLICATES=true VALIDATION_STRINGENCY=SILENT && " + samtools + " index "+finalbam
+#if not os.path.isfile(finalbam):
+#	if(keep_duplicates):
+#		
+#	else:
+#		os.system(MarkDuplicatesCall)
 
 os.system('echo "hey" > ' + outdir+"/logs/trim/"+sample+".trim.txt")

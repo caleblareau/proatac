@@ -173,15 +173,22 @@ def main(mode, input, output, name, ncores, bowtie2_index,
 		
 		folders = [of, logs, fin, trim, aligned, processed, qc,
 			of + "/.internal/parseltongue", of + "/.internal/samples",
-			logs + "/bowtie2", logs + "/trim"]
-
+			logs + "/bowtie2", logs + "/trim", of + "/03_processed_reads/temp"]
+	
 		mkfolderout = [make_folder(x) for x in folders]
 		
 		if not keep_duplicates:
 			make_folder(logs + "/picard")
 		if not skip_fastqc:
 			make_folder(logs + "/fastqc")
-		
+		if extract_mito:
+			make_folder(of + "/mito")
+			
+		if(mode == "bulk"):
+			make_folder(of + "/final/bams")
+		if(mode == "single"):
+			make_folder(of + "/03_processed_reads/bams")
+
 		# Create internal README files 
 		if not os.path.exists(of + "/.internal/README"):
 			with open(of + "/.internal/README" , 'w') as outfile:

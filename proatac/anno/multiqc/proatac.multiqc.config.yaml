@@ -3,4 +3,6 @@ extra_fn_clean_exts:
     - '_processedFile'
 extra_fn_clean_trim:
     - '.trim'
+    - '_1'
+    - '_2'
 
