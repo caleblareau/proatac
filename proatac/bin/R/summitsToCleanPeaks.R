@@ -14,7 +14,7 @@ args <- commandArgs(trailingOnly = TRUE)
 
 if(file_path_sans_ext(basename(args[1])) == "R"){
   i <- 2
-} else {
+} else { # Rscript
   i <- 0
 }
 summit_files <- strsplit(args[i+1], split = ",")[[1]]

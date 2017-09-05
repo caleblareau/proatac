@@ -20,17 +20,18 @@ from ruamel.yaml.scalarstring import SingleQuotedScalarString as sqs
 @click.command()
 @click.version_option()
 
-@click.argument('mode', type=click.Choice(['bulk', 'check', 'single', 'summitsToPeaks']))
+@click.argument('mode', type=click.Choice(['bulk', 'check', 'counts', 'indexSplit', 'single', 'summitsToPeaks']))
 
-@click.option('--input', '-i', default = ".", required=True, help='Input for particular mode; see documentation')
+@click.option('--input', '-i', default = ".", required=True, help='Input for proatac; varies by which mode is specified; see documentation')
 @click.option('--output', '-o', default="proatac_out", help='Output directory for analysis; see documentation.')
 @click.option('--name', '-n', default="proatac",  help='Prefix for project name')
 @click.option('--ncores', '-c', default = "detect", help='Number of cores to run the main job in parallel.')
 
 @click.option('--bowtie2-index', '-bi', default = "", required=True, help='Path to the bowtie2 index; should be specified as if you were calling bowtie2 (with file index prefix)')
-
 @click.option('--cluster', default = "",  help='Message to send to Snakemake to execute jobs on cluster interface; see documentation.')
 @click.option('--jobs', default = "0",  help='Max number of jobs to be running concurrently on the cluster interface.')
+
+@click.option('--peaks-file', '-pf', default = "", help='Path to a pre-defined peaks file; option is only useful in `counts` mode')
 
 @click.option('--peak-width', '-pw', default = "250", help='Fixed width value of resulting peaks from summit calling / padding. 250, 500 recommended.')
 @click.option('--keep-duplicates', '-kd', is_flag=True, help='Keep optical/PCR duplicates')
@@ -42,7 +43,9 @@ from ruamel.yaml.scalarstring import SingleQuotedScalarString as sqs
 @click.option('--clipR', '-cr', default = "0", help='Number of variants to clip from right hand side of read.')
 
 @click.option('--keep-temp-files', '-z', is_flag=True, help='Keep all intermediate files.')
-@click.option('--skip-fastqc', '-sf', is_flag=True, help='Throw this flag to skip fastqc on the trimmed fastqs; will only run if software is discovered in the path')
+@click.option('--skip-fastqc', '-sf', is_flag=True, help='Throw this flag to skip fastqc on the trimmed fastqs; will only run if software is discovered in the path.')
+@click.option('--overwrite', '-ov', is_flag=True, help='Throw this flag to always retrim, realign, reprocess, etc. each sample even if it already exists in output (see documentation).')
+
 
 @click.option('--bedtools-genome', '-bg', default = "", help='Path to bedtools genome file; overrides default if --reference-genome flag is set and is necessary for non-supported genomes.')
 @click.option('--blacklist-file', '-bl', default = "", help='Path to bed file of blacklist; overrides default if --reference-genome flag is set and is necessary for non-supported genomes.')
@@ -58,15 +61,15 @@ from ruamel.yaml.scalarstring import SingleQuotedScalarString as sqs
 @click.option('--R-path', default = "", help='Path to R; by default, assumes that R is in PATH')
 
 def main(mode, input, output, name, ncores, bowtie2_index,
-	cluster, jobs, peak_width, keep_duplicates, max_javamem, extract_mito, reference_genome,
-	clipl, clipr, keep_temp_files, skip_fastqc,
+	cluster, jobs, peaks_file, peak_width, keep_duplicates, max_javamem, extract_mito, reference_genome,
+	clipl, clipr, keep_temp_files, skip_fastqc, overwrite,
 	bedtools_genome, blacklist_file, tss_file, macs2_genome_size, bs_genome, 
 	bedtools_path, bowtie2_path, java_path, macs2_path, samtools_path, r_path):
 	
 	"""
-	proatac: a toolkit for prePROcessing ATAC-seq and scatac-seq data. \n
-	Caleb Lareau, Aryee/Buenrostro Labs \n
-	modes = ['bulk', 'check', 'single'] \n
+	proatac: a toolkit for PROcessing ATAC-seq data. \n
+	Caleb Lareau, Buenrostro Lab. \n
+	modes = ['bulk', 'check', 'counts', 'indexSplit', 'single', 'summitsToPeaks']\n
 	See http://proatac.readthedocs.io for more details.
 	"""
 	
@@ -103,10 +106,36 @@ def main(mode, input, output, name, ncores, bowtie2_index,
 	
 	# TO DO: 
 	# Make a mode to handle split-pool data
+	if(mode == 'indexSplit'):
+		sys.exit("Mode does not actually work yet")
+	
+	if(mode == 'counts'):
+		click.echo(gettime() + "Attempting to assemble counts table from user-specified input.")
+		
+		# Verify dependencies
+		R = get_software_path('R', r_path)
+		check_R_packages(['chromVAR', 'SummarizedExperiment', 'tools'], R)
+		
+		# Make sure that there are samples to process / there is a peak file
+		bamfiles = os.popen("ls " + input.rstrip("/") + "/*.bam").read().strip().split("\n")
+		if(len(bamfiles) < 1):
+			sys.exist("No sample *.bam files found in user-specified input; QUITTING")
+		else:
+			click.echo(gettime() + "Making a counts table from these samples:")
+			click.echo(gettime() + str(bedFiles))
+		if(os.path.isfile(peaks_file)):
+			click.echo(gettime() + "Found peaks file: " + peaks_file)
+		
+		# Execute software
+		make_folder(output)
+		countsRcall = " ".join([R +"script", script_dir + "/bin/R/makeCountsTable.R", input, peaks_file, output, name])
+		os.system(countsRcall)	
+		click.echo(gettime() + "Completed peak inference from summit files.")
+		sys.exit()
 	
 	p = proatacProject(script_dir, mode, input, output, name, ncores, bowtie2_index,
 		cluster, jobs, peak_width, keep_duplicates, max_javamem, extract_mito, reference_genome,
-		clipl, clipr, keep_temp_files, skip_fastqc,
+		clipl, clipr, keep_temp_files, skip_fastqc, overwrite,
 		bedtools_genome, blacklist_file, tss_file, macs2_genome_size, bs_genome, 
 		bedtools_path, bowtie2_path, java_path, macs2_path, samtools_path, r_path)
 	
@@ -138,7 +167,9 @@ def main(mode, input, output, name, ncores, bowtie2_index,
 		
 		# To do: handle snakemake file a la mgatk -- one scatter (probably) file; one gather?
 		# Create a sample table / dump it to internal folder
-		# Dump the project to a .yaml file for passing around (a la mgatk)
+		
+		with open(of + "/.internal/parseltongue/proatac.object.yaml", 'w') as yaml_file:
+			yaml.dump(dict(p), yaml_file, default_flow_style=False, Dumper=yaml.RoundTripDumper)
 		
 		if keep_temp_files:
 			click.echo(gettime() + "Temporary files not deleted since --keep-temp-files was specified.")
@@ -146,7 +177,6 @@ def main(mode, input, output, name, ncores, bowtie2_index,
 			if(mode == "bulk" or mode == "single"):
 				byefolder = of
 			
-			shutil.rmtree(byefolder + "/logs")
 			shutil.rmtree(byefolder + "/.internal")
 			shutil.rmtree(byefolder + "/01_trimmed")
 			shutil.rmtree(byefolder + "/02_aligned_reads")

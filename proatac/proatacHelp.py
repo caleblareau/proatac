@@ -130,6 +130,15 @@ def inferSampleVectors(input):
 
 	return(samplenames, fastq1, fastq2)
 
+def filterExistingSamples(samples, fastq1, fastq2, output):
+	'''
+	Looks in the output folder to see which samples have been 
+	terminally processed already and will filter them from the three vectors
+	of sample names, fastqs, etc. 
+	'''
+	# use findIdx here to infer which samples
+	# already exist
+	return(samples, fastq1, fastq2)
 
 # https://stackoverflow.com/questions/1006289/how-to-find-out-the-number-of-cpus-using-python	
 def available_cpu_count():
