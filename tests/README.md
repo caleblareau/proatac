@@ -6,7 +6,10 @@ GM12878 from [Jason's original paper](http://www.nature.com/nature/journal/v523/
 
 ```
 proatac bulk -i data/fastq -o testout -rg hg19 -bi /Volumes/dat/genomes/hg19_bwt2/hg19
-proatac counts -i data/bam -o countstest -pf data/test_bed.txt 
+
+proatac counts -i data/bam/RGID -o countsRGIDtest -pf data/test_bed.txt --by-rgid
+proatac counts -i data/bam/individualSamples -o countstest -pf data/test_bed.txt
+
 proatac check -i data/fastq -o checktest -rg hg19 -bi /Volumes/dat/genomes/hg19_bwt2/hg19
 proatac summitsToPeaks -i data/summitfiles -o summitout -rg hg19
 ```

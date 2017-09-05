@@ -17,19 +17,26 @@ if(file_path_sans_ext(basename(args[1])) == "R"){
 
 bamdir <- args[i+1]
 peak_file <- args[i+2]
-outdir <- args[i+3]
-name <- args[i+4]
+by_rg_in <- args[i+3]
+outdir <- args[i+4]
+name <- args[i+5]
+
+if(by_rg_in == "True"){
+  by_rg <- TRUE
+} else {
+  by_rg <- FALSE
+}
 
 peaks <- getPeaks(peak_file)
 
 bamfiles <- list.files(bamdir, full.names = TRUE)
 sampleNames <- file_path_sans_ext(basename(bamfiles))
-countsSE <- getCounts(bamfiles, peaks, paired =  TRUE,  by_rg = TRUE, format = "bam", 
+countsSE <- getCounts(bamfiles, peaks, paired =  TRUE,  by_rg = by_rg, format = "bam", 
                               colData = DataFrame(sampleNames = c(sampleNames)))
 
-counts <- data.frame(assays(countsSE)[["counts"]])
-colnames(counts) <- sampleNames
+counts <- data.frame(data.matrix(assays(countsSE)[["counts"]]))
+if(!by_rg) colnames(counts) <- sampleNames
 write.table(counts,
             file = paste0(outdir, "/", name, ".counts.tsv"),
-            col.names = FALSE, row.names = FALSE, sep = "\t", quote = FALSE)
+            col.names = TRUE, row.names = FALSE, sep = "\t", quote = FALSE)
 

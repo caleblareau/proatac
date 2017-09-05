@@ -32,6 +32,7 @@ from ruamel.yaml.scalarstring import SingleQuotedScalarString as sqs
 @click.option('--jobs', default = "0",  help='Max number of jobs to be running concurrently on the cluster interface.')
 
 @click.option('--peaks-file', '-pf', default = "", help='Path to a pre-defined peaks file; option is only useful in `counts` mode')
+@click.option('--by-rgid', is_flag = True, help='Option to makes counts table RGID aware; option is only useful in `counts` mode')
 
 @click.option('--peak-width', '-pw', default = "250", help='Fixed width value of resulting peaks from summit calling / padding. 250, 500 recommended.')
 @click.option('--keep-duplicates', '-kd', is_flag=True, help='Keep optical/PCR duplicates')
@@ -61,7 +62,8 @@ from ruamel.yaml.scalarstring import SingleQuotedScalarString as sqs
 @click.option('--R-path', default = "", help='Path to R; by default, assumes that R is in PATH')
 
 def main(mode, input, output, name, ncores, bowtie2_index,
-	cluster, jobs, peaks_file, peak_width, keep_duplicates, max_javamem, extract_mito, reference_genome,
+	cluster, jobs, peaks_file, by_rgid,
+	peak_width, keep_duplicates, max_javamem, extract_mito, reference_genome,
 	clipl, clipr, keep_temp_files, skip_fastqc, overwrite,
 	bedtools_genome, blacklist_file, tss_file, macs2_genome_size, bs_genome, 
 	bedtools_path, bowtie2_path, java_path, macs2_path, samtools_path, r_path):
@@ -128,7 +130,7 @@ def main(mode, input, output, name, ncores, bowtie2_index,
 		
 		# Execute software
 		make_folder(output)
-		countsRcall = " ".join([R +"script", script_dir + "/bin/R/makeCountsTable.R", input, peaks_file, output, name])
+		countsRcall = " ".join([R +"script", script_dir + "/bin/R/makeCountsTable.R", input, peaks_file, str(by_rgid), output, name])
 		os.system(countsRcall)	
 		click.echo(gettime() + "Completed peak inference from summit files.")
 		sys.exit()
