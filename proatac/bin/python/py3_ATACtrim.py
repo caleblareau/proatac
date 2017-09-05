@@ -17,13 +17,14 @@ from optparse import OptionParser
 
 #### OPTIONS ####
 opts = OptionParser()
-usage = "usage: %prog [options] [inputs] This will trim adapters"
+usage = "usage: %prog [options] [inputs] This will trim adapters + additional clipping"
 opts = OptionParser(usage=usage)
 opts.add_option("-a", help="<Read1> Accepts fastq or fastq.gz")
 opts.add_option("-b", help="<Read2> Accepts fastq or fastq.gz")
 opts.add_option("-l", default = "0", help="Number of base pairs to soft-mask on the left.", choices=['0', '1', '2', '3', '4', '5', '6'])
 opts.add_option("-r", default = "0", help="Number of base pairs to soft-mask on the right. Needs to be negative or zero.", choices=['0', '-1', '-2', '-3', '-4', '-5', '-6'])
-opts.add_option("-o", default = ".", help="Output directory for files")
+opts.add_option("-o", default = ".", help="Output directory for fastq files")
+opts.add_option("-q", default = ".", help="Output directory for log file")
 opts.add_option("-s", default = "sample1", help="Sample name")
 opts.add_option("-t", default = "hard", help="Type of trimming to perform if l != 0 or r != 0", choices=['hard', 'soft'])
 options, arguments = opts.parse_args()
@@ -39,6 +40,7 @@ p2_in = options.b
 clipL = options.l
 clipR = options.r
 outdir = options.o
+logoutdir = options.q
 sample = options.s
 cliptype = options.t
 
@@ -179,7 +181,7 @@ while 1:
 r1_write.close();r2_write.close()
 left.close();right.close()
 
-with open(outdir + "/" + sample+ '.trim.log', 'w') as logfile:
+with open(logoutdir + "/" + sample+ '.trim.log', 'w') as logfile:
 
 	# give summary statistics
 	logfile.write(str(i)+" sequences\n")

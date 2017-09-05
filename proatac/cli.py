@@ -111,6 +111,7 @@ def main(mode, input, output, name, ncores, bowtie2_index,
 	if(mode == 'indexSplit'):
 		sys.exit("Mode does not actually work yet")
 	
+	# Make a counts table from user-supplied peaks and bam files
 	if(mode == 'counts'):
 		click.echo(gettime() + "Attempting to assemble counts table from user-specified input.")
 		
@@ -152,14 +153,27 @@ def main(mode, input, output, name, ncores, bowtie2_index,
 	
 	# Single or bulk processing
 	if(mode == "single" or mode == "bulk"):
-	
+
+		# Potentially submit jobs to cluster		
+		if(ncores == "detect"):
+			ncores = str(available_cpu_count())
+		else:
+			ncores = str(ncores)
+		
+		snakeclust = ""
+		njobs = int(jobs)
+		if(njobs > 0 and cluster != ""):
+			snakeclust = " --jobs " + jobs + " --cluster '" + cluster + "' "
+			click.echo(gettime() + "Recognized flags to process jobs on a computing cluster.", logf)		
+		
+		# Make output folders
 		of = output; logs = of + "/logs"; fin = of + "/final"; trim = of + "/01_trimmed"; 
 		aligned = of + "/02_aligned_reads"; processed = of + "/03_processed_reads";
 		qc = of + "/04_qc"
 		
 		folders = [of, logs, fin, trim, aligned, processed, qc,
 			of + "/.internal/parseltongue", of + "/.internal/samples",
-			qc + "/bowtie2"]
+			logs + "/bowtie2", logs + "/trim"]
 
 		mkfolderout = [make_folder(x) for x in folders]
 		
@@ -180,8 +194,8 @@ def main(mode, input, output, name, ncores, bowtie2_index,
 				outfile.write("This folder creates samples to be interpreted by Snakemake; don't modify it.\n\n")
 	
 		# Set up sample bam plain text file
-		for i in range(len(samples)):
-			with open(of + "/.internal/samples/" + samples[i] + ".fastqs.txt" , 'w') as outfile:
+		for i in range(len(p.samples)):
+			with open(of + "/.internal/samples/" + p.samples[i] + ".fastqs.txt" , 'w') as outfile:
 				outfile.write(p.fastq1[i] + "\t" + p.fastq2[i])
 		
 		# Determine chromosomes to keep / filter
@@ -189,11 +203,12 @@ def main(mode, input, output, name, ncores, bowtie2_index,
 		rmchrlist = ["*", "chrY", "MT", "chrM"]
 		#keepchrs = [x for x in chrs if x not in rmchrlist and len(x) < int(p.chr_name_length)]
 		
-		# To do: handle snakemake file a la mgatk -- one scatter (probably) file; one gather?
-		# Create a sample table / dump it to internal folder
-		
-		with open(of + "/.internal/parseltongue/proatac.object.yaml", 'w') as yaml_file:
+		y_s = of + "/.internal/parseltongue/proatac.object.yaml"
+		with open(y_s, 'w') as yaml_file:
 			yaml.dump(dict(p), yaml_file, default_flow_style=False, Dumper=yaml.RoundTripDumper)
+		
+		snakecmd_scatter = 'snakemake'+snakeclust+' --snakefile '+script_dir+'/bin/snake/Snakefile.proatac.scatter --cores '+ncores+' --config cfp="' + y_s + '" -T'
+		os.system(snakecmd_scatter)
 		
 		if keep_temp_files:
 			click.echo(gettime() + "Temporary files not deleted since --keep-temp-files was specified.")

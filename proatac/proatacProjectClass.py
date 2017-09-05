@@ -76,6 +76,7 @@ class proatacProject():
 		self.output = output
 		self.mode = mode
 		self.skip_fastqc = skip_fastqc
+		self.script_dir = script_dir
 		
 		# Collect samples / fastq lists
 		self.samples, self.fastq1, self.fastq2 = inferSampleVectors(input)
@@ -155,8 +156,9 @@ class proatacProject():
 	# Define a method to dump the object as a .yaml/dictionary
 	def __iter__(self):
 		
-		# Purposefully skip samples, fastq1, fastq2 -- will put individual samples there
+		# Purposefully skip samples, fastq1, fastq2 -- will put individual samples there in call
 		
+		yield 'script_dir', self.script_dir
 		yield 'tssFile', self.tssFile
 		yield 'blacklistFile', self.blacklistFile
 		yield 'bedtoolsGenomeFile', self.bedtoolsGenomeFile

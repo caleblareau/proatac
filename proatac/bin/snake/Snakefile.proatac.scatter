@@ -5,7 +5,7 @@ import pysam
 from os.path import join
 
 configfile: config["cfp"]     
-outdir = config["output_directory"]
+outdir = config["output"]
 script_dir = config["script_dir"]          
 
 # A Snakemake regular expression matching the bam file paths
@@ -16,16 +16,16 @@ oneProatacSample_py = script_dir + "/bin/python/oneProatacSample.py"
 
 rule all:
 	input:
-		outdir + "/temp/scattered.allSamples.txt"
+		outdir + "/final/crap.txt"
 
 rule process_one_sample:
 	input:
 		txtin = join(outdir + "/.internal/samples", fastqstxtin)
 	output:
-		bam = outdir + "/final/samplebams/{sample}.qc.bam",
+		trimlog = protected(outdir + "/logs/trim/{sample}.trim.log"),
 	run:
 		# Get sample information
-		sample = output.bam.replace(outdir + "/final/samplebams/", "").replace(".qc.bam", "")
+		sample = output.trimlog.replace(outdir + "/logs/trim/", "").replace(".trim.log", "")
 		with open(input.txtin) as f:
 			line1 = f.read()
 			fastq1 = line1.split("\t")[0].strip()
@@ -38,10 +38,10 @@ rule process_one_sample:
 # Collate everything
 rule make_sample_list:
 	input:
-		depths = expand(outdir + "/qc/depth/{sample}.depth.txt", sample=SAMPLES)
+		trimlogs = expand(outdir + "/logs/trim/{sample}.trim.log", sample=SAMPLES)
 	output:
-		allSamplesFile = outdir + "/temp/scattered.allSamples.txt"
+		allSamplesFile = outdir + "/final/crap.txt"
 	run: 	
-		for file in input.depths:
-			sample = file.replace(outdir + "/qc/depth/", "").replace(".depth.txt", "")
+		for file in input.trimlogs:
+			sample = file.replace(outdir + "/logs/trim/", "").replace(".trim.log", "")
 			os.system("echo " + sample + " >> " + output.allSamplesFile)
