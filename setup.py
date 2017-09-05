@@ -2,8 +2,11 @@
 prePROcessing ATAC and scatac data 
 """
 from setuptools import find_packages, setup
+from distutils.core import setup, Extension
 
 dependencies = ['click', 'Numpy', 'editdistance', 'pytest', 'python-levenshtein', 'snakemake', 'biopython', 'optparse-pretty', 'regex', 'PyYAML', 'pysam', 'ruamel.yaml', 'multiqc']
+
+#proatactrim = Extension('proatactrim', sources = ['src/trimming.cpp'])
 
 setup(
     name='proatac',
@@ -19,6 +22,7 @@ setup(
     zip_safe=False,
     platforms='any',
     install_requires=dependencies,
+#    ext_modules = [proatactrim],
     entry_points={
         'console_scripts': [
             'proatac = proatac.cli:main',

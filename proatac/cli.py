@@ -210,6 +210,9 @@ def main(mode, input, output, name, ncores, bowtie2_index,
 		snakecmd_scatter = 'snakemake'+snakeclust+' --snakefile '+script_dir+'/bin/snake/Snakefile.proatac.scatter --cores '+ncores+' --config cfp="' + y_s + '" -T'
 		os.system(snakecmd_scatter)
 		
+		snakecmd_gather = 'snakemake --snakefile '+script_dir+'/bin/snake/Snakefile.proatac.gather --cores '+ncores+' --config cfp="' + y_s + '" -T'
+		os.system(snakecmd_gather)
+		
 		if keep_temp_files:
 			click.echo(gettime() + "Temporary files not deleted since --keep-temp-files was specified.")
 		else:

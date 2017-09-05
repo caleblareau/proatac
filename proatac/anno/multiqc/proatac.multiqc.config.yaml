@@ -1,0 +1,6 @@
+extra_fn_clean_exts:
+    - '.myformat'
+    - '_processedFile'
+extra_fn_clean_trim:
+    - '.trim'
+
