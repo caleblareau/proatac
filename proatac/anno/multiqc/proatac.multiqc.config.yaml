@@ -3,10 +3,13 @@ extra_fn_clean_exts:
     - '_processedFile'
 extra_fn_clean_trim:
     - '.trim'
+    - '.proatac'
     - '.temp2'
     - '_1'
     - '_2'
-picard/insertsize:
+picard/markdups:
     fn: '*.MarkDuplicates.log'
     shared: true
-
+picard/insertsize:
+    fn: '*.inserts.log'
+    shared: true

@@ -44,7 +44,7 @@ extract_mito = str(config["extract_mito"])
 max_javamem = config["max_javamem"]
 keep_duplicates = str(config["keep_duplicates"])
 MarkDuplicatesCall = java + " -Xmx"+max_javamem+"  -jar " + script_dir + "/bin/MarkDuplicates.jar"
-
+CollectInsertCall = java + " -Xmx"+max_javamem+"  -jar " + script_dir + "/bin/CollectInsertSizeMetrics.jar"
 # Step 4
 macs2 = config["macs2"]
 macs2_genome_size = config["macs2_genome_size"]
@@ -109,10 +109,15 @@ if not os.path.isfile(finalbam):
 # 04 Do macs2 on each sample only if bulk
 # Need to build in support for bigwig here
 if(mode == "bulk"):
+	insertlog = outdir + "/logs/picard/inserts/"+sample+".inserts.log"
+	histofile = outdir + "/logs/picard/inserts/"+sample+".histogram.pdf"
+	run_insert = CollectInsertCall + " INPUT="+finalbam+" O="+insertlog+" H="+histofile+"  W=1000 VALIDATION_STRINGENCY=SILENT" 
+	os.system(run_insert)
+	
 	macs2log = outdir + "/logs/macs2/"+sample+".peakcalls.log"
 	macs2outdir = outdir + "/04_qc/macs2_each/"
 	macs2call = "(" + macs2 + " callpeak -t "+finalbam+" -n " + macs2outdir + sample + " --nomodel --keep-dup all --call-summits -q 0.05 -g " + macs2_genome_size + ") 2> " + macs2log
-	if(macs2outdir + sample + "_peaks.narrowPeak"):
+	if not os.path.isfile(macs2outdir + sample + "_peaks.narrowPeak"):
 		os.system(macs2call)
 		os.system("mv " + macs2outdir + sample + "_peaks.xls " + outdir + "/logs/macs2/"+sample+"_peaks.xls")
 		os.system("mv " + macs2outdir + sample + "_summits.bed " + outdir + "/final/summits/"+sample+"_summits.bed")

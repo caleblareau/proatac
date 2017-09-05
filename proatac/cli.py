@@ -178,8 +178,9 @@ def main(mode, input, output, name, ncores, bowtie2_index,
 	
 		mkfolderout = [make_folder(x) for x in folders]
 		
+		make_folder(logs + "/picard")
+		make_folder(logs + "/picard/inserts")
 		if not keep_duplicates:
-			make_folder(logs + "/picard")
 			make_folder(logs + "/picard/markdups")
 		if not skip_fastqc:
 			make_folder(logs + "/fastqc")
@@ -220,8 +221,9 @@ def main(mode, input, output, name, ncores, bowtie2_index,
 			
 			# Merge into one .bam file:
 			finalmergedbam = fin + "/"+p.name+".merged.bam"
-			os.system(p.samtools + " merge " +finalmergedbam+" "+ of + "/03_processed_reads/bams/*.bam")
-			pysam.index(finalmergedbam)
+			if not os.path.isfile(finalmergedbam):
+				os.system(p.samtools + " merge " +finalmergedbam+" "+ of + "/03_processed_reads/bams/*.bam")
+				pysam.index(finalmergedbam)
 			
 		snakecmd_gather = 'snakemake --snakefile '+script_dir+'/bin/snake/Snakefile.proatac.gather --cores '+ncores+' --config cfp="' + y_s + '" -T'
 		os.system(snakecmd_gather)
