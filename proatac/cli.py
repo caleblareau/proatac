@@ -209,11 +209,6 @@ def main(mode, input, output, name, ncores, bowtie2_index,
 			with open(of + "/.internal/samples/" + p.samples[i] + ".fastqs.txt" , 'w') as outfile:
 				outfile.write(p.fastq1[i] + "\t" + p.fastq2[i])
 		
-		# Determine chromosomes to keep / filter
-		#chrs = os.popen(p.samtools_path + " idxstats " +  outfolder + "/02_aligned_reads/* | cut -f1").read().strip().split("\n")
-		rmchrlist = ["*", "chrY", "MT", "chrM"]
-		#keepchrs = [x for x in chrs if x not in rmchrlist and len(x) < int(p.chr_name_length)]
-		
 		y_s = of + "/.internal/parseltongue/proatac.object.yaml"
 		with open(y_s, 'w') as yaml_file:
 			yaml.dump(dict(p), yaml_file, default_flow_style=False, Dumper=yaml.RoundTripDumper)
@@ -221,6 +216,13 @@ def main(mode, input, output, name, ncores, bowtie2_index,
 		snakecmd_scatter = 'snakemake'+snakeclust+' --snakefile '+script_dir+'/bin/snake/Snakefile.proatac.scatter --cores '+ncores+' --config cfp="' + y_s + '" -T'
 		os.system(snakecmd_scatter)
 		
+		if(mode == 'single'):
+			
+			# Merge into one .bam file:
+			finalmergedbam = fin + "/"+p.name+".merged.bam"
+			os.system(p.samtools + " merge " +finalmergedbam+" "+ of + "/03_processed_reads/bams/*.bam")
+			pysam.index(finalmergedbam)
+			
 		snakecmd_gather = 'snakemake --snakefile '+script_dir+'/bin/snake/Snakefile.proatac.gather --cores '+ncores+' --config cfp="' + y_s + '" -T'
 		os.system(snakecmd_gather)
 		

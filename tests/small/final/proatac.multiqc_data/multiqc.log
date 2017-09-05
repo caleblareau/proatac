@@ -1,0 +1,81 @@
+[2017-09-05 10:51:52,618] multiqc                                            [DEBUG  ]  No MultiQC config found: /Volumes/dat/Research/venv3/lib/python3.6/site-packages/multiqc_config.yaml
+[2017-09-05 10:51:52,619] multiqc                                            [DEBUG  ]  No MultiQC config found: /Users/lareauc/.multiqc_config.yaml
+[2017-09-05 10:51:52,619] multiqc                                            [DEBUG  ]  No MultiQC config found: multiqc_config.yaml
+[2017-09-05 10:51:52,622] multiqc                                            [DEBUG  ]  Loading config settings from: /Volumes/dat/Research/BuenrostroResearch/lareau_dev/proatac/proatac/anno/multiqc/proatac.multiqc.config.yaml
+[2017-09-05 10:51:52,622] multiqc                                            [DEBUG  ]  Added to filename clean extensions: ['.myformat', '_processedFile']
+[2017-09-05 10:51:52,622] multiqc                                            [DEBUG  ]  Added to filename clean trimmings: ['.trim', '.temp2', '_1', '_2']
+[2017-09-05 10:51:52,622] multiqc                                            [DEBUG  ]  New config 'picard/insertsize': {'fn': '*.MarkDuplicates.log', 'shared': True}
+[2017-09-05 10:51:52,623] multiqc                                            [DEBUG  ]  Command used: /Volumes/dat/Research/venv3/bin/multiqc -c /Volumes/dat/Research/BuenrostroResearch/lareau_dev/proatac/proatac/anno/multiqc/proatac.multiqc.config.yaml -f small/logs/ -o small/final -n proatac.multiqc -i proatac
+[2017-09-05 10:51:53,649] multiqc                                            [DEBUG  ]  Latest MultiQC version is v1.2
+[2017-09-05 10:51:53,649] multiqc                                            [INFO   ]  This is MultiQC v1.2
+[2017-09-05 10:51:53,649] multiqc                                            [DEBUG  ]  Command     : /Volumes/dat/Research/venv3/bin/multiqc -c /Volumes/dat/Research/BuenrostroResearch/lareau_dev/proatac/proatac/anno/multiqc/proatac.multiqc.config.yaml -f small/logs/ -o small/final -n proatac.multiqc -i proatac
+[2017-09-05 10:51:53,649] multiqc                                            [DEBUG  ]  Working dir : /Volumes/dat/Research/BuenrostroResearch/lareau_dev/proatac/tests
+[2017-09-05 10:51:53,649] multiqc                                            [INFO   ]  Template    : default
+[2017-09-05 10:51:53,649] multiqc                                            [INFO   ]  Report title: proatac
+[2017-09-05 10:51:53,650] multiqc                                            [INFO   ]  Searching 'small/logs/'
+[2017-09-05 10:51:53,650] multiqc                                            [DEBUG  ]  Analysing modules: afterqc, custom_content, conpair, peddy, methylQA, qualimap, preseq, quast, qorts, rna_seqc, rseqc, busco, goleft_indexcov, disambiguate, homer, macs2, theta2, snpeff, gatk, htseq, bcftools, featureCounts, picard, prokka, samblaster, samtools, bamtools, jellyfish, vcftools, bismark, hicup, salmon, kallisto, slamdunk, star, hisat2, tophat, bowtie2, bowtie1, leehom, adapterRemoval, cutadapt, flexbar, trimmomatic, skewer, sortmerna, biobloomtools, fastq_screen, fastqc, clusterflow, bcl2fastq
+[2017-09-05 10:51:53,651] multiqc                                            [DEBUG  ]  Using temporary directory for creating report: /var/folders/m0/x094zjwj29jgv66179mkkkhm0000gn/T/tmpp7m6ve63
+[2017-09-05 10:51:53,745] multiqc                                            [DEBUG  ]  Ignoring file as matched an ignore pattern: SRR1779979_1.trim_fastqc.html
+[2017-09-05 10:51:53,746] multiqc                                            [DEBUG  ]  Ignoring file as matched an ignore pattern: SRR1779979_2.trim_fastqc.html
+[2017-09-05 10:51:54,254] multiqc.modules.afterqc.afterqc                    [DEBUG  ]  Could not find any reports in ('small/logs/',)
+[2017-09-05 10:51:54,265] multiqc.modules.custom_content.custom_content      [DEBUG  ]  No custom content found
+[2017-09-05 10:51:54,269] multiqc.modules.conpair.conpair                    [DEBUG  ]  Could not find any reports in ('small/logs/',)
+[2017-09-05 10:51:54,276] multiqc.modules.peddy.peddy                        [DEBUG  ]  Could not find any reports in ('small/logs/',)
+[2017-09-05 10:51:54,281] multiqc.modules.methylQA.methylQA                  [DEBUG  ]  Could not find any reports in ('small/logs/',)
+[2017-09-05 10:51:54,292] multiqc.modules.qualimap.QM_BamQC                  [DEBUG  ]  Using default Qualimap thresholds: 1, 5, 10, 30, 50
+[2017-09-05 10:51:54,292] multiqc.modules.qualimap.qualimap                  [DEBUG  ]  Could not find any reports in ('small/logs/',)
+[2017-09-05 10:51:54,299] multiqc.modules.preseq.preseq                      [DEBUG  ]  Could not find any preseq data in ('small/logs/',)
+[2017-09-05 10:51:54,306] multiqc.modules.quast.quast                        [DEBUG  ]  Could not find any reports in ('small/logs/',)
+[2017-09-05 10:51:54,311] multiqc.modules.qorts.qorts                        [DEBUG  ]  Could not find any QoRTs data in ('small/logs/',)
+[2017-09-05 10:51:54,318] multiqc.modules.rna_seqc.rna_seqc                  [DEBUG  ]  Could not find any RNA-SeQC data in ('small/logs/',)
+[2017-09-05 10:51:54,336] multiqc.modules.rseqc.rseqc                        [DEBUG  ]  Could not find any reports in ('small/logs/',)
+[2017-09-05 10:51:54,343] multiqc.modules.busco.busco                        [DEBUG  ]  Could not find any reports in ('small/logs/',)
+[2017-09-05 10:51:54,349] multiqc.modules.goleft_indexcov.goleft_indexcov    [DEBUG  ]  Did not find goleft indexcov outputs in ('small/logs/',)
+[2017-09-05 10:51:54,355] multiqc.modules.disambiguate.disambiguate          [DEBUG  ]  Could not find any data in ('small/logs/',)
+[2017-09-05 10:51:54,362] multiqc.modules.homer.homer                        [DEBUG  ]  Could not find any reports in ('small/logs/',)
+[2017-09-05 10:51:54,369] multiqc.modules.macs2.macs2                        [DEBUG  ]  Could not find any MACS2 data in ('small/logs/',)
+[2017-09-05 10:51:54,375] multiqc.modules.theta2.theta2                      [DEBUG  ]  Could not find any reports in ('small/logs/',)
+[2017-09-05 10:51:54,381] multiqc.modules.snpeff.snpeff                      [DEBUG  ]  Could not find any data in ('small/logs/',)
+[2017-09-05 10:51:54,388] multiqc.modules.gatk.gatk                          [DEBUG  ]  Could not find any reports in ('small/logs/',)
+[2017-09-05 10:51:54,394] multiqc.modules.htseq.htseq                        [DEBUG  ]  Could not find any reports in ('small/logs/',)
+[2017-09-05 10:51:54,402] multiqc.modules.bcftools.bcftools                  [DEBUG  ]  Could not find any reports in ('small/logs/',)
+[2017-09-05 10:51:54,408] multiqc.modules.featureCounts.feature_counts       [DEBUG  ]  Could not find any reports in ('small/logs/',)
+[2017-09-05 10:51:54,433] multiqc.modules.picard.picard                      [INFO   ]  Found 1 MarkDuplicates reports
+[2017-09-05 10:51:54,438] multiqc.modules.prokka.prokka                      [DEBUG  ]  Could not find any Prokka data in ('small/logs/',)
+[2017-09-05 10:51:54,446] multiqc.modules.samblaster.samblaster              [DEBUG  ]  Could not find any data in ('small/logs/',)
+[2017-09-05 10:51:54,455] multiqc.modules.samtools.samtools                  [DEBUG  ]  Could not find any reports in ('small/logs/',)
+[2017-09-05 10:51:54,461] multiqc.modules.bamtools.bamtools                  [DEBUG  ]  Could not find any reports in ('small/logs/',)
+[2017-09-05 10:51:54,466] multiqc.modules.jellyfish.jellyfish                [DEBUG  ]  Could not find any data in ('small/logs/',)
+[2017-09-05 10:51:54,477] multiqc.modules.vcftools.vcftools                  [DEBUG  ]  Could not find any reports in ('small/logs/',)
+[2017-09-05 10:51:54,485] multiqc.modules.bismark.bismark                    [DEBUG  ]  Could not find any reports in ('small/logs/',)
+[2017-09-05 10:51:54,491] multiqc.modules.hicup.hicup                        [DEBUG  ]  Could not find any HiCUP data in ('small/logs/',)
+[2017-09-05 10:51:54,495] multiqc.modules.salmon.salmon                      [DEBUG  ]  Could not find any Salmon data in ('small/logs/',)
+[2017-09-05 10:51:54,500] multiqc.modules.kallisto.kallisto                  [DEBUG  ]  Could not find any reports in ('small/logs/',)
+[2017-09-05 10:51:54,508] multiqc.modules.slamdunk.slamdunk                  [DEBUG  ]  No slamdunk reports found.
+[2017-09-05 10:51:54,513] multiqc.modules.star.star                          [DEBUG  ]  Could not find any reports in ('small/logs/',)
+[2017-09-05 10:51:54,518] multiqc.modules.hisat2.hisat2                      [DEBUG  ]  Could not find any reports in ('small/logs/',)
+[2017-09-05 10:51:54,524] multiqc.modules.tophat.tophat                      [DEBUG  ]  Could not find any reports in ('small/logs/',)
+[2017-09-05 10:51:54,532] multiqc.modules.bowtie2.bowtie2                    [INFO   ]  Found 1 reports
+[2017-09-05 10:51:54,553] multiqc.modules.bowtie1.bowtie1                    [DEBUG  ]  Could not find any reports in ('small/logs/',)
+[2017-09-05 10:51:54,558] multiqc.modules.leehom.leehom                      [DEBUG  ]  Could not find any reports in ('small/logs/',)
+[2017-09-05 10:51:54,563] multiqc.modules.adapterRemoval.adapterRemoval      [DEBUG  ]  Could not find any reports in ('small/logs/',)
+[2017-09-05 10:51:54,568] multiqc.modules.cutadapt.cutadapt                  [DEBUG  ]  Could not find any reports in ('small/logs/',)
+[2017-09-05 10:51:54,573] multiqc.modules.flexbar.flexbar                    [DEBUG  ]  Could not find any Flexbar data in ('small/logs/',)
+[2017-09-05 10:51:54,578] multiqc.modules.trimmomatic.trimmomatic            [DEBUG  ]  Could not find any Trimmomatic data in ('small/logs/',)
+[2017-09-05 10:51:54,587] multiqc.modules.skewer.skewer                      [DEBUG  ]  Could not find any data in ('small/logs/',)
+[2017-09-05 10:51:54,593] multiqc.modules.sortmerna.sortmerna                [DEBUG  ]  Could not find any SortMeRNA data in ('small/logs/',)
+[2017-09-05 10:51:54,598] multiqc.modules.biobloomtools.biobloomtools        [DEBUG  ]  Could not find any reports in ('small/logs/',)
+[2017-09-05 10:51:54,603] multiqc.modules.fastq_screen.fastq_screen          [DEBUG  ]  Could not find any reports in ('small/logs/',)
+[2017-09-05 10:51:54,649] multiqc.modules.fastqc.fastqc                      [DEBUG  ]  Duplicate sample name found! Overwriting: SRR1779979
+[2017-09-05 10:51:54,677] multiqc.modules.fastqc.fastqc                      [INFO   ]  Found 1 reports
+[2017-09-05 10:51:54,722] multiqc.modules.clusterflow.clusterflow            [DEBUG  ]  Could not find any reports in ('small/logs/',)
+[2017-09-05 10:51:54,729] multiqc.modules.bcl2fastq.bcl2fastq                [DEBUG  ]  Could not find any bcl2fastq data in ('small/logs/',)
+[2017-09-05 10:51:54,733] multiqc                                            [INFO   ]  Compressing plot data
+[2017-09-05 10:51:54,770] multiqc                                            [INFO   ]  Report      : small/final/proatac.multiqc.html
+[2017-09-05 10:51:54,771] multiqc                                            [INFO   ]  Data        : small/final/proatac.multiqc_data
+[2017-09-05 10:51:54,772] multiqc                                            [DEBUG  ]  Moving data file from '/var/folders/m0/x094zjwj29jgv66179mkkkhm0000gn/T/tmpp7m6ve63/multiqc_data/multiqc_bowtie2.txt' to 'small/final/proatac.multiqc_data'
+[2017-09-05 10:51:54,773] multiqc                                            [DEBUG  ]  Moving data file from '/var/folders/m0/x094zjwj29jgv66179mkkkhm0000gn/T/tmpp7m6ve63/multiqc_data/multiqc_fastqc.txt' to 'small/final/proatac.multiqc_data'
+[2017-09-05 10:51:54,774] multiqc                                            [DEBUG  ]  Moving data file from '/var/folders/m0/x094zjwj29jgv66179mkkkhm0000gn/T/tmpp7m6ve63/multiqc_data/multiqc_general_stats.txt' to 'small/final/proatac.multiqc_data'
+[2017-09-05 10:51:54,774] multiqc                                            [DEBUG  ]  Moving data file from '/var/folders/m0/x094zjwj29jgv66179mkkkhm0000gn/T/tmpp7m6ve63/multiqc_data/multiqc_picard_dups.txt' to 'small/final/proatac.multiqc_data'
+[2017-09-05 10:51:54,775] multiqc                                            [DEBUG  ]  Moving data file from '/var/folders/m0/x094zjwj29jgv66179mkkkhm0000gn/T/tmpp7m6ve63/multiqc_data/multiqc_sources.txt' to 'small/final/proatac.multiqc_data'
+[2017-09-05 10:51:55,006] multiqc                                            [INFO   ]  MultiQC complete

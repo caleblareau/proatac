@@ -1,0 +1,4 @@
+Module	Section	Sample Name	Source
+Picard	DuplicationMetrics	SRR1779979	/Volumes/dat/Research/BuenrostroResearch/lareau_dev/proatac/tests/small/logs/picard/markdups/SRR1779979.MarkDuplicates.log
+Bowtie 2	all_sections	SRR1779979	/Volumes/dat/Research/BuenrostroResearch/lareau_dev/proatac/tests/small/logs/bowtie2/SRR1779979.log
+FastQC	all_sections	SRR1779979	/Volumes/dat/Research/BuenrostroResearch/lareau_dev/proatac/tests/small/logs/fastqc/SRR1779979_2.trim_fastqc.zip

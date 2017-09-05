@@ -12,5 +12,8 @@ proatac counts -i data/bam/RGID -o countsRGIDtest -pf data/test_bed.txt --by-rgi
 proatac counts -i data/bam/individualSamples -o countstest -pf data/test_bed.txt
 
 proatac check -i data/fastq -o checktest -rg hg19 -bi /Volumes/dat/genomes/hg19_bwt2/hg19
+
+proatac single -i data/smallTable.txt -o small -rg hg19 -bi /Volumes/dat/genomes/hg19_bwt2/hg19 -z 
+
 proatac summitsToPeaks -i data/summitfiles -o summittest -rg hg19
 ```
