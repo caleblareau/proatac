@@ -6,23 +6,47 @@
 
 suppressMessages(suppressWarnings(require(GenomicRanges)))
 suppressMessages(suppressWarnings(require(data.table)))
+suppressMessages(suppressWarnings(require(tools)))
 
 "%ni%" <- Negate("%in%")
 
 args <- commandArgs(trailingOnly = TRUE)
-summit_files <- args[1]
-peak_width <- args[2]
-blacklist <- args[3]
-chrom_sizes <- args[4]
-n <- args[5]
-fdr_threshold <- args[6]
-outdir <- args[7]
-name <- args[8]
+
+if(file_path_sans_ext(basename(args[1])) == "R"){
+  i <- 2
+} else {
+  i <- 0
+}
+summit_files <- strsplit(args[i+1], split = ",")[[1]]
+peak_width <- as.numeric(args[i+2])
+blacklist <- args[i+3]
+chrom_sizes <- args[i+4]
+n <- as.numeric(args[i+5])
+fdr_threshold <- as.numeric(args[i+6])
+outdir <- args[i+7]
+name <- args[i+8]
+
+# For dev only
+if(FALSE){
+  summit_files <- strsplit(paste0("/Volumes/dat/Research/BuenrostroResearch/lareau_dev/proatac/tests/summitfiles/CLP_summits.bed.gz,",
+                                  "/Volumes/dat/Research/BuenrostroResearch/lareau_dev/proatac/tests/summitfiles/CMP_summits.bed.gz,",
+                                  "/Volumes/dat/Research/BuenrostroResearch/lareau_dev/proatac/tests/summitfiles/HSC_summits.bed.gz,",
+                                  "/Volumes/dat/Research/BuenrostroResearch/lareau_dev/proatac/tests/summitfiles/LMPP_summits.bed.gz,",
+                                  "/Volumes/dat/Research/BuenrostroResearch/lareau_dev/proatac/tests/summitfiles/MEP_summits.bed.gz"),
+                           split = ",")[[1]]
+  peak_width <- as.numeric("250")
+  blacklist <- "/Volumes/dat/Research/BuenrostroResearch/lareau_dev/proatac/proatac/anno/blacklist/hg19.full.blacklist.bed"
+  chrom_sizes <- "/Volumes/dat/Research/BuenrostroResearch/lareau_dev/proatac/proatac/anno/bedtools/chrom_hg19.sizes"
+  n <- as.numeric("999999999")
+  fdr_threshold <- as.numeric("0.01")
+  outdir <- "summitout"
+  name <- "proatac"
+}
 
 makePeaksDF <- function(summit_files, peak_width, blacklist, chrom_sizes, n = 999999999, fdr_threshold = 0.01){
   
   # Make GRanges of peaks and blacklist
-  pad <- round(as.numeric(peak_width)/2)
+  pad <- round(as.numeric(peak_width)/2) 
   l <- lapply(summit_files, function(file){
     if(tools::file_ext(file) == "gz"){
       dt <- fread(paste0("zcat < ", file), stringsAsFactors = TRUE)
@@ -33,8 +57,16 @@ makePeaksDF <- function(summit_files, peak_width, blacklist, chrom_sizes, n = 99
   })
   peakdf <- data.frame(rbindlist( l ))
   peakdf <- peakdf[peakdf$V5 > -1*log10(fdr_threshold), ]
+  
+  # Import sizes and remove chromosomes
+  sizedf <- read.table(chrom_sizes, stringsAsFactors = FALSE); names(sizedf) <- c("seqnames", "end"); sizedf$start <- 0
+  chrranges <- makeGRangesFromDataFrame(sizedf)
+  chrs <- as.character(sizedf[,1])
+  chrs <- chrs[chrs %ni% c("chrY", "chrM", "MT")]
+  
+  # Set peaks
   peakdf <- peakdf[peakdf[,1] %in% chrs,]
-  peaks <- makeGRangesFromDataFrame(setNames(data.frame(peakdf[, 1], peakdf[, 2]-pad+1, peakdf[, 3]+pad, peakdf[, 5]),
+  peaks <- makeGRangesFromDataFrame(setNames(data.frame(peakdf[, 1], peakdf[, 2]-pad, peakdf[, 2]+pad, peakdf[, 5]),
                                              c("seqnames", "start", "end", "score")), keep.extra.columns = TRUE)
   
   bdf <- data.frame(fread(paste0(input = blacklist), header = FALSE))
@@ -43,8 +75,6 @@ makePeaksDF <- function(summit_files, peak_width, blacklist, chrom_sizes, n = 99
   
   # Remove blacklist and peaks out of bounds
   peaks <- peaks[!(1:length(peaks) %in% data.frame(findOverlaps(peaks, bg))$queryHits)]
-  sizedf <- read.table(chrom_sizes, stringsAsFactors = FALSE); names(sizedf) <- c("seqnames", "end"); sizedf$start <- 0
-  chrranges <- makeGRangesFromDataFrame(sizedf)
   peaks <- subsetByOverlaps(peaks, chrranges, type = "within")
   peaks <- sortSeqlevels(peaks); peaks <- sort(peaks)
   
@@ -84,6 +114,6 @@ odf <- makePeaksDF(summit_files, peak_width, blacklist, chrom_sizes, n = n, fdr_
 
 # Write to file
 write.table(odf[sort(odf$rank, decreasing = FALSE, index.return = TRUE)$ix, c(1,2,3)],
-            file = paste0(outdir, "/", name, ".fixedpeaks.bed"),
+            file = paste0(outdir, "/", name, ".fixedwidthpeaks.bed"),
             col.names = FALSE, row.names = FALSE, sep = "\t", quote = FALSE)
 

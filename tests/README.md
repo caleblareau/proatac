@@ -2,4 +2,10 @@
 
 GM12878 from [Jason's original paper](http://www.nature.com/nature/journal/v523/n7561/abs/nature14590.html)
 
+### Sample executions
 
+```
+proatac bulk -i fastq -o testout -rg hg19 -bi /Volumes/dat/genomes/hg19_bwt2/hg19
+proatac check -i fastq -o testout -rg hg19 -bi /Volumes/dat/genomes/hg19_bwt2/hg19
+proatac summitsToPeaks -i summitfiles -o summitout -rg hg19
+```

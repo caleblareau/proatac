@@ -44,7 +44,7 @@ from ruamel.yaml.scalarstring import SingleQuotedScalarString as sqs
 @click.option('--keep-temp-files', '-z', is_flag=True, help='Keep all intermediate files.')
 @click.option('--skip-fastqc', '-sf', is_flag=True, help='Throw this flag to skip fastqc on the trimmed fastqs; will only run if software is discovered in the path')
 
-@click.option('--bedtools-genome', '-bg', default = "", help='Path to bedtools genome; overrides default if --reference-genome flag is set and is necessary for non-supported genomes.')
+@click.option('--bedtools-genome', '-bg', default = "", help='Path to bedtools genome file; overrides default if --reference-genome flag is set and is necessary for non-supported genomes.')
 @click.option('--blacklist-file', '-bl', default = "", help='Path to bed file of blacklist; overrides default if --reference-genome flag is set and is necessary for non-supported genomes.')
 @click.option('--tss-file', '-ts', default = "", help='Path bed file of transcription start sites; overrides default if --reference-genome flag is set and is necessary for non-supported genomes.')
 @click.option('--macs2_genome_size', '-mg', default = "", help='String passed to macs2 for ; overrides default if --reference-genome flag is set and is necessary for non-supported genomes.')
@@ -75,13 +75,33 @@ def main(mode, input, output, name, ncores, bowtie2_index,
 
 	click.echo(gettime() + "Starting proatac pipeline v%s" % __version__)
 	
-	# Take a collection of summits files and return a consensus set of peaks
-	# Based on the relative ranking approach	
+	# Take a collection of summits files and return a consensus set of peaks	
 	if(mode == 'summitsToPeaks'):
-		make_folder(
-		doSummitsToPeaks(input, name, peak_width)
-		click.echo(gettime() + "Starting proatac pipeline v%s"
+		click.echo(gettime() + "Starting inference of peaks from summits.")
 		
+		# Need chromosome sizes and blacklist
+		bedtoolsGenomeFile, blacklistFile = getBfiles(bedtools_genome, blacklist_file, reference_genome, script_dir)
+		
+		# Figure out which samples to process
+		bedFiles = os.popen("ls " + input.rstrip("/") + "/*summits.bed*").read().strip().split("\n")
+		if(len(bedFiles) < 1):
+			sys.exist("No summit *summits.bed* files found; QUITTING")
+		else:
+			click.echo(gettime() + "Calling peaks from these samples:")
+			click.echo(gettime() + str(bedFiles))
+		
+		# Verify dependencies
+		R = get_software_path('R', r_path)
+		check_R_packages(['data.table', 'GenomicRanges', 'tools'], R)
+		
+		# Execute software
+		make_folder(output)
+		summitRcall = " ".join([R +"script", script_dir + "/bin/R/summitsToCleanPeaks.R", ",".join(bedFiles), peak_width, blacklistFile, bedtoolsGenomeFile, str(999999999), str(0.01), output, name])
+		os.system(summitRcall)	
+		click.echo(gettime() + "Completed peak inference from summit files.")
+		sys.exit()
+	
+	# TO DO: 
 	# Make a mode to handle split-pool data
 	
 	p = proatacProject(script_dir, mode, input, output, name, ncores, bowtie2_index,

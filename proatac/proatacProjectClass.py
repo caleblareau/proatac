@@ -11,6 +11,39 @@ import platform
 from ruamel import yaml
 from .proatacHelp import *
 
+supported_genomes = ['hg19', 'hg38', 'mm9', 'mm10', 'hg19_mm10_c']
+
+def getBfiles(bedtools_genome, blacklist_file, reference_genome, script_dir):
+	'''
+	Function that isn't actually a proatacProject specific function.
+	Used in summitsToPeaks mode to infer high quality peaks from an 
+	array of summit files.
+	'''
+	
+	# Handle bedtools
+	if(bedtools_genome == "" and reference_genome == ""):
+		sys.exit("ERROR: proatac needs either the bedtools genome or a correctly specified reference genome to get peaks from summit files; QUITTING")
+	elif any(reference_genome == s for s in supported_genomes):
+		bedtoolsGenomeFile = script_dir + "/anno/bedtools/chrom_" + reference_genome + ".sizes"
+	else:
+		if(os.path.isfile(bedtools_genome)):
+			bedtoolsGenomeFile = bedtools_genome
+		else: 
+			sys.exit("Could not find the bedtools genome file: %s" % bedtools_genome)
+	
+	# Handle blacklist	
+	if(blacklist_file == "" and reference_genome == ""):
+		sys.exit("ERROR: proatac needs either a blacklist bed file or a correctly specified reference genome to get peaks from summit files; QUITTING")
+	elif any(reference_genome == s for s in supported_genomes):
+		blacklistFile = script_dir + "/anno/blacklist/" + reference_genome + ".full.blacklist.bed"
+	else:
+		if(os.path.isfile(bedtools_genome)):
+			blacklistFile = bedtools_genome
+		else: 
+			sys.exit("Could not find the blacklist file: %s" % bedtools_genome)
+			
+	return(bedtoolsGenomeFile, blacklistFile)
+
 class proatacProject():
 	def __init__(self, script_dir, mode, input, output, name, ncores, bowtie2_index,
 		cluster, jobs, peak_width, keep_duplicates, max_javamem, extract_mito, reference_genome,
@@ -48,7 +81,6 @@ class proatacProject():
 		
 		# Handle reference genome
 		self.reference_genome = reference_genome
-		supported_genomes = ['hg19', 'hg38', 'mm9', 'mm10', 'hg19_mm10_c']
 		if any(self.reference_genome == s for s in supported_genomes):
 			click.echo(gettime() + "Found designated reference genome: %s" % self.reference_genome)
 			
