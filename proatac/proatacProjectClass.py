@@ -81,7 +81,7 @@ class proatacProject():
 		self.samples, self.fastq1, self.fastq2 = inferSampleVectors(input)
 		
 		# remove samples that have been previously processed
-		if(!overwrite):
+		if not overwrite:
 			self.samples, self.fastq1, self.fastq2 = filterExistingSamples(self.samples, self.fastq1, self.fastq2, output)
 		
 		# Handle reference genome

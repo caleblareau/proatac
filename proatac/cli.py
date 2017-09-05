@@ -122,7 +122,7 @@ def main(mode, input, output, name, ncores, bowtie2_index,
 			sys.exist("No sample *.bam files found in user-specified input; QUITTING")
 		else:
 			click.echo(gettime() + "Making a counts table from these samples:")
-			click.echo(gettime() + str(bedFiles))
+			click.echo(gettime() + str(bamfiles))
 		if(os.path.isfile(peaks_file)):
 			click.echo(gettime() + "Found peaks file: " + peaks_file)
 		
@@ -161,9 +161,9 @@ def main(mode, input, output, name, ncores, bowtie2_index,
 
 		mkfolderout = [make_folder(x) for x in folders]
 		
-		if(!keep_duplicates):
+		if not keep_duplicates:
 			make_folder(logs + "/picard")
-		if(!skip_fastqc):
+		if not skip_fastqc:
 			make_folder(logs + "/fastqc")
 		
 		# Create internal README files 
