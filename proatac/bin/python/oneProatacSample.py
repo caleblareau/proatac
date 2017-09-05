@@ -22,6 +22,12 @@ name = config["name"]
 script_dir = config["script_dir"]
 mode = config["mode"]
 
+# Ned to update
+keepchrs = ["chr1", "chr2", "chr3", "chr4", "chr5", "chr6", "chr7", "chr8", "chr9", "chr10", "chr11", "chr12", "chr13", "chr14", "chr15", "chr16", "chr17", "chr18", "chr19", "chr20", "chr21", "chr22", "chrX"]
+mitochrs = ['chrM', 'MT', 'humanM', 'mouseM', 'humanMT', 'mouseMT']
+read_quality = "20"
+# bigwig support
+
 # Step 1
 clipl = config["clipl"]
 clipr = config["clipr"]
@@ -39,6 +45,9 @@ max_javamem = config["max_javamem"]
 keep_duplicates = str(config["keep_duplicates"])
 MarkDuplicatesCall = java + " -Xmx"+max_javamem+"  -jar " + script_dir + "/bin/MarkDuplicates.jar"
 
+# Step 4
+macs2 = config["macs2"]
+macs2_genome_size = config["macs2_genome_size"]
 
 # 01 Trim using custom script
 trim_py = script_dir + "/bin/python/py3_ATACtrim.py"
@@ -65,26 +74,47 @@ if not os.path.isfile(sortedbam):
 # 02a mito-- extract if the user says to
 if(extract_mito == "True"):
 	mitobam = outdir + "/mito/" + sample + ".mito.bam"
-	mitochrs = ['chrM', 'MT', 'humanM', 'mouseM', 'humanMT', 'mouseMT']
 	mitocall = samtools + " view -b "+sortedbam+" -o "+mitobam+" " + " ".join(str(i) for i in mitochrs) + " && " + samtools + " index " + mitobam
 	if not os.path.isfile(mitobam):
 		os.system(mitocall)
 
 # 03 Process .bam files
-#temp1 = outdir + "/03_processed_reads/temp/" + sample + ".temp1.bam"
-#temp2 = outdir + "/03_processed_reads/temp/" + sample + ".temp2.bam"
+temp1 = outdir + "/03_processed_reads/temp/" + sample + ".temp1.bam"
+temp1call = samtools + " view -q " + read_quality + " -f 0x2 "+sortedbam+" -o "+ temp1
+if not os.path.isfile(temp1):
+	os.system(temp1call)
+	pysam.index(temp1)
 
-#if(mode == "bulk"):
-#	finalbam = outdir + "/final/bams/"+sample+".proatac.bam"
-#else:
-#	finalbam = outdir + "/03_processed_reads/bams/"+sample+".proatac.bam"
-	
-#rmlog = outdir + "/logs/picard/"+sample+".rmdups.log"
-#MarkDuplicatesCall + " INPUT="+temp2+" OUTPUT="+finalbam+" METRICS_FILE="+rmlog+" REMOVE_DUPLICATES=true VALIDATION_STRINGENCY=SILENT && " + samtools + " index "+finalbam
-#if not os.path.isfile(finalbam):
-#	if(keep_duplicates):
-#		
-#	else:
-#		os.system(MarkDuplicatesCall)
+temp2 = outdir + "/03_processed_reads/temp/" + sample + ".temp2.bam"
+temp2call = samtools + " view -b "+temp1+" -o "+temp2+" " + " ".join(str(i) for i in keepchrs)
+if not os.path.isfile(temp2):
+	os.system(temp2call)
+	pysam.index(temp2)
+
+if(mode == "bulk"):
+	finalbam = outdir + "/final/bams/"+sample+".proatac.bam"
+else:
+	finalbam = outdir + "/03_processed_reads/bams/"+sample+".proatac.bam"	
+rmlog = outdir + "/logs/picard/markdups/"+sample+".MarkDuplicates.log"
+run_markdup = MarkDuplicatesCall + " INPUT="+temp2+" OUTPUT="+finalbam+" METRICS_FILE="+rmlog+" REMOVE_DUPLICATES=true VALIDATION_STRINGENCY=SILENT"
+
+if not os.path.isfile(finalbam):
+	if(keep_duplicates == "True"):
+		os.system("cp " + temp2 + " " + finalbam)
+	else:
+		os.system(run_markdup)
+	pysam.index(finalbam)
+
+
+# 04 Do macs2 on each sample only if bulk
+# Need to build in support for bigwig here
+if(mode == "bulk"):
+	macs2log = outdir + "/logs/macs2/"+sample+".peakcalls.log"
+	macs2outdir = outdir + "/04_qc/macs2_each/"
+	macs2call = "(" + macs2 + " callpeak -t "+finalbam+" -n " + macs2outdir + sample + " --nomodel --keep-dup all --call-summits -q 0.05 -g " + macs2_genome_size + ") 2> " + macs2log
+	if(macs2outdir + sample + "_peaks.narrowPeak"):
+		os.system(macs2call)
+		os.system("mv " + macs2outdir + sample + "_peaks.xls " + outdir + "/logs/macs2/"+sample+"_peaks.xls")
+		os.system("mv " + macs2outdir + sample + "_summits.bed " + outdir + "/final/summits/"+sample+"_summits.bed")
 
 os.system('echo "hey" > ' + outdir+"/logs/trim/"+sample+".trim.txt")

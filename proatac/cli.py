@@ -173,12 +173,14 @@ def main(mode, input, output, name, ncores, bowtie2_index,
 		
 		folders = [of, logs, fin, trim, aligned, processed, qc,
 			of + "/.internal/parseltongue", of + "/.internal/samples",
-			logs + "/bowtie2", logs + "/trim", of + "/03_processed_reads/temp"]
+			logs + "/bowtie2", logs + "/trim", logs + "/macs2",
+			of + "/03_processed_reads/temp",]
 	
 		mkfolderout = [make_folder(x) for x in folders]
 		
 		if not keep_duplicates:
 			make_folder(logs + "/picard")
+			make_folder(logs + "/picard/markdups")
 		if not skip_fastqc:
 			make_folder(logs + "/fastqc")
 		if extract_mito:
@@ -186,6 +188,8 @@ def main(mode, input, output, name, ncores, bowtie2_index,
 			
 		if(mode == "bulk"):
 			make_folder(of + "/final/bams")
+			make_folder(of + "/final/summits")
+			make_folder(of + "/04_qc/macs2_each")
 		if(mode == "single"):
 			make_folder(of + "/03_processed_reads/bams")
 

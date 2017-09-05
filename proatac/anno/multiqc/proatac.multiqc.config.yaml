@@ -3,6 +3,10 @@ extra_fn_clean_exts:
     - '_processedFile'
 extra_fn_clean_trim:
     - '.trim'
+    - '.temp2'
     - '_1'
     - '_2'
+picard/insertsize:
+    fn: '*.MarkDuplicates.log'
+    shared: true
 
