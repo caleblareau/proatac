@@ -156,9 +156,31 @@ def main(mode, input, output, name, ncores, bowtie2_index,
 		qc = of + "/04_qc"
 		
 		folders = [of, logs, fin, trim, aligned, processed, qc,
-			of + "/.internal/parseltongue", of + "/.internal/samples"]
+			of + "/.internal/parseltongue", of + "/.internal/samples",
+			qc + "/bowtie2"]
 
 		mkfolderout = [make_folder(x) for x in folders]
+		
+		if(!keep_duplicates):
+			make_folder(logs + "/picard")
+		if(!skip_fastqc):
+			make_folder(logs + "/fastqc")
+		
+		# Create internal README files 
+		if not os.path.exists(of + "/.internal/README"):
+			with open(of + "/.internal/README" , 'w') as outfile:
+				outfile.write("This folder creates important (small) intermediate; don't modify it.\n\n")
+		if not os.path.exists(of + "/.internal/parseltongue/README"):	
+			with open(of + "/.internal/parseltongue/README" , 'w') as outfile:
+				outfile.write("This folder creates intermediate output to be interpreted by Snakemake; don't modify it.\n\n")
+		if not os.path.exists(of + "/.internal/samples/README"):
+			with open(of + "/.internal" + "/samples" + "/README" , 'w') as outfile:
+				outfile.write("This folder creates samples to be interpreted by Snakemake; don't modify it.\n\n")
+	
+		# Set up sample bam plain text file
+		for i in range(len(samples)):
+			with open(of + "/.internal/samples/" + samples[i] + ".fastqs.txt" , 'w') as outfile:
+				outfile.write(p.fastq1[i] + "\t" + p.fastq2[i])
 		
 		# Determine chromosomes to keep / filter
 		#chrs = os.popen(p.samtools_path + " idxstats " +  outfolder + "/02_aligned_reads/* | cut -f1").read().strip().split("\n")

@@ -1,0 +1,47 @@
+import os
+import subprocess
+import shutil
+import pysam
+from os.path import join
+
+configfile: config["cfp"]     
+outdir = config["output_directory"]
+script_dir = config["script_dir"]          
+
+# A Snakemake regular expression matching the bam file paths
+SAMPLES, = glob_wildcards(join(outdir, ".internal/samples/{sample}.fastqs.txt"))
+fastqstxtin = '{sample}.fastqs.txt'
+
+oneProatacSample_py = script_dir + "/bin/python/oneProatacSample.py"
+
+rule all:
+	input:
+		outdir + "/temp/scattered.allSamples.txt"
+
+rule process_one_sample:
+	input:
+		txtin = join(outdir + "/.internal/samples", fastqstxtin)
+	output:
+		bam = outdir + "/final/samplebams/{sample}.qc.bam",
+	run:
+		# Get sample information
+		sample = output.bam.replace(outdir + "/final/samplebams/", "").replace(".qc.bam", "")
+		with open(input.txtin) as f:
+			line1 = f.read()
+			fastq1 = line1.split("\t")[0].strip()
+			fastq2 = line1.split("\t")[1].strip()
+		
+		# Process one samle
+		pycall = " ".join(['python', oneProatacSample_py, config["cfp"], fastq1, fastq2, sample])
+		os.system(pycall)
+
+# Collate everything
+rule make_sample_list:
+	input:
+		depths = expand(outdir + "/qc/depth/{sample}.depth.txt", sample=SAMPLES)
+	output:
+		allSamplesFile = outdir + "/temp/scattered.allSamples.txt"
+	run: 	
+		for file in input.depths:
+			sample = file.replace(outdir + "/qc/depth/", "").replace(".depth.txt", "")
+			os.system("echo " + sample + " >> " + output.allSamplesFile)
