@@ -31,6 +31,8 @@ read_quality = "20"
 # Step 1
 clipl = config["clipl"]
 clipr = config["clipr"]
+py_trim = config["py_trim"]
+PEAT = config["PEAT"]
 skip_fastqc = str(config["skip_fastqc"])
 java = str(config["java"])
 
@@ -43,8 +45,8 @@ extract_mito = str(config["extract_mito"])
 # Step 3
 max_javamem = config["max_javamem"]
 keep_duplicates = str(config["keep_duplicates"])
-MarkDuplicatesCall = java + " -Xmx"+max_javamem+"  -jar " + script_dir + "/bin/MarkDuplicates.jar"
-CollectInsertCall = java + " -Xmx"+max_javamem+"  -jar " + script_dir + "/bin/CollectInsertSizeMetrics.jar"
+MarkDuplicatesCall = java + " -Xmx"+max_javamem+"  -jar " + script_dir + "/bin/picard/MarkDuplicates.jar"
+CollectInsertCall = java + " -Xmx"+max_javamem+"  -jar " + script_dir + "/bin/picard/CollectInsertSizeMetrics.jar"
 # Step 4
 macs2 = config["macs2"]
 macs2_genome_size = config["macs2_genome_size"]
@@ -52,8 +54,16 @@ macs2_genome_size = config["macs2_genome_size"]
 # 01 Trim using custom script
 trim_py = script_dir + "/bin/python/py3_ATACtrim.py"
 pycall = "python " + trim_py + " -a "+fastq1+" -b "+fastq2+" -l "+clipl+" -r "+clipr+" -s "+sample+" -o "+outdir+"/01_trimmed -t hard -q "+outdir+"/logs/trim"
+peatcall = PEAT + " paired -1 "+fastq1+" -2 "+fastq2+" -o "+ outdir+"/01_trimmed/"+sample+" -n 2 -l 20 -r 0.1 -a 0.1 -g 0.1 --out_gzip"
 if not os.path.isfile(outdir+"/logs/trim/"+sample+".trim.log"):
-	os.system(pycall)
+	if(py_trim == "True"):
+		print("running py trim")
+		os.system(pycall)
+	else:
+		print("Running PEAT trimming")
+		os.system(peatcall)
+		os.system("mv "+outdir+"/01_trimmed/"+sample+"_report.txt "+outdir+"/logs/trim/"+sample+".trim.log")
+
 tfq1 = outdir + "/01_trimmed/" + sample + "_1.trim.fastq.gz"
 tfq2 = outdir + "/01_trimmed/" + sample + "_2.trim.fastq.gz"
 
@@ -68,6 +78,7 @@ bwt2log = outdir+"/logs/bowtie2/" + sample + ".log"
 sortedbam = outdir + '/02_aligned_reads/'+sample+'.all.sorted.bam'
 bwt2call = '(' + bowtie2 + ' -X 2000 -p 2 -x '+ bowtie2index +' --rg-id '+sample+' -1 '+tfq1+' -2 '+tfq2+' | ' + samtools + ' view -bS - | ' + samtools + ' sort -@ 2 - -o ' +sortedbam+') 2> ' + bwt2log 
 if not os.path.isfile(sortedbam):
+	print("Aligning data with Bowtie2")
 	os.system(bwt2call)
 	pysam.index(sortedbam)
 

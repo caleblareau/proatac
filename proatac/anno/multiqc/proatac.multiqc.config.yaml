@@ -13,3 +13,21 @@ picard/markdups:
 picard/insertsize:
     fn: '*.inserts.log'
     shared: true
+custom_logo: '/Volumes/dat/Research/BuenrostroResearch/lareau_dev/proatac/proatac/anno/multiqc/logo.png'
+custom_logo_url: 'http://proatac.readthedocs.io'
+custom_logo_title: 'proatac'
+report_header_info:
+    - For more information on proatac: 'http://proatac.readthedocs.io'
+top_modules:
+    - 'fastqc'
+    - 'bowtie2'
+    - 'picard'
+    - 'macs2'
+read_count_multiplier: 1000
+read_count_prefix: 'K'
+read_count_desc: 'thousand'
+title: "proatac QC report"
+subtitle: "An overview of key metrics for ATAC-seq analysis processing statistics."
+intro_text: ""
+report_comment: ""
+max_table_rows: 100

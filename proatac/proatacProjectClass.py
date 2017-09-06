@@ -47,7 +47,7 @@ def getBfiles(bedtools_genome, blacklist_file, reference_genome, script_dir):
 class proatacProject():
 	def __init__(self, script_dir, mode, input, output, name, ncores, bowtie2_index,
 		cluster, jobs, peak_width, keep_duplicates, max_javamem, extract_mito, reference_genome,
-		clipl, clipr, keep_temp_files, skip_fastqc, overwrite,
+		clipl, clipr, py_trim, keep_temp_files, skip_fastqc, overwrite,
 		bedtools_genome, blacklist_file, tss_file, macs2_genome_size, bs_genome, 
 		bedtools_path, bowtie2_path, java_path, macs2_path, samtools_path, r_path):
 
@@ -56,6 +56,12 @@ class proatacProject():
 		if(platform.platform()[0:5]=="Darwi"):
 			self.os = "mac"
 		
+		# Add Path to PEAT
+		if(self.os == "mac"):
+			self.PEAT = script_dir + "/bin/static/PEAT_cl123_mac"
+		else:
+			self.PEAT = script_dir + "/bin/static/PEAT_cl123_linux"
+			
 		# verify bowtie2 index
 		bwt2idxfiles = os.popen("ls " + bowtie2_index + "*.bt2*").read().strip().split("\n")
 		if(len(bwt2idxfiles) < 6):
@@ -66,6 +72,7 @@ class proatacProject():
 		# Assign straightforward attributes
 		self.clipl = clipl
 		self.clipr = clipr
+		self.py_trim = py_trim
 		self.peak_width = peak_width
 		self.max_javamem = max_javamem
 		self.extract_mito = extract_mito
@@ -157,7 +164,8 @@ class proatacProject():
 	def __iter__(self):
 		
 		# Purposefully skip samples, fastq1, fastq2 -- will put individual samples there in call
-		
+		yield 'py_trim', self.py_trim
+		yield 'PEAT', self.PEAT
 		yield 'script_dir', self.script_dir
 		yield 'tssFile', self.tssFile
 		yield 'blacklistFile', self.blacklistFile

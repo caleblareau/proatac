@@ -40,8 +40,9 @@ from ruamel.yaml.scalarstring import SingleQuotedScalarString as sqs
 @click.option('--extract-mito', '-em', is_flag=True, help='Extract mitochondrial reads as part of special output.')
 @click.option('--reference-genome', '-rg', default = "", help='Support for built-in genome; choices are hg19, mm9, hg38, mm10, hg19_mm10_c (species mix)')
 
-@click.option('--clipL', '-cl', default = "0", help='Number of variants to clip from left hand side of read.')
-@click.option('--clipR', '-cr', default = "0", help='Number of variants to clip from right hand side of read.')
+@click.option('--clipL', '-cl', default = "0", help='Number of bases to clip from left hand side of read.')
+@click.option('--clipR', '-cr', default = "0", help='Number of bases to clip from right hand side of read.')
+@click.option('--py-trim', is_flag = True, help='Option to use custom python script for trimming. Slows down the linker trimming dramatically.')
 
 @click.option('--keep-temp-files', '-z', is_flag=True, help='Keep all intermediate files.')
 @click.option('--skip-fastqc', '-sf', is_flag=True, help='Throw this flag to skip fastqc on the trimmed fastqs; will only run if software is discovered in the path.')
@@ -64,7 +65,7 @@ from ruamel.yaml.scalarstring import SingleQuotedScalarString as sqs
 def main(mode, input, output, name, ncores, bowtie2_index,
 	cluster, jobs, peaks_file, by_rgid,
 	peak_width, keep_duplicates, max_javamem, extract_mito, reference_genome,
-	clipl, clipr, keep_temp_files, skip_fastqc, overwrite,
+	clipl, clipr, py_trim, keep_temp_files, skip_fastqc, overwrite,
 	bedtools_genome, blacklist_file, tss_file, macs2_genome_size, bs_genome, 
 	bedtools_path, bowtie2_path, java_path, macs2_path, samtools_path, r_path):
 	
@@ -138,7 +139,7 @@ def main(mode, input, output, name, ncores, bowtie2_index,
 	
 	p = proatacProject(script_dir, mode, input, output, name, ncores, bowtie2_index,
 		cluster, jobs, peak_width, keep_duplicates, max_javamem, extract_mito, reference_genome,
-		clipl, clipr, keep_temp_files, skip_fastqc, overwrite,
+		clipl, clipr, py_trim, keep_temp_files, skip_fastqc, overwrite,
 		bedtools_genome, blacklist_file, tss_file, macs2_genome_size, bs_genome, 
 		bedtools_path, bowtie2_path, java_path, macs2_path, samtools_path, r_path)
 	
