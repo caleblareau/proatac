@@ -20,7 +20,7 @@ from ruamel.yaml.scalarstring import SingleQuotedScalarString as sqs
 @click.command()
 @click.version_option()
 
-@click.argument('mode', type=click.Choice(['bulk', 'check', 'counts', 'indexSplit', 'single', 'summitsToPeaks']))
+@click.argument('mode', type=click.Choice(['bulk', 'check', 'counts', 'indexSplit', 'single', 'summitsToPeaks', 'support']))
 
 @click.option('--input', '-i', default = ".", required=True, help='Input for proatac; varies by which mode is specified; see documentation')
 @click.option('--output', '-o', default="proatac_out", help='Output directory for analysis; see documentation.')
@@ -81,12 +81,22 @@ def main(mode, input, output, name, ncores, bowtie2_index,
 
 	click.echo(gettime() + "Starting proatac pipeline v%s" % __version__)
 	
+	# Determine which genomes are available
+	rawsg = os.popen('ls ' + script_dir + "/anno/bedtools/*.sizes").read().strip().split("\n")
+	supported_genomes = [x.replace(script_dir + "/anno/bedtools/chrom_", "").replace(".sizes", "") for x in rawsg]  
+
+	if(mode == "support"):
+		click.echo(gettime() + "List of built-in genomes supported in proatac:")
+		click.echo(gettime() + str(supported_genomes))
+		sys.exit(gettime() + 'Specify one of these genomes or provide your own files (see documentation).')
+		
+	
 	# Take a collection of summits files and return a consensus set of peaks	
 	if(mode == 'summitsToPeaks'):
 		click.echo(gettime() + "Starting inference of peaks from summits.")
 		
 		# Need chromosome sizes and blacklist
-		bedtoolsGenomeFile, blacklistFile = getBfiles(bedtools_genome, blacklist_file, reference_genome, script_dir)
+		bedtoolsGenomeFile, blacklistFile = getBfiles(bedtools_genome, blacklist_file, reference_genome, script_dir, supported_genomes)
 		
 		# Figure out which samples to process
 		bedFiles = os.popen("ls " + input.rstrip("/") + "/*summits.bed*").read().strip().split("\n")
@@ -137,7 +147,7 @@ def main(mode, input, output, name, ncores, bowtie2_index,
 		click.echo(gettime() + "Completed peak inference from summit files.")
 		sys.exit()
 	
-	p = proatacProject(script_dir, mode, input, output, name, ncores, bowtie2_index,
+	p = proatacProject(script_dir, supported_genomes, mode, input, output, name, ncores, bowtie2_index,
 		cluster, jobs, peak_width, keep_duplicates, max_javamem, extract_mito, reference_genome,
 		clipl, clipr, py_trim, keep_temp_files, skip_fastqc, overwrite,
 		bedtools_genome, blacklist_file, tss_file, macs2_genome_size, bs_genome, 
