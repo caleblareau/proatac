@@ -4,7 +4,7 @@ prePROcessing ATAC and scatac data
 from setuptools import find_packages, setup
 from distutils.core import setup, Extension
 
-dependencies = ['click', 'Numpy', 'editdistance', 'pytest', 'python-levenshtein', 'snakemake', 'biopython', 'optparse-pretty', 'regex', 'PyYAML', 'pysam', 'ruamel.yaml', 'multiqc']
+dependencies = ['click', 'Numpy', 'editdistance', 'pytest', 'python-levenshtein', 'snakemake', 'biopython', 'optparse-pretty', 'regex', 'PyYAML', 'pysam', 'ruamel.yaml', 'multiqc', 'scipy']
 
 setup(
     name='proatac',

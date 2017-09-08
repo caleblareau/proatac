@@ -28,11 +28,9 @@ opts.add_option("-b", help="<Bed> Accepts bed file")
 opts.add_option("-o",help="OutputFile")
 opts.add_option("-e",default="1000", help="number of bases to extend to each side, default=1000")
 opts.add_option("-p",default="center", help="options:center,ends, default=center")
+opts.add_option("-q",help = "Outputplot")
 opts.add_option("-c",default="4",help="number of threads to use, default=20")
 opts.add_option("-s",default='4',help="column in which strand information is located (1 being first), default=4")
-opts.add_option("-u", action="store_true", default=False, help="Print uncompressed output file")
-opts.add_option("-v", action="store_true", default=False, help="Print profile around bed file")
-opts.add_option("-i", action="store_true", default=False, help="Print insert sizes across intervals")
 opts.add_option("--window",default='20',help="window size for ploting")
 options, arguments = opts.parse_args()
 
@@ -120,44 +118,16 @@ if __name__ == "__main__":
 mat = np.zeros([rows,cols])
 for i in range(len(starts)):
 	mat=mat+sub_mats[i]
-#asf
-# get column vector
-if options.v == True:
-	mat = np.sum(mat,0)
-if options.i == True:
-	mat = np.sum(mat,1)
+mat = np.sum(mat,0)
 
-# save matrix
-if not options.o:
-	n1=os.path.basename(options.a)
-	n2=os.path.basename(options.b)
-	if options.v == True: options.o=n1+'.'+n2+'.vect'
-	elif options.i == True: options.o=n1+'.'+n2+'.iSize'
-	else: options.o=n1+'.'+n2+'.vplot'
-#if options.u == True:
-#	np.savetxt(options.o,mat,delimiter='\t',fmt='%s')
-#else:
-#	np.save(options.o,mat)
+np.savetxt(options.o, np.column_stack((np.arange(-2000,2000),np.array(mat))),delimiter=',',fmt='%s')
 
-# plot
 fig=plt.figure(figsize=(8.0, 5.0))
 xran=min(500,int(options.e))
 yran=min(500,rows)
-if options.v == True:
-	#plt.plot(mat/np.median(mat[1:200]))
-	plt.plot(mat/np.mean(mat[1:200]),'k.')
-	plt.plot(np.convolve(mat,np.ones(int(options.window)),'same')/int(options.window)/np.mean(mat[1:200]),'r')
-	plt.xlabel('Position relative to center')
-	plt.ylabel('Insertions')
-elif options.i == True:
-	plt.plot(mat[0:990])
-	plt.xlabel('Insert size (bp)')
-	plt.ylabel('Count')
-else:
-	plt.imshow(mat[0:yran,(int(options.e)-xran):(int(options.e)+xran+1)],origin='lower',aspect='equal',extent=[-xran,xran,1,yran+1])
-	plt.xlabel('Position relative to center')
-	plt.ylabel('Insert size')
-
-# save figure
-fig.savefig(options.o+'.png')
+plt.plot(mat/np.mean(mat[1:200]),'k.')
+plt.plot(np.convolve(mat,np.ones(int(options.window)),'same')/int(options.window)/np.mean(mat[1:200]),'r')
+plt.xlabel('Position to TSS')
+plt.ylabel('Insertions')
+fig.savefig(options.q)
 plt.close(fig)

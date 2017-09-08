@@ -16,17 +16,17 @@ oneProatacSample_py = script_dir + "/bin/python/oneProatacSample.py"
 
 rule all:
 	input:
-		outdir + "/final/crap.txt"
+		outdir + "/final/samples.txt"
 
 rule process_one_sample:
 	input:
 		txtin = join(outdir + "/.internal/samples", fastqstxtin)
 	output:
-		trimlog = outdir + "/logs/trim/{sample}.trim.txt"
+		trimlog = outdir + "/logs/samples/{sample}.sampleComplete.txt"
 	threads: 2
 	run:
 		# Get sample information
-		sample = output.trimlog.replace(outdir + "/logs/trim/", "").replace(".trim.txt", "")
+		sample = output.trimlog.replace(outdir + "/logs/samples/", "").replace(".sampleComplete.txt", "")
 		with open(input.txtin) as f:
 			line1 = f.read()
 			fastq1 = line1.split("\t")[0].strip()
@@ -39,10 +39,10 @@ rule process_one_sample:
 # Collate everything
 rule make_sample_list:
 	input:
-		trimlogs = expand(outdir + "/logs/trim/{sample}.trim.txt", sample=SAMPLES)
+		trimlogs = expand(outdir + "/logs/samples/{sample}.sampleComplete.txt", sample=SAMPLES)
 	output:
-		allSamplesFile = outdir + "/final/crap.txt"
+		allSamplesFile = outdir + "/final/samples.txt"
 	run: 	
 		for file in input.trimlogs:
-			sample = file.replace(outdir + "/logs/trim/", "").replace(".trim.txt", "")
+			sample = file.replace(outdir + "/logs/samples/", "").replace(".sampleComplete.txt", "")
 			os.system("echo " + sample + " >> " + output.allSamplesFile)

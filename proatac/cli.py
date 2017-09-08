@@ -37,7 +37,7 @@ from ruamel.yaml.scalarstring import SingleQuotedScalarString as sqs
 @click.option('--peak-width', '-pw', default = "250", help='Fixed width value of resulting peaks from summit calling / padding. 250, 500 recommended.')
 @click.option('--keep-duplicates', '-kd', is_flag=True, help='Keep optical/PCR duplicates')
 @click.option('--max-javamem', '-jm', default = "4000m", help='Maximum memory for java')
-@click.option('--extract-mito', '-em', is_flag=True, help='Extract mitochondrial reads as part of special output.')
+@click.option('--trash-mito', '-tm', is_flag=True, help='Throw away mitochondrial reads as part of the final cleanup.')
 @click.option('--reference-genome', '-rg', default = "", help='Support for built-in genome; choices are hg19, mm9, hg38, mm10, hg19_mm10_c (species mix)')
 
 @click.option('--clipL', '-cl', default = "0", help='Number of bases to clip from left hand side of read.')
@@ -64,7 +64,7 @@ from ruamel.yaml.scalarstring import SingleQuotedScalarString as sqs
 
 def main(mode, input, output, name, ncores, bowtie2_index,
 	cluster, jobs, peaks_file, by_rgid,
-	peak_width, keep_duplicates, max_javamem, extract_mito, reference_genome,
+	peak_width, keep_duplicates, max_javamem, trash_mito, reference_genome,
 	clipl, clipr, py_trim, keep_temp_files, skip_fastqc, overwrite,
 	bedtools_genome, blacklist_file, tss_file, macs2_genome_size, bs_genome, 
 	bedtools_path, bowtie2_path, java_path, macs2_path, samtools_path, r_path):
@@ -72,7 +72,7 @@ def main(mode, input, output, name, ncores, bowtie2_index,
 	"""
 	proatac: a toolkit for PROcessing ATAC-seq data. \n
 	Caleb Lareau, Buenrostro Lab. \n
-	modes = ['bulk', 'check', 'counts', 'indexSplit', 'single', 'summitsToPeaks']\n
+	modes = ['bulk', 'check', 'counts', 'indexSplit', 'single', 'summitsToPeaks', 'support']\n
 	See http://proatac.readthedocs.io for more details.
 	"""
 	
@@ -148,7 +148,7 @@ def main(mode, input, output, name, ncores, bowtie2_index,
 		sys.exit()
 	
 	p = proatacProject(script_dir, supported_genomes, mode, input, output, name, ncores, bowtie2_index,
-		cluster, jobs, peak_width, keep_duplicates, max_javamem, extract_mito, reference_genome,
+		cluster, jobs, peak_width, keep_duplicates, max_javamem, trash_mito, reference_genome,
 		clipl, clipr, py_trim, keep_temp_files, skip_fastqc, overwrite,
 		bedtools_genome, blacklist_file, tss_file, macs2_genome_size, bs_genome, 
 		bedtools_path, bowtie2_path, java_path, macs2_path, samtools_path, r_path)
@@ -185,18 +185,20 @@ def main(mode, input, output, name, ncores, bowtie2_index,
 		folders = [of, logs, fin, trim, aligned, processed, qc,
 			of + "/.internal/parseltongue", of + "/.internal/samples",
 			logs + "/bowtie2", logs + "/trim", logs + "/macs2",
-			of + "/03_processed_reads/temp",]
+			of + "/03_processed_reads/temp", fin + "/plots"]
 	
 		mkfolderout = [make_folder(x) for x in folders]
 		
 		make_folder(logs + "/picard")
 		make_folder(logs + "/picard/inserts")
+		make_folder(logs + "/tss")
+		make_folder(logs + "/samples")
+		make_folder(of + "/mito")
+		
 		if not keep_duplicates:
 			make_folder(logs + "/picard/markdups")
 		if not skip_fastqc:
 			make_folder(logs + "/fastqc")
-		if extract_mito:
-			make_folder(of + "/mito")
 			
 		if(mode == "bulk"):
 			make_folder(of + "/final/bams")
@@ -215,7 +217,12 @@ def main(mode, input, output, name, ncores, bowtie2_index,
 		if not os.path.exists(of + "/.internal/samples/README"):
 			with open(of + "/.internal" + "/samples" + "/README" , 'w') as outfile:
 				outfile.write("This folder creates samples to be interpreted by Snakemake; don't modify it.\n\n")
-	
+		
+		# Create promoter file:
+		ptss = of + "/.internal/promoter.tss.bed"
+		if not os.path.exists(ptss):
+			os.system('''awk '{print $1"\t"$2-2000"\t"$3+2000"\t"$4}' '''+ p.tssFile + " > " + ptss)
+			
 		# Set up sample bam plain text file
 		for i in range(len(p.samples)):
 			with open(of + "/.internal/samples/" + p.samples[i] + ".fastqs.txt" , 'w') as outfile:
@@ -250,6 +257,9 @@ def main(mode, input, output, name, ncores, bowtie2_index,
 			shutil.rmtree(byefolder + "/02_aligned_reads")
 			shutil.rmtree(byefolder + "/03_processed_reads")
 			shutil.rmtree(byefolder + "/04_qc")
+			if(trash_mito):
+				shutil.rmtree(byefolder + "/mito")
+			
 			click.echo(gettime() + "Intermediate files successfully removed.")
 		
 	click.echo(gettime() + "Complete.")

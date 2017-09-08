@@ -22,6 +22,7 @@ top_modules:
     - 'fastqc'
     - 'bowtie2'
     - 'picard'
+fn_ignore_dirs:
     - 'macs2'
 read_count_multiplier: 0.001
 read_count_prefix: 'Total'
@@ -31,3 +32,22 @@ subtitle: "An overview of key metrics for ATAC-seq analysis processing statistic
 intro_text: ""
 report_comment: ""
 max_table_rows: 100
+table_columns_visible:
+    FastQC:
+        percent_duplicates: False
+custom_data:
+    tss_coverage:
+        file_format: 'tsv'
+        section_name: 'TSS Plot'
+        description: 'Insertions near (signed) RefSeq Transcription Start Sites'
+        plot_type: 'linegraph'
+        pconfig:
+            id: 'example_coverage_lineplot'
+            title: 'TSS Plot'
+            ylab: 'Number of Insertions'
+            xlab: 'Postion relative to TSS'
+            xmax: 2000
+            ymin: -2000
+sp:
+    tss_coverage:
+        fn: '*tss.tsv'

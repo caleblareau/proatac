@@ -40,15 +40,16 @@ java = str(config["java"])
 bowtie2 = config["bowtie2"]
 samtools = config["samtools"]
 bowtie2index = config["bowtie2_index"]
-extract_mito = str(config["extract_mito"])
 
 # Step 3
 max_javamem = config["max_javamem"]
 keep_duplicates = str(config["keep_duplicates"])
 MarkDuplicatesCall = java + " -Xmx"+max_javamem+"  -jar " + script_dir + "/bin/picard/MarkDuplicates.jar"
 CollectInsertCall = java + " -Xmx"+max_javamem+"  -jar " + script_dir + "/bin/picard/CollectInsertSizeMetrics.jar"
+
 # Step 4
 macs2 = config["macs2"]
+tssFile = config["tssFile"]
 macs2_genome_size = config["macs2_genome_size"]
 
 # 01 Trim using custom script
@@ -83,11 +84,10 @@ if not os.path.isfile(sortedbam):
 	pysam.index(sortedbam)
 
 # 02a mito-- extract if the user says to
-if(extract_mito == "True"):
-	mitobam = outdir + "/mito/" + sample + ".mito.bam"
-	mitocall = samtools + " view -b "+sortedbam+" -o "+mitobam+" " + " ".join(str(i) for i in mitochrs) + " && " + samtools + " index " + mitobam
-	if not os.path.isfile(mitobam):
-		os.system(mitocall)
+mitobam = outdir + "/mito/" + sample + ".mito.bam"
+mitocall = samtools + " view -b "+sortedbam+" -o "+mitobam+" " + " ".join(str(i) for i in mitochrs) + " && " + samtools + " index " + mitobam
+if not os.path.isfile(mitobam):
+	os.system(mitocall)
 
 # 03 Process .bam files
 temp1 = outdir + "/03_processed_reads/temp/" + sample + ".temp1.bam"
@@ -106,6 +106,7 @@ if(mode == "bulk"):
 	finalbam = outdir + "/final/bams/"+sample+".proatac.bam"
 else:
 	finalbam = outdir + "/03_processed_reads/bams/"+sample+".proatac.bam"	
+	
 rmlog = outdir + "/logs/picard/markdups/"+sample+".MarkDuplicates.log"
 run_markdup = MarkDuplicatesCall + " INPUT="+temp2+" OUTPUT="+finalbam+" METRICS_FILE="+rmlog+" REMOVE_DUPLICATES=true VALIDATION_STRINGENCY=SILENT"
 
@@ -117,20 +118,70 @@ if not os.path.isfile(finalbam):
 	pysam.index(finalbam)
 
 
+##############
+# GET QC STATS
+##############
+
+# Get Inserts
+insertlog = outdir + "/logs/picard/inserts/"+sample+".inserts.log"
+histofile = outdir + "/logs/picard/inserts/"+sample+".histogram.pdf"
+run_insert = CollectInsertCall + " INPUT="+finalbam+" O="+insertlog+" H="+histofile+"  W=1000 VALIDATION_STRINGENCY=SILENT" 
+os.system(run_insert)
+Median_Insert=os.popen("grep -A1 'MEDIAN_INSERT_SIZE' "+insertlog+''' | grep -v "MEDIAN_INSERT_SIZE" | awk '{print $1}' ''').read().strip()
+Mean_Insert=os.popen("grep -A1 'MEDIAN_INSERT_SIZE' "+insertlog+''' | grep -v "MEDIAN_INSERT_SIZE" | awk '{print $5}' ''').read().strip()
+p80_Insert=os.popen("grep -A1 'MEDIAN_INSERT_SIZE' "+insertlog+''' | grep -v "MEDIAN_INSERT_SIZE" | awk '{print $16}' ''').read().strip()
+
+
+# Do promoter overlap to get TSS rate
+ptss = outdir + "/.internal/promoter.tss.bed"
+TSSreads = os.popen(samtools + ' view -L ' + outdir + "/.internal/promoter.tss.bed " +finalbam+" | wc -l").read().strip()
+ALLreads = os.popen(samtools + ' view '+finalbam+" | wc -l").read().strip()
+TSSpercent = str(round(float(TSSreads)/float(ALLreads)*100,3)) + "%"
+
+# Get other existing summary statistics
+Frags = os.popen(samtools + ' flagstat '+sortedbam+''' | head -1 | cut -d " " -f1 | awk '{print $1/2}' ''').read().strip()
+AlignPercent = os.popen('tail -n 1 ' + bwt2log + ' | cut -d " " -f1').read().strip()
+Aligned_Reads=os.popen(samtools + ' view -b '+sortedbam+" "+" ".join(str(i) for i in mitochrs + keepchrs) +' | '+samtools+''' flagstat - | head -1 | cut -d " " -f1 | awk '{print $1/2}' ''').read().strip()
+Aligned_noMT=os.popen(samtools + ' view -b '+sortedbam+" "+" ".join(str(i) for i in keepchrs) +' | '+samtools+''' flagstat - | head -1 | cut -d " " -f1 | awk '{print $1/2}' ''').read().strip()
+MT_frags=os.popen(samtools + ' flagstat '+mitobam+''' | head -5 | tail -n 1 | cut -d " " -f 1 | awk '{print $1/2}' | awk -F. '{print $1}' ''').read().strip()
+Dup_Rate=os.popen("grep -A1 'UNPAIRED_READS_EXAMINED' "+rmlog+''' | grep -v "UNPAIRED_READS_EXAMINED" | awk '{print $7*100"%"}' ''').read().strip()
+Lib_Size=os.popen("grep -A1 'UNPAIRED_READS_EXAMINED' "+rmlog+''' | grep -v "UNPAIRED_READS_EXAMINED" | awk '{print $8}' ''').read().strip()
+Final_frags=os.popen(samtools+' flagstat '+finalbam+''' | head -1 | cut -d " " -f1 | awk '{print $1/2}' ''').read().strip()
+
+# Now just need to spit these out to a file; make this the output
+print(Frags)
+print(AlignPercent)
+print(Aligned_Reads)
+print(Aligned_noMT)
+print(MT_frags)
+print(Dup_Rate)
+print(Lib_Size)
+print(Final_frags)
+print(TSSpercent)
+print(Median_Insert)
+print(Mean_Insert)
+print(p80_Insert)
+
 # 04 Do macs2 on each sample only if bulk
 # Need to build in support for bigwig here
 if(mode == "bulk"):
-	insertlog = outdir + "/logs/picard/inserts/"+sample+".inserts.log"
-	histofile = outdir + "/logs/picard/inserts/"+sample+".histogram.pdf"
-	run_insert = CollectInsertCall + " INPUT="+finalbam+" O="+insertlog+" H="+histofile+"  W=1000 VALIDATION_STRINGENCY=SILENT" 
-	os.system(run_insert)
 	
+	# Do MACS2
 	macs2log = outdir + "/logs/macs2/"+sample+".peakcalls.log"
 	macs2outdir = outdir + "/04_qc/macs2_each/"
 	macs2call = "(" + macs2 + " callpeak -t "+finalbam+" -n " + macs2outdir + sample + " --nomodel --keep-dup all --call-summits -q 0.05 -g " + macs2_genome_size + ") 2> " + macs2log
+
 	if not os.path.isfile(macs2outdir + sample + "_peaks.narrowPeak"):
 		os.system(macs2call)
 		os.system("mv " + macs2outdir + sample + "_peaks.xls " + outdir + "/logs/macs2/"+sample+"_peaks.xls")
 		os.system("mv " + macs2outdir + sample + "_summits.bed " + outdir + "/final/summits/"+sample+"_summits.bed")
-
-os.system('echo "hey" > ' + outdir+"/logs/trim/"+sample+".trim.txt")
+	
+	# Build TSS Vector
+	tssout = outdir + "/logs/tss/" + sample + ".tss.csv"
+	Vvec_py = script_dir + "/bin/python/py3_makeVvec.py"
+	vv_call = "python "+Vvec_py+" -a "+finalbam+" -b "+tssFile+" -e 2000 -p ends -o " + tssout+" -q "+outdir+"/final/plots/"+sample+".tss.png"
+	print(vv_call)
+	if not os.path.isfile(tssout):
+		os.system(vv_call)
+		
+os.system('echo "hey" > ' + outdir+"/logs/samples/"+sample+".sampleComplete.txt")
