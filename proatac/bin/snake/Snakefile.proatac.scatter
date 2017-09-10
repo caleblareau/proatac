@@ -22,11 +22,12 @@ rule process_one_sample:
 	input:
 		txtin = join(outdir + "/.internal/samples", fastqstxtin)
 	output:
-		trimlog = outdir + "/logs/samples/{sample}.sampleComplete.txt"
-	threads: 2
+		trimlog = outdir + "/logs/samples/{sample}.sampleQC.tsv"
+	threads:
+		4
 	run:
 		# Get sample information
-		sample = output.trimlog.replace(outdir + "/logs/samples/", "").replace(".sampleComplete.txt", "")
+		sample = output.trimlog.replace(outdir + "/logs/samples/", "").replace(".sampleQC.tsv", "")
 		with open(input.txtin) as f:
 			line1 = f.read()
 			fastq1 = line1.split("\t")[0].strip()
@@ -39,10 +40,10 @@ rule process_one_sample:
 # Collate everything
 rule make_sample_list:
 	input:
-		trimlogs = expand(outdir + "/logs/samples/{sample}.sampleComplete.txt", sample=SAMPLES)
+		trimlogs = expand(outdir + "/logs/samples/{sample}.sampleQC.tsv", sample=SAMPLES)
 	output:
 		allSamplesFile = outdir + "/final/samples.txt"
 	run: 	
 		for file in input.trimlogs:
-			sample = file.replace(outdir + "/logs/samples/", "").replace(".sampleComplete.txt", "")
+			sample = file.replace(outdir + "/logs/samples/", "").replace(".sampleQC.tsv", "")
 			os.system("echo " + sample + " >> " + output.allSamplesFile)

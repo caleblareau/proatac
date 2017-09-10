@@ -6,6 +6,7 @@ import subprocess
 import sys
 import shutil
 import pysam
+import csv
 from ruamel import yaml
 
 configFile = sys.argv[1]
@@ -25,7 +26,8 @@ mode = config["mode"]
 # Ned to update
 keepchrs = ["chr1", "chr2", "chr3", "chr4", "chr5", "chr6", "chr7", "chr8", "chr9", "chr10", "chr11", "chr12", "chr13", "chr14", "chr15", "chr16", "chr17", "chr18", "chr19", "chr20", "chr21", "chr22", "chrX"]
 mitochrs = ['chrM', 'MT', 'humanM', 'mouseM', 'humanMT', 'mouseMT']
-read_quality = "20"
+read_quality = "30"
+ncores = "4"
 # bigwig support
 
 # Step 1
@@ -52,10 +54,12 @@ macs2 = config["macs2"]
 tssFile = config["tssFile"]
 macs2_genome_size = config["macs2_genome_size"]
 
+
+
 # 01 Trim using custom script
 trim_py = script_dir + "/bin/python/py3_ATACtrim.py"
 pycall = "python " + trim_py + " -a "+fastq1+" -b "+fastq2+" -l "+clipl+" -r "+clipr+" -s "+sample+" -o "+outdir+"/01_trimmed -t hard -q "+outdir+"/logs/trim"
-peatcall = PEAT + " paired -1 "+fastq1+" -2 "+fastq2+" -o "+ outdir+"/01_trimmed/"+sample+" -n 2 -l 20 -r 0.1 -a 0.1 -g 0.1 --out_gzip"
+peatcall = PEAT + " paired -1 "+fastq1+" -2 "+fastq2+" -o "+ outdir+"/01_trimmed/"+sample+" -n "+ncores+" -l 20 -r 0.1 -a 0.1 -g 0.1 --out_gzip"
 if not os.path.isfile(outdir+"/logs/trim/"+sample+".trim.log"):
 	if(py_trim == "True"):
 		print("running py trim")
@@ -77,7 +81,7 @@ if(skip_fastqc == "False" and str(fastqc_path) != "None"):
 # 02 Align with bowtie2
 bwt2log = outdir+"/logs/bowtie2/" + sample + ".log"
 sortedbam = outdir + '/02_aligned_reads/'+sample+'.all.sorted.bam'
-bwt2call = '(' + bowtie2 + ' -X 2000 -p 2 -x '+ bowtie2index +' --rg-id '+sample+' -1 '+tfq1+' -2 '+tfq2+' | ' + samtools + ' view -bS - | ' + samtools + ' sort -@ 2 - -o ' +sortedbam+') 2> ' + bwt2log 
+bwt2call = '(' + bowtie2 + ' -X 2000 -p '+ncores+' -x '+ bowtie2index +' --rg-id '+sample+' -1 '+tfq1+' -2 '+tfq2+' | ' + samtools + ' view -bS - | ' + samtools + ' sort -@ 2 - -o ' +sortedbam+') 2> ' + bwt2log 
 if not os.path.isfile(sortedbam):
 	print("Aligning data with Bowtie2")
 	os.system(bwt2call)
@@ -131,7 +135,6 @@ Median_Insert=os.popen("grep -A1 'MEDIAN_INSERT_SIZE' "+insertlog+''' | grep -v 
 Mean_Insert=os.popen("grep -A1 'MEDIAN_INSERT_SIZE' "+insertlog+''' | grep -v "MEDIAN_INSERT_SIZE" | awk '{print $5}' ''').read().strip()
 p80_Insert=os.popen("grep -A1 'MEDIAN_INSERT_SIZE' "+insertlog+''' | grep -v "MEDIAN_INSERT_SIZE" | awk '{print $16}' ''').read().strip()
 
-
 # Do promoter overlap to get TSS rate
 ptss = outdir + "/.internal/promoter.tss.bed"
 TSSreads = os.popen(samtools + ' view -L ' + outdir + "/.internal/promoter.tss.bed " +finalbam+" | wc -l").read().strip()
@@ -148,19 +151,6 @@ Dup_Rate=os.popen("grep -A1 'UNPAIRED_READS_EXAMINED' "+rmlog+''' | grep -v "UNP
 Lib_Size=os.popen("grep -A1 'UNPAIRED_READS_EXAMINED' "+rmlog+''' | grep -v "UNPAIRED_READS_EXAMINED" | awk '{print $8}' ''').read().strip()
 Final_frags=os.popen(samtools+' flagstat '+finalbam+''' | head -1 | cut -d " " -f1 | awk '{print $1/2}' ''').read().strip()
 
-# Now just need to spit these out to a file; make this the output
-print(Frags)
-print(AlignPercent)
-print(Aligned_Reads)
-print(Aligned_noMT)
-print(MT_frags)
-print(Dup_Rate)
-print(Lib_Size)
-print(Final_frags)
-print(TSSpercent)
-print(Median_Insert)
-print(Mean_Insert)
-print(p80_Insert)
 
 # 04 Do macs2 on each sample only if bulk
 # Need to build in support for bigwig here
@@ -180,8 +170,12 @@ if(mode == "bulk"):
 	tssout = outdir + "/logs/tss/" + sample + ".tss.csv"
 	Vvec_py = script_dir + "/bin/python/py3_makeVvec.py"
 	vv_call = "python "+Vvec_py+" -a "+finalbam+" -b "+tssFile+" -e 2000 -p ends -o " + tssout+" -q "+outdir+"/final/plots/"+sample+".tss.png"
-	print(vv_call)
 	if not os.path.isfile(tssout):
 		os.system(vv_call)
 		
-os.system('echo "hey" > ' + outdir+"/logs/samples/"+sample+".sampleComplete.txt")
+# Build final output file
+outitems = [ Frags,  AlignPercent,  TSSpercent,  Final_frags,  Frags,  Dup_Rate,  Lib_Size,  MT_frags,  Aligned_Reads,  Aligned_noMT,  Median_Insert,  Mean_Insert,  p80_Insert]
+outnames = ['Frags','AlignPercent','TSSpercent','Final_frags','Frags','Dup_Rate','Lib_Size','MT_frags','Aligned_Reads','Aligned_noMT','Median_Insert','Mean_Insert','p80_Insert']
+with open(outdir+"/logs/samples/"+sample+".sampleQC.tsv", 'w') as outfile:
+	outfile.write("Sample"+"\t"+ "\t".join(outnames)+"\n")
+	outfile.write(sample"\t"+ "\t".join(str(x) for x in outitems)+"\n")

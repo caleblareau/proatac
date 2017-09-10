@@ -27,7 +27,7 @@ directly from Git. Again using a virtual environment--
 
 ```
 python3 -m venv venv3
-source venv3/bin/active
+source venv3/bin/activate
 pip3 install git+ssh://git@github.com/buenrostrolab/search/tree/master/proatac
 ```
 

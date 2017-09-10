@@ -36,6 +36,13 @@ table_columns_visible:
     FastQC:
         percent_duplicates: False
 custom_data:
+    ATAC_stats:
+        id: 'ATAC_stats'
+        section_anchor: 'ATAC_stats'
+        section_name: 'ATAC-seq QC stats'
+        description: 'important QC metrics for ATAC-seq'
+        file_format: 'tsv'
+        plot_type: 'table'
     tss_coverage:
         file_format: 'tsv'
         section_name: 'TSS Plot'
@@ -49,5 +56,8 @@ custom_data:
             xmax: 2000
             ymin: -2000
 sp:
+    ATAC_stats:
+        fn: '*sampleQC.tsv'
     tss_coverage:
         fn: '*tss.tsv'
+    
