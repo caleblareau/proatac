@@ -50,7 +50,7 @@ makePeaksDF <- function(summit_files, peak_width, blacklist, chrom_sizes, n = 99
   l <- lapply(summit_files, function(file){
     if(tools::file_ext(file) == "gz"){
       dt <- fread(paste0("zcat < ", file), stringsAsFactors = TRUE)
-    } else if(tools::file_ext(file) %in% c("txt", "csv", "tsv")){
+    } else {
       dt <- fread(paste0(file), stringsAsFactors = TRUE)
     }
     dt
