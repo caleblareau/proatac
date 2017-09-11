@@ -1,3 +1,6 @@
 
+# 0.3.3
+- Fixed sample table parsing issue associated with Linux
+
 # 0.1.0
 - Added NEWS

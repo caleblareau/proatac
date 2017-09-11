@@ -110,6 +110,8 @@ def inferSampleVectors(input):
 			infile.seek(0)
 			reader = csv.reader(infile, dialect)
 			for row in reader:
+				while '' in row:
+					row.remove('')
 				samplenames.append(row[0])
 				fastq1.append(row[1])
 				fastq2.append(row[2])

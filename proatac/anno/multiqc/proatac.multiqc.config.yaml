@@ -13,12 +13,13 @@ picard/markdups:
 picard/insertsize:
     fn: '*.inserts.log'
     shared: true
-custom_logo: '/Volumes/dat/Research/BuenrostroResearch/lareau_dev/proatac/proatac/anno/multiqc/logo.png'
+#custom_logo: '/Volumes/dat/Research/BuenrostroResearch/lareau_dev/proatac/proatac/anno/multiqc/logo.png'
 custom_logo_url: 'http://proatac.readthedocs.io'
 custom_logo_title: 'proatac'
 report_header_info:
     - For more information on proatac: 'http://proatac.readthedocs.io'
 top_modules:
+    - 'ATAC_stats'
     - 'fastqc'
     - 'bowtie2'
     - 'picard'

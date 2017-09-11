@@ -8,7 +8,7 @@ dependencies = ['click', 'Numpy', 'editdistance', 'pytest', 'python-levenshtein'
 
 setup(
     name='proatac',
-    version='0.3.2',
+    version='0.3.3',
     url='https://github.com/buenrostrolab/proatac',
     license='MIT',
     author='Caleb Lareau',
