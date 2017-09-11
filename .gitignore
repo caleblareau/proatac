@@ -2,7 +2,9 @@
 proatac/__pycache__/*.pyc
 dirOut/*
 
-.snakemake/*
+tests/.snakemake/*
+
+*.snakemake/*
 
 dist/
 build/

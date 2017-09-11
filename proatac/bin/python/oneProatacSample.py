@@ -178,4 +178,4 @@ outitems = [ Frags,  AlignPercent,  TSSpercent,  Final_frags,  Frags,  Dup_Rate,
 outnames = ['Frags','AlignPercent','TSSpercent','Final_frags','Frags','Dup_Rate','Lib_Size','MT_frags','Aligned_Reads','Aligned_noMT','Median_Insert','Mean_Insert','p80_Insert']
 with open(outdir+"/logs/samples/"+sample+".sampleQC.tsv", 'w') as outfile:
 	outfile.write("Sample"+"\t"+ "\t".join(outnames)+"\n")
-	outfile.write(sample"\t"+ "\t".join(str(x) for x in outitems)+"\n")
+	outfile.write(sample+"\t"+ "\t".join(str(x) for x in outitems)+"\n")
