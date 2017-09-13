@@ -5,7 +5,7 @@ prune *.DS_Store
 
 
 # Scripts
-recursive-include proatac/*
+recursive-include proatac *
 
 # Misc
 include Authors.rst

@@ -65,9 +65,11 @@ if not os.path.isfile(outdir+"/logs/trim/"+sample+".trim.log"):
 		print("running py trim")
 		os.system(pycall)
 	else:
-		print("Running PEAT trimming")
-		os.system(peatcall)
-		os.system("mv "+outdir+"/01_trimmed/"+sample+"_report.txt "+outdir+"/logs/trim/"+sample+".trim.log")
+		print("running py trim")
+		os.system(pycall)
+		#print("Running PEAT trimming")
+		#os.system(peatcall)
+		#os.system("mv "+outdir+"/01_trimmed/"+sample+"_report.txt "+outdir+"/logs/trim/"+sample+".trim.log")
 
 tfq1 = outdir + "/01_trimmed/" + sample + "_1.trim.fastq.gz"
 tfq2 = outdir + "/01_trimmed/" + sample + "_2.trim.fastq.gz"
