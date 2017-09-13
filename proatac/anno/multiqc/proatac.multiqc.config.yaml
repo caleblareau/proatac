@@ -19,20 +19,22 @@ custom_logo_title: 'proatac'
 report_header_info:
     - For more information on proatac: 'http://proatac.readthedocs.io'
 top_modules:
-    - 'ATAC_stats'
+    - 'ATAC-seq QC stats'
     - 'fastqc'
     - 'bowtie2'
     - 'picard'
 fn_ignore_dirs:
     - 'macs2'
-read_count_multiplier: 0.001
+read_count_multiplier: 1
 read_count_prefix: 'Total'
-read_count_desc: 'Thousands'
+read_count_desc: 'Reads'
 title: "proatac QC report"
 subtitle: "An overview of key metrics for ATAC-seq analysis processing statistics."
 intro_text: ""
 report_comment: ""
 max_table_rows: 100
+decimalPoint_format: '.'
+thousandsSep_format: ','
 table_columns_visible:
     FastQC:
         percent_duplicates: False
@@ -44,6 +46,7 @@ custom_data:
         description: 'important QC metrics for ATAC-seq'
         file_format: 'tsv'
         plot_type: 'table'
+        format: '{:,.0f}'
     tss_coverage:
         file_format: 'tsv'
         section_name: 'TSS Plot'

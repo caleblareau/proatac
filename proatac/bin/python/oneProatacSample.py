@@ -33,7 +33,7 @@ ncores = "4"
 # Step 1
 clipl = config["clipl"]
 clipr = config["clipr"]
-py_trim = config["py_trim"]
+py_trim = str(config["py_trim"])
 PEAT = config["PEAT"]
 skip_fastqc = str(config["skip_fastqc"])
 java = str(config["java"])
@@ -139,15 +139,14 @@ p80_Insert=os.popen("grep -A1 'MEDIAN_INSERT_SIZE' "+insertlog+''' | grep -v "ME
 ptss = outdir + "/.internal/promoter.tss.bed"
 TSSreads = os.popen(samtools + ' view -L ' + outdir + "/.internal/promoter.tss.bed " +finalbam+" | wc -l").read().strip()
 ALLreads = os.popen(samtools + ' view '+finalbam+" | wc -l").read().strip()
-TSSpercent = str(round(float(TSSreads)/float(ALLreads)*100,3)) + "%"
+TSSpercent = str(round(float(TSSreads)/float(ALLreads)*100,2))
 
 # Get other existing summary statistics
 Frags = os.popen(samtools + ' flagstat '+sortedbam+''' | head -1 | cut -d " " -f1 | awk '{print $1/2}' ''').read().strip()
-AlignPercent = os.popen('tail -n 1 ' + bwt2log + ' | cut -d " " -f1').read().strip()
 Aligned_Reads=os.popen(samtools + ' view -b '+sortedbam+" "+" ".join(str(i) for i in mitochrs + keepchrs) +' | '+samtools+''' flagstat - | head -1 | cut -d " " -f1 | awk '{print $1/2}' ''').read().strip()
 Aligned_noMT=os.popen(samtools + ' view -b '+sortedbam+" "+" ".join(str(i) for i in keepchrs) +' | '+samtools+''' flagstat - | head -1 | cut -d " " -f1 | awk '{print $1/2}' ''').read().strip()
 MT_frags=os.popen(samtools + ' flagstat '+mitobam+''' | head -5 | tail -n 1 | cut -d " " -f 1 | awk '{print $1/2}' | awk -F. '{print $1}' ''').read().strip()
-Dup_Rate=os.popen("grep -A1 'UNPAIRED_READS_EXAMINED' "+rmlog+''' | grep -v "UNPAIRED_READS_EXAMINED" | awk '{print $7*100"%"}' ''').read().strip()
+Dup_Rate=os.popen("grep -A1 'UNPAIRED_READS_EXAMINED' "+rmlog+''' | grep -v "UNPAIRED_READS_EXAMINED" | awk '{print $7*100}' ''').read().strip()
 Lib_Size=os.popen("grep -A1 'UNPAIRED_READS_EXAMINED' "+rmlog+''' | grep -v "UNPAIRED_READS_EXAMINED" | awk '{print $8}' ''').read().strip()
 Final_frags=os.popen(samtools+' flagstat '+finalbam+''' | head -1 | cut -d " " -f1 | awk '{print $1/2}' ''').read().strip()
 
@@ -174,8 +173,8 @@ if(mode == "bulk"):
 		os.system(vv_call)
 		
 # Build final output file
-outitems = [ Frags,  AlignPercent,  TSSpercent,  Final_frags,  Frags,  Dup_Rate,  Lib_Size,  MT_frags,  Aligned_Reads,  Aligned_noMT,  Median_Insert,  Mean_Insert,  p80_Insert]
-outnames = ['Frags','AlignPercent','TSSpercent','Final_frags','Frags','Dup_Rate','Lib_Size','MT_frags','Aligned_Reads','Aligned_noMT','Median_Insert','Mean_Insert','p80_Insert']
+outitems = [ Frags,  TSSpercent,  Final_frags,  Frags,  Dup_Rate,  Lib_Size,  MT_frags,  Aligned_Reads,  Aligned_noMT,  Median_Insert,  Mean_Insert,  p80_Insert]
+outnames = ['Frags','TSSpercent','Final_frags','Frags','Dup_Rate','Lib_Size','MT_frags','Aligned_Reads','Aligned_noMT','Median_Insert','Mean_Insert','p80_Insert']
 with open(outdir+"/logs/samples/"+sample+".sampleQC.tsv", 'w') as outfile:
 	outfile.write("Sample"+"\t"+ "\t".join(outnames)+"\n")
 	outfile.write(sample+"\t"+ "\t".join(str(x) for x in outitems)+"\n")

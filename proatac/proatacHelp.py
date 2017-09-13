@@ -5,18 +5,19 @@ import re
 import os
 import sys
 import csv
+import gzip
 from ruamel import yaml
 from functools import partial
 
 def string_hamming_distance(str1, str2):
-    '''
-    Fast hamming distance over 2 strings known to be of same length.
-    In information theory, the Hamming distance between two strings of equal 
-    length is the number of positions at which the corresponding symbols 
-    are different.
-    eg "karolin" and "kathrin" is 3.
-    '''
-    return sum(itertools.imap(operator.ne, str1, str2))
+	'''
+	Fast hamming distance over 2 strings known to be of same length.
+	In information theory, the Hamming distance between two strings of equal 
+	length is the number of positions at which the corresponding symbols 
+	are different.
+	eg "karolin" and "kathrin" is 3.
+	'''
+	return sum(itertools.imap(operator.ne, str1, str2))
 
 def make_folder(folder):
 	"""
@@ -24,6 +25,23 @@ def make_folder(folder):
 	"""
 	if not os.path.exists(folder):
 		os.makedirs(folder)
+
+def verify_file(filename):
+	"""
+	Ensure that file can both be read and exists
+	"""
+	try:
+		extension = filename.split('.')[-1]
+		if extension == "gz":
+			fp = gzip.open(filename, 'rt')
+		else:
+			fp = open(filename)
+		one = fp.readline()
+		fp.close()
+	except IOError as err:
+		sys.exit(gettime() + "Error reading the file {0}: {1}".format(filename, err))
+	return(filename)
+
 
 def get_software_path(tool, abs_path):
 	'''
@@ -41,11 +59,11 @@ def get_software_path(tool, abs_path):
 	return(tool_path)
 
 def rev_comp(seq):
-    '''
-    Fast Reverse Compliment
-    '''  
-    tbl = {'A':'T', 'T':'A', 'C':'G', 'G':'C', 'N':'N'}
-    return ''.join(tbl[s] for s in seq[::-1])
+	'''
+	Fast Reverse Compliment
+	'''  
+	tbl = {'A':'T', 'T':'A', 'C':'G', 'G':'C', 'N':'N'}
+	return ''.join(tbl[s] for s in seq[::-1])
 
 def gettime(): 
 	'''
@@ -113,8 +131,8 @@ def inferSampleVectors(input):
 				while '' in row:
 					row.remove('')
 				samplenames.append(row[0])
-				fastq1.append(row[1])
-				fastq2.append(row[2])
+				fastq1.append(verify_file(row[1]))
+				fastq2.append(verify_file(row[2]))
 	
 	# Otherwise figure out .fastq files from directory, do the merging, and infer sample names
 	else:
@@ -126,9 +144,9 @@ def inferSampleVectors(input):
 		dups_in_source = partial(list_duplicates_of, samples)
 		for c in set(samples):
 			if(len(dups_in_source(c)) == 2):
-				samplenames.append(c)
+				samplenames.append(verify_file(c))
 				fastq1.append(files[dups_in_source(c)[0]])
-				fastq2.append(files[dups_in_source(c)[1]])
+				fastq2.append(verify_file(files[dups_in_source(c)[1]]))
 
 	return(samplenames, fastq1, fastq2)
 
@@ -144,115 +162,115 @@ def filterExistingSamples(samples, fastq1, fastq2, output):
 
 # https://stackoverflow.com/questions/1006289/how-to-find-out-the-number-of-cpus-using-python	
 def available_cpu_count():
-    '''
-    Number of available virtual or physical CPUs on this system, i.e.
-    user/real as output by time(1) when called with an optimally scaling
-    userspace-only program
 	'''
-    # cpuset
-    # cpuset may restrict the number of *available* processors
-    try:
-        m = re.search(r'(?m)^Cpus_allowed:\s*(.*)$',
-                      open('/proc/self/status').read())
-        if m:
-            res = bin(int(m.group(1).replace(',', ''), 16)).count('1')
-            if res > 0:
-                return res
-    except IOError:
-        pass
+	Number of available virtual or physical CPUs on this system, i.e.
+	user/real as output by time(1) when called with an optimally scaling
+	userspace-only program
+	'''
+	# cpuset
+	# cpuset may restrict the number of *available* processors
+	try:
+		m = re.search(r'(?m)^Cpus_allowed:\s*(.*)$',
+					  open('/proc/self/status').read())
+		if m:
+			res = bin(int(m.group(1).replace(',', ''), 16)).count('1')
+			if res > 0:
+				return res
+	except IOError:
+		pass
 
-    # Python 2.6+
-    try:
-        import multiprocessing
-        return multiprocessing.cpu_count()
-    except (ImportError, NotImplementedError):
-        pass
+	# Python 2.6+
+	try:
+		import multiprocessing
+		return multiprocessing.cpu_count()
+	except (ImportError, NotImplementedError):
+		pass
 
-    # http://code.google.com/p/psutil/
-    try:
-        import psutil
-        return psutil.cpu_count()   # psutil.NUM_CPUS on old versions
-    except (ImportError, AttributeError):
-        pass
+	# http://code.google.com/p/psutil/
+	try:
+		import psutil
+		return psutil.cpu_count()   # psutil.NUM_CPUS on old versions
+	except (ImportError, AttributeError):
+		pass
 
-    # POSIX
-    try:
-        res = int(os.sysconf('SC_NPROCESSORS_ONLN'))
+	# POSIX
+	try:
+		res = int(os.sysconf('SC_NPROCESSORS_ONLN'))
 
-        if res > 0:
-            return res
-    except (AttributeError, ValueError):
-        pass
+		if res > 0:
+			return res
+	except (AttributeError, ValueError):
+		pass
 
-    # Windows
-    try:
-        res = int(os.environ['NUMBER_OF_PROCESSORS'])
+	# Windows
+	try:
+		res = int(os.environ['NUMBER_OF_PROCESSORS'])
 
-        if res > 0:
-            return res
-    except (KeyError, ValueError):
-        pass
+		if res > 0:
+			return res
+	except (KeyError, ValueError):
+		pass
 
-    # jython
-    try:
-        from java.lang import Runtime
-        runtime = Runtime.getRuntime()
-        res = runtime.availableProcessors()
-        if res > 0:
-            return res
-    except ImportError:
-        pass
+	# jython
+	try:
+		from java.lang import Runtime
+		runtime = Runtime.getRuntime()
+		res = runtime.availableProcessors()
+		if res > 0:
+			return res
+	except ImportError:
+		pass
 
-    # BSD
-    try:
-        sysctl = subprocess.Popen(['sysctl', '-n', 'hw.ncpu'],
-                                  stdout=subprocess.PIPE)
-        scStdout = sysctl.communicate()[0]
-        res = int(scStdout)
+	# BSD
+	try:
+		sysctl = subprocess.Popen(['sysctl', '-n', 'hw.ncpu'],
+								  stdout=subprocess.PIPE)
+		scStdout = sysctl.communicate()[0]
+		res = int(scStdout)
 
-        if res > 0:
-            return res
-    except (OSError, ValueError):
-        pass
+		if res > 0:
+			return res
+	except (OSError, ValueError):
+		pass
 
-    # Linux
-    try:
-        res = open('/proc/cpuinfo').read().count('processor\t:')
+	# Linux
+	try:
+		res = open('/proc/cpuinfo').read().count('processor\t:')
 
-        if res > 0:
-            return res
-    except IOError:
-        pass
+		if res > 0:
+			return res
+	except IOError:
+		pass
 
-    # Solaris
-    try:
-        pseudoDevices = os.listdir('/devices/pseudo/')
-        res = 0
-        for pd in pseudoDevices:
-            if re.match(r'^cpuid@[0-9]+$', pd):
-                res += 1
+	# Solaris
+	try:
+		pseudoDevices = os.listdir('/devices/pseudo/')
+		res = 0
+		for pd in pseudoDevices:
+			if re.match(r'^cpuid@[0-9]+$', pd):
+				res += 1
 
-        if res > 0:
-            return res
-    except OSError:
-        pass
+		if res > 0:
+			return res
+	except OSError:
+		pass
 
-    # Other UNIXes (heuristic)
-    try:
-        try:
-            dmesg = open('/var/run/dmesg.boot').read()
-        except IOError:
-            dmesgProcess = subprocess.Popen(['dmesg'], stdout=subprocess.PIPE)
-            dmesg = dmesgProcess.communicate()[0]
+	# Other UNIXes (heuristic)
+	try:
+		try:
+			dmesg = open('/var/run/dmesg.boot').read()
+		except IOError:
+			dmesgProcess = subprocess.Popen(['dmesg'], stdout=subprocess.PIPE)
+			dmesg = dmesgProcess.communicate()[0]
 
-        res = 0
-        while '\ncpu' + str(res) + ':' in dmesg:
-            res += 1
+		res = 0
+		while '\ncpu' + str(res) + ':' in dmesg:
+			res += 1
 
-        if res > 0:
-            return res
-    except OSError:
-        pass
+		if res > 0:
+			return res
+	except OSError:
+		pass
 
-    raise Exception('Can not determine number of CPUs on this system')
-    
+	raise Exception('Can not determine number of CPUs on this system')
+	
