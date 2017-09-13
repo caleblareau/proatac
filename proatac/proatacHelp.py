@@ -144,8 +144,8 @@ def inferSampleVectors(input):
 		dups_in_source = partial(list_duplicates_of, samples)
 		for c in set(samples):
 			if(len(dups_in_source(c)) == 2):
-				samplenames.append(verify_file(c))
-				fastq1.append(files[dups_in_source(c)[0]])
+				samplenames.append(c)
+				fastq1.append(verify_file(files[dups_in_source(c)[0]]))
 				fastq2.append(verify_file(files[dups_in_source(c)[1]]))
 
 	return(samplenames, fastq1, fastq2)
