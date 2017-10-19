@@ -8,7 +8,7 @@ dependencies = ['click', 'cutadapt', 'Numpy', 'editdistance', 'pytest', 'python-
 
 setup(
     name='proatac',
-    version='0.4.0',
+    version='0.4.1',
     url='https://github.com/buenrostrolab/proatac',
     license='MIT',
     author='Caleb Lareau',
