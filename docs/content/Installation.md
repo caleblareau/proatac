@@ -11,7 +11,7 @@ python virtual environment called `venv3` using the following sequence of comman
 
 ```
 python3 -m venv venv3
-source venv3/bin/active
+source venv3/bin/activate
 ```
 
 The installation can then be specified using the following:
