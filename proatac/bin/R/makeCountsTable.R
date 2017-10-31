@@ -29,7 +29,7 @@ if(by_rg_in == "True"){
 
 peaks <- getPeaks(peak_file)
 
-bamfiles <- list.files(bamdir, full.names = TRUE)
+bamfiles <- list.files(bamdir, full.names = TRUE, pattern = "\\.bam$")
 sampleNames <- file_path_sans_ext(basename(bamfiles))
 countsSE <- getCounts(bamfiles, peaks, paired =  TRUE,  by_rg = by_rg, format = "bam", 
                               colData = DataFrame(sampleNames = c(sampleNames)))
