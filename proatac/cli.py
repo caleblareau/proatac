@@ -175,7 +175,7 @@ def main(mode, input, output, name, ncores, bowtie2_index,
 		njobs = int(jobs)
 		if(njobs > 0 and cluster != ""):
 			snakeclust = " --jobs " + jobs + " --cluster '" + cluster + "' "
-			click.echo(gettime() + "Recognized flags to process jobs on a computing cluster.", logf)		
+			click.echo(gettime() + "Recognized flags to process jobs on a computing cluster.")		
 		
 		# Make output folders
 		of = output; logs = of + "/logs"; fin = of + "/final"; trim = of + "/01_trimmed"; 
