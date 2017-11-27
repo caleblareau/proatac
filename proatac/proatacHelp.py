@@ -128,11 +128,12 @@ def inferSampleVectors(input):
 			infile.seek(0)
 			reader = csv.reader(infile, dialect)
 			for row in reader:
-				while '' in row:
-					row.remove('')
-				samplenames.append(row[0])
-				fastq1.append(verify_file(row[1]))
-				fastq2.append(verify_file(row[2]))
+				if(len(row) > 0):
+					while '' in row:
+						row.remove('')
+					samplenames.append(row[0])
+					fastq1.append(verify_file(row[1]))
+					fastq2.append(verify_file(row[2]))
 	
 	# Otherwise figure out .fastq files from directory, do the merging, and infer sample names
 	else:

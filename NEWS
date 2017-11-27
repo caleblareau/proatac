@@ -1,3 +1,5 @@
+# 0.4.3
+- Fixed sample table parsing issue for rows without 3 columns
 
 # 0.3.3
 - Fixed sample table parsing issue associated with Linux
