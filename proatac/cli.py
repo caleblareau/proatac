@@ -39,6 +39,7 @@ from ruamel.yaml.scalarstring import SingleQuotedScalarString as sqs
 @click.option('--max-javamem', '-jm', default = "4000m", help='Maximum memory for java')
 @click.option('--trash-mito', '-tm', is_flag=True, help='Throw away mitochondrial reads as part of the final cleanup.')
 @click.option('--reference-genome', '-rg', default = "", help='Support for built-in genome; choices are hg19, mm9, hg38, mm10, hg19_mm10_c (species mix)')
+@click.option('--very-sensitive', '-vs', is_flag = True, help='Align with bowtie2 using very sensitive')
 
 @click.option('--clipL', '-cl', default = "0", help='Number of bases to clip from left hand side of read.')
 @click.option('--clipR', '-cr', default = "0", help='Number of bases to clip from right hand side of read.')
@@ -64,7 +65,7 @@ from ruamel.yaml.scalarstring import SingleQuotedScalarString as sqs
 
 def main(mode, input, output, name, ncores, bowtie2_index,
 	cluster, jobs, peaks_file, by_rgid,
-	peak_width, keep_duplicates, max_javamem, trash_mito, reference_genome,
+	peak_width, keep_duplicates, max_javamem, trash_mito, reference_genome, very_sensitive,
 	clipl, clipr, py_trim, keep_temp_files, skip_fastqc, overwrite,
 	bedtools_genome, blacklist_file, tss_file, macs2_genome_size, bs_genome, 
 	bedtools_path, bowtie2_path, java_path, macs2_path, samtools_path, r_path):
@@ -147,8 +148,12 @@ def main(mode, input, output, name, ncores, bowtie2_index,
 		click.echo(gettime() + "Completed peak inference from summit files.")
 		sys.exit()
 	
+	# Last minute changes
+	if(very_sensitive):
+		very_sensitive = "--very-sensitive "
+	
 	p = proatacProject(script_dir, supported_genomes, mode, input, output, name, ncores, bowtie2_index,
-		cluster, jobs, peak_width, keep_duplicates, max_javamem, trash_mito, reference_genome,
+		cluster, jobs, peak_width, keep_duplicates, max_javamem, trash_mito, reference_genome, very_sensitive,
 		clipl, clipr, py_trim, keep_temp_files, skip_fastqc, overwrite,
 		bedtools_genome, blacklist_file, tss_file, macs2_genome_size, bs_genome, 
 		bedtools_path, bowtie2_path, java_path, macs2_path, samtools_path, r_path)

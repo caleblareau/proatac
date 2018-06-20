@@ -22,6 +22,7 @@ outdir = config["output"]
 name = config["name"]
 script_dir = config["script_dir"]
 mode = config["mode"]
+vs = config["very_sensitive"]
 
 # Ned to update
 keepchrs = ["chr1", "chr2", "chr3", "chr4", "chr5", "chr6", "chr7", "chr8", "chr9", "chr10", "chr11", "chr12", "chr13", "chr14", "chr15", "chr16", "chr17", "chr18", "chr19", "chr20", "chr21", "chr22", "chrX"]
@@ -83,9 +84,9 @@ if(skip_fastqc == "False" and str(fastqc_path) != "None"):
 # 02 Align with bowtie2
 bwt2log = outdir+"/logs/bowtie2/" + sample + ".log"
 sortedbam = outdir + '/02_aligned_reads/'+sample+'.all.sorted.bam'
-bwt2call = '(' + bowtie2 + ' -X 2000 -p '+ncores+' -x '+ bowtie2index +' --rg-id '+sample+' -1 '+tfq1+' -2 '+tfq2+' | ' + samtools + ' view -bS - | ' + samtools + ' sort -@ 2 - -o ' +sortedbam+') 2> ' + bwt2log 
+bwt2call = '(' + bowtie2 + ' -X 2000 -p '+ncores+' ' +vs+' -x '+ bowtie2index +' --rg-id '+sample+' -1 '+tfq1+' -2 '+tfq2+' | ' + samtools + ' view -bS - | ' + samtools + ' sort -@ 2 - -o ' +sortedbam+') 2> ' + bwt2log 
 if not os.path.isfile(sortedbam):
-	print("Aligning data with Bowtie2")
+	print("Aligning data with Bowtie2 " + vs)
 	os.system(bwt2call)
 	pysam.index(sortedbam)
 
