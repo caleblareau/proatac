@@ -151,6 +151,8 @@ def main(mode, input, output, name, ncores, bowtie2_index,
 	# Last minute changes
 	if(very_sensitive):
 		very_sensitive = "--very-sensitive "
+	else:
+		very_sensitive = ""
 	
 	p = proatacProject(script_dir, supported_genomes, mode, input, output, name, ncores, bowtie2_index,
 		cluster, jobs, peak_width, keep_duplicates, max_javamem, trash_mito, reference_genome, very_sensitive,
