@@ -239,7 +239,7 @@ def main(mode, input, output, name, ncores, bowtie2_index,
 		with open(y_s, 'w') as yaml_file:
 			yaml.dump(dict(p), yaml_file, default_flow_style=False, Dumper=yaml.RoundTripDumper)
 		
-		snakecmd_scatter = 'snakemake'+snakeclust+' --snakefile '+script_dir+'/bin/snake/Snakefile.proatac.scatter --cores '+ncores+' --config cfp="' + y_s + '" -T'
+		snakecmd_scatter = 'snakemake'+snakeclust+' --snakefile '+script_dir+'/bin/snake/Snakefile.proatac.scatter --cores '+ncores+' --config cfp="' + y_s + '" '
 		os.system(snakecmd_scatter)
 		
 		if(mode == 'single'):
@@ -250,7 +250,7 @@ def main(mode, input, output, name, ncores, bowtie2_index,
 				os.system(p.samtools + " merge " +finalmergedbam+" "+ of + "/03_processed_reads/bams/*.bam")
 				pysam.index(finalmergedbam)
 			
-		snakecmd_gather = 'snakemake --snakefile '+script_dir+'/bin/snake/Snakefile.proatac.gather --cores '+ncores+' --config cfp="' + y_s + '" -T'
+		snakecmd_gather = 'snakemake --snakefile '+script_dir+'/bin/snake/Snakefile.proatac.gather --cores '+ncores+' --config cfp="' + y_s + '" '
 		os.system(snakecmd_gather)
 		
 		if keep_temp_files:
