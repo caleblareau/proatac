@@ -64,15 +64,12 @@ def main(mode, input):
 	os.system(bg2bwcmd)	
 	
 	# Remove temp
-	#os.remove(treat_pileup)
-	#os.remove(treat_pileup+".sort.clip")
-	#os.remove(treat_pileup+".clip")
-	#os.remove(treat_pileup)
+	os.remove(treat_pileup)
+	os.remove(treat_pileup+".sort.clip")
+	os.remove(treat_pileup+".clip")
+	os.remove(contigfile)
+	os.remove(input_filename + "_peaks.xls")
+	os.remove(input_filename + "_peaks.narrowPeak")
+	os.remove(input_filename + "_summits.bed")
+	os.remove(input_filename + "_control_lambda.bdg")
 
-	
-	
-	
-	
-	
-	
-	
