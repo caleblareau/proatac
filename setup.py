@@ -8,7 +8,7 @@ dependencies = ['click', 'cutadapt', 'Numpy', 'editdistance', 'pytest', 'python-
 
 setup(
     name='proatac',
-    version='0.4.8',
+    version='0.4.9',
     url='https://github.com/caleblareau/proatac',
     license='MIT',
     author='Caleb Lareau',
@@ -23,6 +23,7 @@ setup(
     entry_points={
         'console_scripts': [
             'proatac = proatac.cli:main',
+            'pybam2bw = proatac.clibwmake:main'
         ],
     },
     classifiers=[

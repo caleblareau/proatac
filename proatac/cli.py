@@ -72,9 +72,7 @@ def main(mode, input, output, name, ncores, bowtie2_index,
 	
 	"""
 	proatac: a toolkit for PROcessing ATAC-seq data. \n
-	Caleb Lareau, Buenrostro Lab. \n
-	modes = ['bulk', 'check', 'counts', 'indexSplit', 'single', 'summitsToPeaks', 'support']\n
-	See http://proatac.readthedocs.io for more details.
+	Caleb Lareau
 	"""
 	
 	__version__ = get_distribution('proatac').version
