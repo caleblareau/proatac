@@ -24,9 +24,10 @@ script_dir = config["script_dir"]
 mode = config["mode"]
 vs = config["very_sensitive"]
 
-# Need to update
-keepchrs = ["chr1", "chr2", "chr3", "chr4", "chr5", "chr6", "chr7", "chr8", "chr9", "chr10", "chr11", "chr12", "chr13", "chr14", "chr15", "chr16", "chr17", "chr18", "chr19", "chr20", "chr21", "chr22", "chrX"]
-mitochrs = ['chrM', 'MT', 'humanM', 'mouseM', 'humanMT', 'mouseMT']
+# need to make more clever sometime
+keepchrs = ["chr1", "chr2", "chr3", "chr4", "chr5", "chr6", "chr7", "chr8", "chr9", "chr10", "chr11", "chr12", "chr13", "chr14", "chr15", "chr16", "chr17", "chr18", "chr19", "chr20", "chr21", "chr22", "chrX", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "X"]
+keepchrs.extend(["PvP01_01_v1","PvP01_02_v1","PvP01_03_v1","PvP01_04_v1","PvP01_05_v1","PvP01_06_v1","PvP01_07_v1","PvP01_08_v1","PvP01_09_v1","PvP01_10_v1","PvP01_11_v1","PvP01_12_v1","PvP01_13_v1","PvP01_14_v1"])
+mitochrs = ['chrM', 'MT', 'humanM', 'mouseM', 'humanMT', 'mouseMT', 'PvP01_MIT_v1']
 read_quality = "30"
 ncores = "4"
 # bigwig support
