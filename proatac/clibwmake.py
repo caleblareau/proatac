@@ -44,8 +44,7 @@ def main(mode, input):
 		format = " -f BAMPE"
 	else:
 		format = " -f BAM"
-	macs2call = "macs2 callpeak -t " + input_filename + " -B --SPMR -n " + input_filename + format
-	print(macs2call)
+	macs2call = "macs2 callpeak -t " + input_filename + " -B --nomodel --SPMR -n " + input_filename + format
 	os.system(macs2call)	
 
 	# Threshold and slop

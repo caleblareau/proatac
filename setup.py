@@ -8,11 +8,11 @@ dependencies = ['click', 'cutadapt', 'Numpy', 'editdistance', 'pytest', 'python-
 
 setup(
     name='proatac',
-    version='0.5.0',
+    version='0.5.1',
     url='https://github.com/caleblareau/proatac',
     license='MIT',
     author='Caleb Lareau',
-    author_email='caleblareau@g.harvard.edu',
+    author_email='clareau@stanford.edu',
     description='Processing and quality control of ATAC data.',
     long_description=__doc__,
     packages=find_packages(exclude=['tests']),
