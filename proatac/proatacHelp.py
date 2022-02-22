@@ -54,7 +54,7 @@ def get_software_path(tool, abs_path):
 		if(abs_path == ""):
 			sys.exit("ERROR: cannot find "+tool+" in environment; add it to user PATH environment or specify executable using a flag.")
 	if(abs_path != ""):
-		if(os.path.isfile(abs_file)):
+		if(os.path.isfile(abs_path)):
 			tool_path = abs_path
 	return(tool_path)
 
